@@ -42,11 +42,13 @@ Plx.SpriteRenderer.prototype.onEntityRemoved = function(event) {
 
 Plx.SpriteRenderer.prototype.addComponent = function(spriteComponent) {
   var inserted = false
+  // TODO: this number is blowing up as we add components!
   for (var i = 0; i < this.sprites.length; i++) {
     var sprite = this.sprites[i];
     if (sprite.z > spriteComponent.z) {
       inserted = true;
       this.sprites.splice(i, 0, spriteComponent);
+      break;
     }
   }
   if (!inserted)
@@ -105,14 +107,14 @@ Plx.SpriteRenderer.prototype.onRendered = function(event) {
         spriteX = 0;
         spriteY = 0;
       }
-      this.context.fillStyle = "#00FF00";
-      this.context.strokeRect(drawOffsetX, drawOffsetY, Math.round(sprite.frame.width * sprite.scaleX), Math.round(sprite.frame.height * sprite.scaleY));
+      // this.context.fillStyle = "#00FF00";
+      // this.context.strokeRect(drawOffsetX, drawOffsetY, Math.round(sprite.frame.width * sprite.scaleX), Math.round(sprite.frame.height * sprite.scaleY));
       this.context.drawImage(image, sprite.frame.x, sprite.frame.y, sprite.frame.width, sprite.frame.height, 0 + drawOffsetX, 0 + drawOffsetY, Math.round(sprite.frame.width * sprite.scaleX), Math.round(sprite.frame.height * sprite.scaleY));
       this.context.restore();
     }
     else {
-      this.context.fillStyle = "#00FF00";
-      this.context.strokeRect(spriteX, spriteY, Math.round(sprite.frame.width * sprite.scaleX), Math.round(sprite.frame.height * sprite.scaleY));
+      // this.context.fillStyle = "#00FF00";
+      // this.context.strokeRect(spriteX, spriteY, Math.round(sprite.frame.width * sprite.scaleX), Math.round(sprite.frame.height * sprite.scaleY));
       this.context.drawImage(image, sprite.frame.x, sprite.frame.y, sprite.frame.width, sprite.frame.height, Math.round(spriteX), Math.round(spriteY), Math.round(sprite.frame.width * sprite.scaleX), Math.round(sprite.frame.height * sprite.scaleY));
     }
   }
