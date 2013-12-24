@@ -29,7 +29,7 @@ var calcIntersectTime = function(leftActor, rightActor, topActor, bottomActor) {
   var intersectTime = null;
   if (xIntersectTime != null)
     intersectTime = xIntersectTime;
-  if ((yIntersectTime != null && !xIntersectTime) || (yIntersectTime != nul && xIntersectTime != null && yIntersectTime < xIntersectTime)) {
+  if ((yIntersectTime != null && !xIntersectTime) || (yIntersectTime != null && xIntersectTime != null && yIntersectTime < xIntersectTime)) {
     intersectTime = yIntersectTime;
     leftActor = rightActor = null;
   }
@@ -158,9 +158,12 @@ Plx.Physics.prototype.onEntityAdded = function(event) {
   entityComponents = event.data.entity.components;
   for (var i = 0; i < entityComponents.length; i++) {
     var component = entityComponents[i];
-    if (component instanceof Plx.PhysicsComponent)
+    if (component instanceof Plx.PhysicsComponent) {
+      if (!this.physicsComponents[component.collisionType])
+        throw new Error("Collion Type " + component.collisionType + ") not registered.");
       this.physicsComponents[component.collisionType].push(component);
       // console.log "entityId: //{event.data['entity'].id} component added"
+    }
   }
 };
 
@@ -392,6 +395,8 @@ Plx.Physics.prototype.resolveCollisionPairs = function(collisionPairs) {
     otherComponent.nextRect.loc.y = otherComponent.rect.loc.y + otherComponent.pendingMove.y;
 
     // emit events for collision
+    if (component.sponginess == 1 && otherComponent.sponginess == 1)
+      var blah = 1;
     component.beacon.emit("collided", {physicsComponent:otherComponent, type:otherComponent.collisionType, colliderDirection:(collisionPair.vertical) ? "down" : "right"});
     otherComponent.beacon.emit("collided", {physicsComponent:component, type:component.collisionType, colliderDirection:(collisionPair.vertical) ? "up" : "left"});
 
@@ -441,7 +446,7 @@ Plx.Physics.prototype.addCollisionPair = function(typeOne, typeTwo) {
     }
   }
   if (!pairFound) {
-    this.collisionPairs.push(new CollisionPair(typeOne, typeTwo));
+    this.collisionPairs.push(new Plx.CollisionPair(typeOne, typeTwo));
 
     if (!this.physicsComponents.hasOwnProperty(typeOne))
       this.physicsComponents[typeOne] = [];

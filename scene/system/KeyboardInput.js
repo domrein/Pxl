@@ -31,12 +31,12 @@ Plx.KeyboardInput.prototype.onKeyUp = function(event) {
 
 Plx.KeyboardInput.prototype.getKeyDown = function(keyName) {
   switch (keyName) {
-    case 'space': return this.keys[32]; break;
-    case 'left': return this.keys[37]; break;
-    case 'up': return this.keys[38]; break;
-    case 'right': return this.keys[39]; break;
-    case 'down': return this.keys[40]; break;
-    case 'z': return this.keys[90]; break;
+    case "space": return this.keys[32]; break;
+    case "left": return this.keys[37]; break;
+    case "up": return this.keys[38]; break;
+    case "right": return this.keys[39]; break;
+    case "down": return this.keys[40]; break;
+    case "z": return this.keys[90]; break;
   }
 
   console.log("keyName " + keyName + " does not exist");
@@ -44,14 +44,14 @@ Plx.KeyboardInput.prototype.getKeyDown = function(keyName) {
 };
 
 Plx.KeyboardInput.prototype.translateKeyCode = function(keyCode) {
-  keyName = ''
+  keyName = "";
   switch (keyCode) {
-    case 32: keyName = 'space'; break;
-    case 37: keyName = 'left'; break;
-    case 38: keyName = 'up'; break;
-    case 39: keyName = 'right'; break;
-    case 40: keyName = 'down'; break;
-    case 90: keyName = 'z'; break;
+    case 32: keyName = "space"; break;
+    case 37: keyName = "left"; break;
+    case 38: keyName = "up"; break;
+    case 39: keyName = "right"; break;
+    case 40: keyName = "down"; break;
+    case 90: keyName = "z"; break;
   }
 
   return keyName;
