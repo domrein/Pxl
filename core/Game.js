@@ -37,6 +37,13 @@ Plx.Game = function(width, height, firstSceneClass) {
   this.preloader.beacon.observe(this, "completed", this.onPreloaderCompleted);
   this.spriteStore = new Plx.SpriteStore();
   this.saveData = new Plx.SaveData();
+  this.entityFactory = new Plx.EntityFactory(this);
+  // TODO: move the default entity types somewhere more appropriate
+  this.entityFactory.registerType("Button", [
+    {type: Plx.PhysicsComponent, name: "physics", params: {}, },
+    {type: Plx.Sprite, name: "sprite", params: {}, },
+    {type: Plx.Tappable, name: "tappable", params: {}, },
+  ]);
 };
 
 Plx.Game.prototype.init = function() {
