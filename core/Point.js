@@ -1,4 +1,8 @@
 Plx.Point = function(x, y) {
+  this.reset(x, y);
+};
+
+Plx.Point.prototype.reset = function(x, y) {
   this.x = x || 0;
   this.y = y || 0;
 };

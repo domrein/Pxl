@@ -2,11 +2,27 @@ Plx.PhysicsComponent = function() {
   Plx.Component.call(this);
   this.rect = new Plx.Rectangle();
   this.lastRect = new Plx.Rectangle();
-  
   // just for use in physics system
   this.nextRect = new Plx.Rectangle();
-
   this.pendingMove = new Plx.Point();
+  Plx.PhysicsComponent.count++;
+  this.reset();
+};
+
+Plx.PhysicsComponent.prototype = Object.create(Plx.Component.prototype);
+Plx.PhysicsComponent.prototype.constructor = Plx.PhysicsComponent;
+
+Plx.PhysicsComponent.count = 0;
+
+Plx.PhysicsComponent.prototype.reset = function() {
+  this.rreset();
+  this.rect.reset();
+  this.lastRect.reset();
+  
+  // just for use in physics system
+  this.nextRect.reset();
+
+  this.pendingMove.reset();
   // TODO: refactor this into speed.x
   this.speedX = 0;
   this.speedY = 0;
@@ -19,17 +35,34 @@ Plx.PhysicsComponent = function() {
   this.mass = 1;
   this.sponginess = .1;
   this.collisionType = 'none';
-  Plx.PhysicsComponent.count++;
   this.gravity = 0;
   this.collisionEnabled = true;
   // console.log "created, PhysicsComponent.count: //{PhysicsComponent.count}"
 };
 
-Plx.PhysicsComponent.prototype = Object.create(Plx.Component.prototype);
-Plx.PhysicsComponent.prototype.constructor = Plx.PhysicsComponent;
+Plx.PhysicsComponent.prototype.init = function() {
 
-Plx.PhysicsComponent.count = 0;
+};
 
+Object.defineProperty(Plx.PhysicsComponent.prototype, "x", {
+  get: function() {
+    return this.rect.loc.x;
+  },
+  set: function(value) {
+    this.rect.loc.x = value;
+  }
+});
+
+Object.defineProperty(Plx.PhysicsComponent.prototype, "y", {
+  get: function() {
+    return this.rect.loc.y;
+  },
+  set: function(value) {
+    this.rect.loc.y = value;
+  }
+});
+
+// TODO: rip these out and replace with getters/setters
 Plx.PhysicsComponent.prototype.setX = function(x, syncLast) {
   syncLast = syncLast || false;
   if (syncLast)

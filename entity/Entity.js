@@ -1,14 +1,22 @@
 Plx.Entity = function() {
   this.beacon = new Plx.Beacon(this);
+  // maybe we should have the id increment when it's inited?
+  this.id = Plx.Entity.idCounter++;
   this.components = [];
   this.componentMap = {};
-  this.alive = true;
-  this.scene = null;
-  this.game = null;
-  this.id = Plx.Entity.idCounter++;
+  this.reset();
 };
 
 Plx.Entity.idCounter = 0;
+
+Plx.Entity.prototype.reset = function() {
+  for (var i = 0; i < this.components.length; i ++)
+    this.components[i].reset();
+  this.beacon.reset();
+  this.alive = true;
+  this.scene = null;
+  this.game = null;
+};
 
 Plx.Entity.prototype.update = function() {
   this.beacon.emit('updated', null);
@@ -16,9 +24,17 @@ Plx.Entity.prototype.update = function() {
 
 Plx.Entity.prototype.addComponent = function(component) {
   component.entity = this;
+  component.game = this.game;
   component.beacon.emit('added', null);
   this.components.push(component);
   this.componentMap[component.name] = component;
+
+  // add getter for component for convenience
+  Object.defineProperty(this, component.name, {
+    get: function() {
+      return this.componentMap[component.name];
+    }
+  });
 
   return component;
 };

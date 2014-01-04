@@ -1,3 +1,7 @@
+// TODO: rework this system to handle input instead of just redispatching events
+//  Have tappable, draggable and all that handled by the system itself
+//  Also, we're mobile first, so MouseInput isn't the best name for the system :P
+
 Plx.MouseInput = function() {
   Plx.System.call(this);
   this.mouseDown = false;
@@ -12,13 +16,13 @@ Plx.MouseInput = function() {
   this.touchEndFunc = function(event){_this.onTouchEnd(event)};
   this.touchMoveFunc = function(event){_this.onTouchMove(event)};
   // mouse events
-  document.getElementById('canvas').addEventListener("mousedown", this.mouseDownFunc, false);
-  document.getElementById('canvas').addEventListener("mouseup", this.mouseUpFunc, false);
-  document.getElementById('canvas').addEventListener("mousemove", this.mouseMoveFunc, false);
+  document.getElementById("canvas").addEventListener("mousedown", this.mouseDownFunc, false);
+  document.getElementById("canvas").addEventListener("mouseup", this.mouseUpFunc, false);
+  document.getElementById("canvas").addEventListener("mousemove", this.mouseMoveFunc, false);
   // touch events
-  document.getElementById('canvas').addEventListener("touchstart", this.touchStartFunc, false);
-  document.getElementById('canvas').addEventListener("touchend", this.touchEndFunc, false);
-  document.getElementById('canvas').addEventListener("touchmove", this.touchMoveFunc, false);
+  document.getElementById("canvas").addEventListener("touchstart", this.touchStartFunc, false);
+  document.getElementById("canvas").addEventListener("touchend", this.touchEndFunc, false);
+  document.getElementById("canvas").addEventListener("touchmove", this.touchMoveFunc, false);
 };
 
 Plx.MouseInput.prototype = Object.create(Plx.System.prototype);

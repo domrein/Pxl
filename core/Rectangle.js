@@ -1,5 +1,10 @@
 Plx.Rectangle = function() {
   this.loc = new Plx.Point();
+  this.reset();
+};
+
+Plx.Rectangle.prototype.reset = function() {
+  this.loc.reset();
   this.width = 0;
   this.height = 0;
 };

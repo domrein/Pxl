@@ -6,6 +6,7 @@ Plx.SpriteRenderer = function() {
   this.context = this.canvas.getContext("2d");
 
   // I hate cross browser crap like this!
+  // TODO: remove the above comment
   this.context.imageSmoothingEnabled = false;
   this.context.mozImageSmoothingEnabled = false;
   this.context.webkitImageSmoothingEnabled = false;

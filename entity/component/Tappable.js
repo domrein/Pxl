@@ -1,13 +1,25 @@
 Plx.Tappable = function() {
   Plx.Component.call(this);
+  this.reset();
+};
+
+Plx.Tappable.prototype = Object.create(Plx.Component.prototype);
+Plx.Tappable.prototype.constructor = Plx.Tappable;
+
+Plx.Tappable.prototype.reset = function() {
+  this.rreset();
+  this.beacon.reset();
   this.beacon.observe(this, 'added', this.onAdded);
+  // TODO: mouseInput should be a system instead of handled at the component level
+  // TODO: do some of these TODOs
   this.mouseInput = null;
   this.precedence = 5;
   this.enabled = true;
 };
 
-Plx.Tappable.prototype = Object.create(Plx.Component.prototype);
-Plx.Tappable.prototype.constructor = Plx.Tappable;
+Plx.Tappable.prototype.init = function() {
+
+};
 
 Plx.Tappable.prototype.onAdded = function(event) {
   this.physicsComponent = this.entity.fetchComponent(Plx.PhysicsComponent);

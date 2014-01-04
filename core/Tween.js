@@ -49,23 +49,23 @@ Plx.Tween = function(target, property, heartbeatBeacon, heartbeatEvent) {
 
 // utility function to move entity with a physics component
 Plx.Tween.move = function(target, changeX, changeY, duration, delay) {
-  return Plx.Tween.moveTo(target, target.physicsComponent.rect.loc.x + changeX, target.physicsComponent.rect.loc.y + changeY, duration, delay);
+  return Plx.Tween.moveTo(target, target.physics.rect.loc.x + changeX, target.physics.rect.loc.y + changeY, duration, delay);
 };
 
 Plx.Tween.moveTo = function(target, destX, destY, duration, delay) {
-  var tweenX = new Plx.Tween(target.physicsComponent, 'x', target.scene.beacon, 'updated');
-  var tweenY = new Plx.Tween(target.physicsComponent, 'y', target.scene.beacon, 'updated');
+  var tweenX = new Plx.Tween(target.physics, 'x', target.scene.beacon, 'updated');
+  var tweenY = new Plx.Tween(target.physics, 'y', target.scene.beacon, 'updated');
   if (delay) {
     var timer = new Plx.Timer(delay, 1, 0, target.scene.beacon, 'updated');
     timer.start();
     timer.beacon.observe(this, 'timed', function(event) {
-      tweenX.start(target.physicsComponent.rect.loc.x, destX, duration);
-      tweenY.start(target.physicsComponent.rect.loc.y, destY, duration);
+      tweenX.start(target.physics.rect.loc.x, destX, duration);
+      tweenY.start(target.physics.rect.loc.y, destY, duration);
     });
   }
   else {
-    tweenX.start(target.physicsComponent.rect.loc.x, destX, duration);
-    tweenY.start(target.physicsComponent.rect.loc.y, destY, duration);
+    tweenX.start(target.physics.rect.loc.x, destX, duration);
+    tweenY.start(target.physics.rect.loc.y, destY, duration);
   }
   
   return [tweenX, tweenY];

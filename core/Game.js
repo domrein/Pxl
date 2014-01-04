@@ -38,11 +38,16 @@ Plx.Game = function(width, height, firstSceneClass) {
   this.spriteStore = new Plx.SpriteStore();
   this.saveData = new Plx.SaveData();
   this.entityFactory = new Plx.EntityFactory(this);
+  
   // TODO: move the default entity types somewhere more appropriate
-  this.entityFactory.registerType("Button", [
+  this.entityFactory.registerType("PlxButton", [
     {type: Plx.PhysicsComponent, name: "physics", params: {}, },
     {type: Plx.Sprite, name: "sprite", params: {}, },
     {type: Plx.Tappable, name: "tappable", params: {}, },
+  ]);
+  this.entityFactory.registerType("PlxSprient", [
+    {type: Plx.PhysicsComponent, name: "physics", params: {}, },
+    {type: Plx.Sprite, name: "sprite", params: {}, },
   ]);
 };
 

@@ -16,7 +16,7 @@ Plx.Scene.prototype.update = function() {
     entity = this.entities[i];
     entity.update();
   }
-
+  
   // remove dead entities
   for (i = this.entities.length - 1; i >= 0; i --) {
     entity = this.entities[i];

@@ -5,6 +5,7 @@ Plx.EntityFactory = function(game) {
 };
 
 // componentList is a component type and any values that should be set on it
+// TODO: allow extension of types extendType (maybe cloneType with overrides?)
 Plx.EntityFactory.prototype.registerType = function(name, componentList) {
   if (this.entityTypes[name])
     throw new Error("type (" + name + ") already registered in EntityFactory");
@@ -27,25 +28,26 @@ Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
     for (var i = 0; i < entityType.componentList.length; i ++) {
       var listItem = entityType.componentList[i];
       var component = new listItem.type();
+      component.entity = entity;
       component.name = listItem.name;
       entity.addComponent(component);
     }
   }
 
+  entity.reset();
   // set defaults on all components
   // TODO: defaults can only be primitives right now, make it so we can set nested variables and objects as defaults
   for (i = 0; i < entity.components.length; i ++) {
     listItem = entityType.componentList[i];
     component = entity.components[i];
-    for (key in listItem.params)
+    for (var key in listItem.params)
       component[key] = listItem.params[key];
   }
   // set any default overrides
-  for (i = 0; i < defaultOverrides; i ++) {
-    var defaultOverride = defaultOverrides[i];
-    component = entity.fetchComponentByName(defaultOverride.name);
-    for (key in defaultOverride.params)
-      component[key] = defaultOverride.params[key];
+  for (defaultOverride in defaultOverrides) {
+    component = entity.fetchComponentByName(defaultOverride);
+    for (key in defaultOverrides[defaultOverride])
+      component[key] = defaultOverrides[defaultOverride][key];
   }
 
   // call init on components after they've all been created, added and defaults initialized
