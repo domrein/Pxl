@@ -24,6 +24,7 @@ Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
   // create entity with components if needed
   else {
     entity = new Plx.Entity();
+    entity.typeName = typeName;
     entity.game = this.game;
     for (var i = 0; i < entityType.componentList.length; i ++) {
       var listItem = entityType.componentList[i];
@@ -57,5 +58,6 @@ Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
   return entity;
 };
 
-Plx.EntityFactory.prototype.retire = function(entity) {
+Plx.EntityFactory.prototype.returnEntity = function(entity) {
+  this.entityPool[entity.typeName].push(entity);
 };

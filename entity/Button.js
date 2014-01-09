@@ -9,14 +9,14 @@ Plx.Button = function(anim) {
   this.sprite = this.addComponent(new Plx.Sprite());
   this.tappable = this.addComponent(new Plx.Tappable());
 
-  this.beacon.observe(this, 'addedToScene', this.onAddedToScene);
+  this.beacon.observe(this, "addedToScene", this.onAddedToScene);
 };
 
 Plx.Button.prototype = Object.create(Plx.Entity.prototype);
 Plx.Button.prototype.constructor = Plx.Button;
-    
+
 Plx.Button.prototype.onAddedToScene = function(event) {
-  this.beacon.ignore(this, 'addedToScene', this.onAddedToScene);
+  this.beacon.ignore(this, "addedToScene", this.onAddedToScene);
   this.sprite.play(this.anim);
   this.physicsComponent.setWidth(this.sprite.frame.width);
   this.physicsComponent.setHeight(this.sprite.frame.height);

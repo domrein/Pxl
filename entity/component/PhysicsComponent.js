@@ -15,7 +15,7 @@ Plx.PhysicsComponent.prototype.constructor = Plx.PhysicsComponent;
 Plx.PhysicsComponent.count = 0;
 
 Plx.PhysicsComponent.prototype.reset = function() {
-  this.rreset();
+  Plx.Component.prototype.reset.call(this);
   this.rect.reset();
   this.lastRect.reset();
   
@@ -59,6 +59,26 @@ Object.defineProperty(Plx.PhysicsComponent.prototype, "y", {
   },
   set: function(value) {
     this.rect.loc.y = value;
+  }
+});
+
+Object.defineProperty(Plx.PhysicsComponent.prototype, "width", {
+  get: function() {
+    return this.rect.width;
+  },
+  set: function(value) {
+    this.rect.width = value;
+    this.nextRect.width = value;
+  }
+});
+
+Object.defineProperty(Plx.PhysicsComponent.prototype, "height", {
+  get: function() {
+    return this.rect.height;
+  },
+  set: function(value) {
+    this.rect.height = value;
+    this.nextRect.height = value;
   }
 });
 

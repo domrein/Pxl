@@ -42,7 +42,7 @@ Plx.Game = function(width, height, firstSceneClass) {
   // TODO: move the default entity types somewhere more appropriate
   this.entityFactory.registerType("PlxButton", [
     {type: Plx.PhysicsComponent, name: "physics", params: {}, },
-    {type: Plx.Sprite, name: "sprite", params: {}, },
+    {type: Plx.Sprite, name: "sprite", params: {autoSizePhysics: true}, },
     {type: Plx.Tappable, name: "tappable", params: {}, },
   ]);
   this.entityFactory.registerType("PlxSprient", [

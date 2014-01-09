@@ -10,7 +10,7 @@ Plx.Sprite.prototype = Object.create(Plx.Component.prototype);
 Plx.Sprite.prototype.constructor = Plx.Sprite;
 
 Plx.Sprite.prototype.reset = function() {
-  this.rreset();
+  Plx.Component.prototype.reset.call(this);
   this.loc.reset();
   this.z = 0;
   this.visible = true;
@@ -29,17 +29,23 @@ Plx.Sprite.prototype.reset = function() {
   this.flippedX = false;
   this.flippedY = false;
   this.alpha = 1;
+  this.autoSizePhysics = false;
 };
 
 Plx.Sprite.prototype.init = function() {
-  this.physicsComponent = this.entity.fetchComponent(Plx.PhysicsComponent);
-  if (this.physicsComponent != null)
-    this.physicsComponent.beacon.observe(this, 'updated', this.onPhysicsUpdated);
-  
-  this.animTimer = new Plx.Timer(0, -1, 0, this.entity.beacon, 'updated');
-  this.animTimer.beacon.observe(this, 'timed', this.onAnimTimerTimed);
+  this.animTimer = new Plx.Timer(0, -1, 0, this.entity.beacon, "updated");
+  this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed);
 
   this.play(this.animName);
+
+  this.physics = this.entity.fetchComponent(Plx.PhysicsComponent);
+  if (this.physics != null) {
+    this.physics.beacon.observe(this, "updated", this.onPhysicsUpdated);
+    if (this.autoSizePhysics) {
+      this.physics.width = this.frame.width;
+      this.physics.height = this.frame.height;
+    }
+  }
 };
 
 Plx.Sprite.prototype.onAnimTimerTimed = function() {
@@ -59,10 +65,10 @@ Plx.Sprite.prototype.onAnimTimerTimed = function() {
 };
 
 Plx.Sprite.prototype.onPhysicsUpdated = function() {
-  this.loc.x = this.physicsComponent.rect.loc.x + this.offset.x;
-  this.loc.y = this.physicsComponent.rect.loc.y + this.offset.y;
-  this.speedX = this.physicsComponent.speedX;
-  this.speedY = this.physicsComponent.speedY;
+  this.loc.x = this.physics.rect.loc.x + this.offset.x;
+  this.loc.y = this.physics.rect.loc.y + this.offset.y;
+  this.speedX = this.physics.speedX;
+  this.speedY = this.physics.speedY;
 };
 
 Plx.Sprite.prototype.play = function(animName) {

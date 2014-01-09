@@ -4,6 +4,7 @@ Plx.Entity = function() {
   this.id = Plx.Entity.idCounter++;
   this.components = [];
   this.componentMap = {};
+  this.typeName = null;
   this.reset();
 };
 

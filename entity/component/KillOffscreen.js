@@ -1,19 +1,24 @@
 Plx.KillOffscreen = function(left, right, top, bottom) {
   Plx.Component.call(this);
-  this.left = left;
-  this.right = right;
-  this.top = top;
-  this.bottom = bottom;
-  this.beacon.observe(this, 'added', this.onAdded);
-  this.physicsComponent = null;
+  this.reset();
 };
 
 Plx.KillOffscreen.prototype = Object.create(Plx.Component.prototype);
 Plx.KillOffscreen.prototype.constructor = Plx.KillOffscreen;
 
-Plx.KillOffscreen.prototype.onAdded = function(event) {
+Plx.KillOffscreen.prototype.reset = function(event) {
+  Plx.Component.prototype.reset.call(this);
+
+  this.left = false;
+  this.right = false;
+  this.top = false;
+  this.bottom = false;
+  this.physicsComponent = null;
+};
+
+Plx.KillOffscreen.prototype.init = function() {
   this.physicsComponent = this.entity.fetchComponent(Plx.PhysicsComponent);
-  this.physicsComponent.beacon.observe(this, 'updated', this.onPhysicsUpdated);
+  this.physicsComponent.beacon.observe(this, "updated", this.onPhysicsUpdated);
 };
 
 Plx.KillOffscreen.prototype.onPhysicsUpdated = function(event) {

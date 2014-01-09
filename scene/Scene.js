@@ -23,6 +23,7 @@ Plx.Scene.prototype.update = function() {
     if (!entity.alive) {
       this.removeEntity(entity);
       this.entities.splice(i, 1);
+      this.game.entityFactory.returnEntity(entity);
     }
   }
 
@@ -63,7 +64,6 @@ Plx.Scene.prototype.addEntity = function(entity) {
 Plx.Scene.prototype.removeEntity = function(entity) {
   entity.beacon.emit('removedFromScene', null);
   this.beacon.emit('entityRemoved', {entity:entity});
-  entity.destroy();
 };
 
 Plx.Scene.prototype.switchScene = function(sceneClass, transition, handoffData) {
@@ -75,7 +75,7 @@ Plx.Scene.prototype.destroy = function() {
   var i;
   for (i = 0; i < this.entities.length; i ++) {
     var entity = this.entities[i];
-    entity.destroy();
+    this.game.entityFactory.returnEntity(entity);
   }
   for (i = 0; i < this.systems.length; i ++) {
     var system = this.systems[i];

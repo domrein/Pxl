@@ -1,6 +1,7 @@
 // TODO: rework this system to handle input instead of just redispatching events
 //  Have tappable, draggable and all that handled by the system itself
 //  Also, we're mobile first, so MouseInput isn't the best name for the system :P
+// TODO: combine all the input systems into UserInput (will handle keyboard, mouse, gamepad and touch)
 
 Plx.MouseInput = function() {
   Plx.System.call(this);
