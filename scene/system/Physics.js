@@ -87,16 +87,16 @@ var calcPostCollisionSpeed = function(actorOne, actorTwo, vertical) {
   if (actorOne.mass == -1 && actorTwo.mass == -1)
     // unmoving actors shouldn't be colliding
     // something is very wrong
-    alert('unmoving actors are colliding');
+    alert("unmoving actors are colliding");
   if (vertical) {
-    var pendingYSpeedOne = adjustPendingSpeed('speedY', actorOne, actorTwo);
-    var pendingYSpeedTwo = adjustPendingSpeed('speedY', actorTwo, actorOne);
+    var pendingYSpeedOne = adjustPendingSpeed("speedY", actorOne, actorTwo);
+    var pendingYSpeedTwo = adjustPendingSpeed("speedY", actorTwo, actorOne);
     actorOne.speedY = pendingYSpeedOne;
     actorTwo.speedY = pendingYSpeedTwo;
   }
   else {
-    var pendingXSpeedOne = adjustPendingSpeed('speedX', actorOne, actorTwo);
-    var pendingXSpeedTwo = adjustPendingSpeed('speedX', actorTwo, actorOne);
+    var pendingXSpeedOne = adjustPendingSpeed("speedX", actorOne, actorTwo);
+    var pendingXSpeedTwo = adjustPendingSpeed("speedX", actorTwo, actorOne);
     actorOne.speedX = pendingXSpeedOne;
     actorTwo.speedX = pendingXSpeedTwo;
   }
@@ -138,47 +138,32 @@ var separateActors = function(actorOne, actorTwo, vertical) {
 
 Plx.Physics = function() {
   Plx.System.call(this);
+  this.componentTypes = [Plx.PhysicsComponent];
   this.collisionPairs = [];
   this.physicsComponents = {};
-  this.physicsComponents['none'] = [];
-  this.beacon.observe(this, 'addedToScene', this.onAddedToScene);
+  this.physicsComponents["none"] = [];
+  this.beacon.observe(this, "addedToScene", this.onAddedToScene);
 };
 
 Plx.Physics.prototype = Object.create(Plx.System.prototype);
 Plx.Physics.prototype.constructor = Plx.Physics;
 
 Plx.Physics.prototype.onAddedToScene = function(event) {
-  this.scene.beacon.observe(this, 'entityAdded', this.onEntityAdded);
-  this.scene.beacon.observe(this, 'entityRemoved', this.onEntityRemoved);
-  this.scene.beacon.observe(this, 'updated', this.onSceneUpdated, 1);
+  this.scene.beacon.observe(this, "updated", this.onSceneUpdated, 1);
 };
 
-Plx.Physics.prototype.onEntityAdded = function(event) {
-  // console.log "onEntityAdded"
-  entityComponents = event.data.entity.components;
-  for (var i = 0; i < entityComponents.length; i++) {
-    var component = entityComponents[i];
-    if (component instanceof Plx.PhysicsComponent) {
-      if (!this.physicsComponents[component.collisionType])
-        throw new Error("Collion Type " + component.collisionType + ") not registered.");
-      this.physicsComponents[component.collisionType].push(component);
-      // console.log "entityId: //{event.data['entity'].id} component added"
-    }
-  }
+Plx.Physics.prototype.addComponent = function(component) {
+  if (!this.physicsComponents[component.collisionType])
+    throw new Error("Collion Type " + component.collisionType + ") not registered.");
+  this.physicsComponents[component.collisionType].push(component);
+  // console.log "entityId: //{event.data['entity'].id} component added"
 };
 
-Plx.Physics.prototype.onEntityRemoved = function(event) {
-  // console.log "onEntityRemoved"
-  var entityComponents = event.data.entity.components;
-  for (var i = entityComponents.length - 1; i >= 0; i --) {
-    var component = entityComponents[i];
-    if (component instanceof Plx.PhysicsComponent) {
-      for (var j = this.physicsComponents[component.collisionType].length - 1; j >= 0; j --) {
-        var otherComponent = this.physicsComponents[component.collisionType][j];
-        if (otherComponent == component)
-          this.physicsComponents[component.collisionType].splice(j, 1);
-      }
-    }
+Plx.Physics.prototype.removeComponent = function(component) {
+  for (var j = this.physicsComponents[component.collisionType].length - 1; j >= 0; j --) {
+    var otherComponent = this.physicsComponents[component.collisionType][j];
+    if (otherComponent == component)
+      this.physicsComponents[component.collisionType].splice(j, 1);
   }
 };
 

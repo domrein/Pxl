@@ -1,5 +1,6 @@
 Plx.PixelBlotRenderer = function() {
   Plx.System.call(this);
+  this.componentTypes = [Plx.PixelBlotMap];
   this.pixelBlotMaps = [];
   this.beacon.observe(this, "addedToScene", this.onAddedToScene);
   this.canvas = document.getElementById("canvas");
@@ -12,33 +13,18 @@ Plx.PixelBlotRenderer.prototype = Object.create(Plx.System.prototype);
 Plx.PixelBlotRenderer.prototype.constructor = Plx.PixelBlotRenderer;
 
 Plx.PixelBlotRenderer.prototype.onAddedToScene = function(event) {
-  this.scene.beacon.observe(this, "entityAdded", this.onEntityAdded);
-  this.scene.beacon.observe(this, "entityRemoved", this.onEntityRemoved);
   this.scene.beacon.observe(this, "rendered", this.onRendered, 10);
 };
 
-Plx.PixelBlotRenderer.prototype.onEntityAdded = function(event) {
-  // if entity has sprite component, add it to the system
-  var entity = event.data.entity;
-  for (var i = 0; i < entity.components.length; i++) {
-    var component = entity.components[i];
-    if (component instanceof Plx.PixelBlotMap)
-      this.pixelBlotMaps.push(component);
-  }
+Plx.PixelBlotRenderer.prototype.addComponent = function(component) {
+  this.pixelBlotMaps.push(component);
 };
 
-Plx.PixelBlotRenderer.prototype.onEntityRemoved = function(event) {
-  // if entity has sprite component, remove it from the system
-  var entity = event.data.entity;
-  for (var i = entity.components.length - 1; i >= 0 ; i --) {
-    var component = entity.components[i];
-    if (!component instanceof Plx.PixelBlotMap)
-      continue;
-    for (var j = this.pixelBlotMaps.length - 1; j >= 0; j --) {
-      var otherComponent = this.pixelBlotMaps[j];
-      if (component == otherComponent)
-        this.pixelBlotMaps.splice(j, 1);
-    }
+Plx.PixelBlotRenderer.prototype.removeComponent = function(component) {
+  for (var j = this.pixelBlotMaps.length - 1; j >= 0; j --) {
+    var otherComponent = this.pixelBlotMaps[j];
+    if (component == otherComponent)
+      this.pixelBlotMaps.splice(j, 1);
   }
 };
 

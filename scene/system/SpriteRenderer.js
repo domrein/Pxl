@@ -1,12 +1,12 @@
 Plx.SpriteRenderer = function() {
   Plx.System.call(this);
+  this.componentTypes = [Plx.Sprite];
   this.sprites = [];
   this.beacon.observe(this, "addedToScene", this.onAddedToScene);
   this.canvas = document.getElementById("canvas");
   this.context = this.canvas.getContext("2d");
 
-  // I hate cross browser crap like this!
-  // TODO: remove the above comment
+  // Make sure we aren't smoothing any of our sweet pixel art
   this.context.imageSmoothingEnabled = false;
   this.context.mozImageSmoothingEnabled = false;
   this.context.webkitImageSmoothingEnabled = false;
@@ -16,53 +16,31 @@ Plx.SpriteRenderer.prototype = Object.create(Plx.System.prototype);
 Plx.SpriteRenderer.prototype.constructor = Plx.SpriteRenderer;
 
 Plx.SpriteRenderer.prototype.onAddedToScene = function(event) {
-  this.scene.beacon.observe(this, "entityAdded", this.onEntityAdded);
-  this.scene.beacon.observe(this, "entityRemoved", this.onEntityRemoved);
   this.scene.beacon.observe(this, "rendered", this.onRendered, 10);
 };
 
-Plx.SpriteRenderer.prototype.onEntityAdded = function(event) {
-  // if entity has sprite component, add it to the system
-  var entity = event.data.entity;
-  for (var i = 0; i < entity.components.length; i ++) {
-    var component = entity.components[i];
-    if (component instanceof Plx.Sprite)
-      this.addComponent(component);
-  }
-};
-
-Plx.SpriteRenderer.prototype.onEntityRemoved = function(event) {
-  // if entity has sprite component, remove it from the system
-  var entity = event.data.entity;
-  for (var i = entity.components.length - 1; i >= 0; i--) {
-    var component = entity.components[i];
-    if (component instanceof Plx.Sprite)
-      this.removeComponent(component);
-  }
-};
-
-Plx.SpriteRenderer.prototype.addComponent = function(spriteComponent) {
+Plx.SpriteRenderer.prototype.addComponent = function(component) {
   var inserted = false
   // TODO: this number is blowing up as we add components!
   for (var i = 0; i < this.sprites.length; i++) {
     var sprite = this.sprites[i];
-    if (sprite.z > spriteComponent.z) {
+    if (sprite.z > component.z) {
       inserted = true;
-      this.sprites.splice(i, 0, spriteComponent);
+      this.sprites.splice(i, 0, component);
       break;
     }
   }
   if (!inserted)
-    this.sprites.push(spriteComponent);
-  spriteComponent.beacon.observe(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
+    this.sprites.push(component);
+  component.beacon.observe(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
 };
 
-Plx.SpriteRenderer.prototype.removeComponent = function(spriteComponent) {
+Plx.SpriteRenderer.prototype.removeComponent = function(component) {
   for (var i = this.sprites.length - 1; i >= 0; i--) {
     var otherComponent = this.sprites[i];
-    if (spriteComponent != otherComponent)
+    if (component != otherComponent)
       continue;
-    spriteComponent.beacon.ignore(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
+    component.beacon.ignore(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
     this.sprites.splice(i, 1);
   }
 };
