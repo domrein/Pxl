@@ -14,7 +14,7 @@ Plx.Timer = function(duration, reps, delay, heartbeatBeacon, heartbeatEvent) {
 
 Plx.Timer.oneShot = function(duration, delay, heartbeatBeacon, heartbeatEvent, callback) {
   var timer = new Plx.Timer(duration, 1, delay, heartbeatBeacon, heartbeatEvent);
-  timer.beacon.observe(this, 'completed', callback);
+  timer.beacon.observe(this, "completed", callback);
   timer.start();
   return timer;
 };
@@ -53,9 +53,9 @@ Plx.Timer.prototype.onHeartbeat = function(event) {
   if (this.curCount == this.duration) {
     this.curCount = 0;
     this.curRep++;
-    this.beacon.emit('timed', null);
+    this.beacon.emit("timed", null);
     if (this.curRep == this.reps) {
-      this.beacon.emit('completed', null);
+      this.beacon.emit("completed", null);
       this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat);
       this.heartbeatOn = false;
     }

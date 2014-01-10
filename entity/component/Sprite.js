@@ -42,8 +42,8 @@ Plx.Sprite.prototype.init = function() {
   if (this.physics != null) {
     this.physics.beacon.observe(this, "updated", this.onPhysicsUpdated);
     if (this.autoSizePhysics) {
-      this.physics.width = this.frame.width;
-      this.physics.height = this.frame.height;
+      this.physics.width = this.frame.width * this.scaleX;
+      this.physics.height = this.frame.height * this.scaleY;
     }
   }
 };
@@ -59,7 +59,7 @@ Plx.Sprite.prototype.onAnimTimerTimed = function() {
   else if (this.frameIndex >= this.anim.frames.length)
     this.frameIndex = this.anim.frames.length - 1;
 
-  frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
+  var frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
   frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
   this.frame = this.entity.scene.game.spriteStore.frames[frameName];
 };
@@ -79,7 +79,7 @@ Plx.Sprite.prototype.play = function(animName) {
   this.animTimer.reset();
   if (!this.animTimer.isRunning)
     this.animTimer.start();
-  frameName = this.anim.frames[this.frameIndex];
+  var frameName = this.anim.frames[this.frameIndex];
   this.frame = this.game.spriteStore.frames[frameName];
 };
 

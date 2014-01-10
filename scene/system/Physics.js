@@ -413,7 +413,7 @@ Plx.Physics.prototype.onSceneUpdated = function(event) {
   for (key in this.physicsComponents)
     this.updatePhysicsSpeeds(this.physicsComponents[key]);
   
-  collisionPairs = this.findAllCollisionPairs(true);
+  var collisionPairs = this.findAllCollisionPairs(true);
   // this.removeCollisionPairDups collisionPairs
   this.resolveCollisionPairs(collisionPairs);
 

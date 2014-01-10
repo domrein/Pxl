@@ -27,17 +27,17 @@ Plx.Scene.prototype.update = function() {
     }
   }
 
-  this.beacon.emit('updated', null);
+  this.beacon.emit("updated", null);
 };
 
 Plx.Scene.prototype.render = function(frameProgress) {
-  this.beacon.emit('rendered', {frameProgress:frameProgress});
+  this.beacon.emit("rendered", {frameProgress:frameProgress});
 };
 
 Plx.Scene.prototype.addSystem = function(system) {
   system.scene = this;
   this.systems.push(system);
-  system.beacon.emit('addedToScene', {});
+  system.beacon.emit("addedToScene", {});
 
   return system;
 };
@@ -55,19 +55,19 @@ Plx.Scene.prototype.fetchSystem = function(systemClass) {
 Plx.Scene.prototype.addEntity = function(entity) {
   entity.scene = this;
   this.entities.push(entity);
-  this.beacon.emit('entityAdded', {entity:entity});
-  entity.beacon.emit('addedToScene', {});
+  this.beacon.emit("entityAdded", {entity:entity});
+  entity.beacon.emit("addedToScene", {});
 
   return entity;
 };
 
 Plx.Scene.prototype.removeEntity = function(entity) {
-  entity.beacon.emit('removedFromScene', null);
-  this.beacon.emit('entityRemoved', {entity:entity});
+  entity.beacon.emit("removedFromScene", null);
+  this.beacon.emit("entityRemoved", {entity:entity});
 };
 
 Plx.Scene.prototype.switchScene = function(sceneClass, transition, handoffData) {
-  this.beacon.emit('completed', {sceneClass:sceneClass, transition:transition, handoffData:handoffData});
+  this.beacon.emit("completed", {sceneClass:sceneClass, transition:transition, handoffData:handoffData});
   this.paused = true;
 };
 
