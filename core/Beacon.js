@@ -1,9 +1,9 @@
 Plx.Beacon = function(owner) {
-  this.reset(owner);
+  this.owner = owner;
+  this.reset();
 };
 
-Plx.Beacon.prototype.reset = function(owner) {
-  this.owner = owner;
+Plx.Beacon.prototype.reset = function() {
   // WHEEEE! Break the observer pattern. :)
   this.observerGroups = [];
 };
