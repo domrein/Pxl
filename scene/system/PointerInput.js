@@ -27,6 +27,10 @@ Plx.PointerInput = function() {
 Plx.PointerInput.prototype = Object.create(Plx.System.prototype);
 Plx.PointerInput.prototype.constructor = Plx.PointerInput;
 
+Plx.PointerInput.prototype.update = function() {
+  
+};
+
 Plx.PointerInput.prototype.addComponent = function(component) {
   this.pointerComponents.push(component);
 };

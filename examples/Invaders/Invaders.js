@@ -27,7 +27,8 @@ var onLoad = function(event) {
 
   game.entityFactory.registerType("Bullet", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Bullet", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
-    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player"}},
+    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", speedY: -7}},
+    {name: "killOffscreen", type: Plx.KillOffscreen, params: {top: true}},
   ]);
 
   game.entityFactory.registerType("Enemy", [

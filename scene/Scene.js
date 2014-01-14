@@ -52,6 +52,11 @@ Plx.Scene.prototype.fetchSystem = function(systemClass) {
   return null;
 };
 
+// a convenience function to create an entity and add it to the scene
+Plx.Scene.prototype.makeEntity = function(type, defaultOverrides) {
+  return this.addEntity(this.game.entityFactory.createType(type, defaultOverrides));
+};
+
 Plx.Scene.prototype.addEntity = function(entity) {
   entity.scene = this;
   this.entities.push(entity);
