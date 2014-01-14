@@ -14,8 +14,10 @@ PlayScene.prototype = Object.create(Plx.Scene.prototype);
 PlayScene.prototype.constructor = PlayScene;
 
 PlayScene.prototype.onAdded = function(event) {
-  var player = this.game.entityFactory.createType("Player", {});
-  this.addEntity(player);
+  var player = this.addEntity(this.game.entityFactory.createType("Player", {physics: {x: 0}}));
+  var bullet = this.addEntity(this.game.entityFactory.createType("Bullet", {physics: {x: 30}}));
+  var enemy = this.addEntity(this.game.entityFactory.createType("Enemy", {physics: {x: 60}}));
+  var arrowButton = this.addEntity(this.game.entityFactory.createType("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4}, physics: {x: 90}}));
 };
 
 PlayScene.prototype.onUpdated = function(event) {

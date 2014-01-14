@@ -45,7 +45,7 @@ Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
       component[key] = listItem.params[key];
   }
   // set any default overrides
-  for (defaultOverride in defaultOverrides) {
+  for (var defaultOverride in defaultOverrides) {
     component = entity.fetchComponentByName(defaultOverride);
     for (key in defaultOverrides[defaultOverride])
       component[key] = defaultOverrides[defaultOverride][key];
