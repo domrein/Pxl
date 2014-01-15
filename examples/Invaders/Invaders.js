@@ -34,6 +34,11 @@ var onLoad = function(event) {
   game.entityFactory.registerType("Enemy", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Enemy", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
     {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "enemy"}},
+    {name: "killOnCollide", type: Plx.FunctionBinder, params: {initFunc: function() {
+      this.entity.fetchComponentByName("physics").beacon.observe(this, "collided", function(event) {
+        this.entity.alive = false;
+      });
+    }}},
   ]);
 
   // start the game
