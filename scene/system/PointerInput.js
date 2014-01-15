@@ -5,6 +5,7 @@ Plx.PointerInput = function() {
 
   this.mouseDown = false;
   this.mouseLoc = new Plx.Point();
+  this.mouseTarget = null;
 
   // controls
   var _this = this;
@@ -50,20 +51,42 @@ Plx.PointerInput.prototype.onMouseDown = function(event) {
       continue;
     if (pointerComponent.collisionCheck(event.layerX, event.layerY)) {
       pointerComponent.beacon.emit("tapped", null);
+      pointerComponent.beacon.emit("entered", null);
+      this.mouseTarget = pointerComponent;
       break;
     }
   }
 };
 
 Plx.PointerInput.prototype.onMouseUp = function(event) {
+  if (this.mouseTarget) {
+    this.mouseTarget.beacon.emit("exited", null);
+    this.mouseTarget = null;
+  }
   this.mouseDown = false;
-  this.beacon.emit("mouseUp", {x:event.layerX, y:event.layerY}); // TODO: if we scale the game we probably need to scale these inputs too (in the opposite direction though)
 };
 
-// [MouseEvent] event
 Plx.PointerInput.prototype.onMouseMove = function(event) {
-  // window.alert "mouseMove"
-  this.beacon.emit("mouseMove", {x:event.layerX, y:event.layerY}); // TODO: if we scale the game we probably need to scale these inputs too (in the opposite direction though)
+  if (this.mouseTarget) {
+    if (this.mouseTarget.collisionCheck(event.layerX, event.layerY)) {
+    }
+    else {
+      this.mouseTarget.beacon.emit("exited", null);
+      this.mouseTarget = null;
+    }
+  }
+  else if (this.mouseDown) {
+    for (var i = 0; i < this.pointerComponents.length; i ++) {
+      var pointerComponent = this.pointerComponents[i];
+      if (!pointerComponent.enabled)
+        continue;
+      if (pointerComponent.collisionCheck(event.layerX, event.layerY)) {
+        pointerComponent.beacon.emit("entered", null);
+        this.mouseTarget = pointerComponent;
+        break;
+      }
+    }
+  }
 };
 
 // NOTE: layerX,Y is relative to the element, clientX,Y is relative to the document make these compatible (they just so hapen to be the same in thie case)

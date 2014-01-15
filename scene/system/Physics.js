@@ -43,7 +43,7 @@ var calcIntersectTime = function(leftActor, rightActor, topActor, bottomActor) {
 var validateIntersectTime = function(actorOne, actorTwo, stepProgress) {
   if (stepProgress < 0)
     blah = 2;
-  colliding = true;
+  var colliding = true;
   if (actorOne.rect.loc.x + actorOne.rect.width + actorOne.speedX * stepProgress < actorTwo.rect.loc.x + actorTwo.speedX * stepProgress) // to the left
     colliding = false;
   else if (actorOne.rect.loc.x + actorOne.speedX * stepProgress > actorTwo.rect.loc.x + actorTwo.rect.width + actorTwo.speedX * stepProgress) // to the right
