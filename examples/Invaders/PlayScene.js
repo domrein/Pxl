@@ -15,6 +15,8 @@ var PlayScene = function() {
   this.cooldownCount = 0;
   this.leftDown = false;
   this.rightDown = false;
+
+  this.enemyCount = 0;
 };
 
 PlayScene.prototype = Object.create(Plx.Scene.prototype);
@@ -23,31 +25,45 @@ PlayScene.prototype.constructor = PlayScene;
 PlayScene.prototype.onAdded = function(event) {
   var _this = this;
   this.player = this.makeEntity("Player", {});
+  this.player.beacon.observe(this, "removedFromScene", function(event) {
+    // TODO: game over screen
+    _this.switchScene(PlayScene, null, null);
+  });
   this.player.physics.x = this.game.width / 2 - this.player.physics.width / 2;
   this.player.physics.y = this.game.height - this.player.physics.height - 10;
   var bullet = this.makeEntity("Bullet", {physics: {x: 30}});
-  var enemy = this.makeEntity("Enemy", {physics: {x: 60}});
   
   // controls
   var arrowPadding = 10;
   var rightArrowButton = this.makeEntity("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4}});
   rightArrowButton.physics.x = this.game.width - rightArrowButton.physics.width - arrowPadding;
   rightArrowButton.physics.y = this.game.height - rightArrowButton.physics.height - arrowPadding;
-  rightArrowButton.tappable.beacon.observe(this, "entered", function(event) {
-    _this.rightDown = true;
-  });
-  rightArrowButton.tappable.beacon.observe(this, "exited", function(event) {
-    _this.rightDown = false;
-  });
+  rightArrowButton.tappable.beacon.observe(this, "entered", function(event) {_this.rightDown = true;});
+  rightArrowButton.tappable.beacon.observe(this, "exited", function(event) {_this.rightDown = false;});
   var leftArrowButton = this.makeEntity("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4, flippedX: true}, physics: {x: 90}});
   leftArrowButton.physics.x = arrowPadding;
   leftArrowButton.physics.y = this.game.height - leftArrowButton.physics.height - arrowPadding;
-  leftArrowButton.tappable.beacon.observe(this, "entered", function(event) {
-    _this.leftDown = true;
-  });
-  leftArrowButton.tappable.beacon.observe(this, "exited", function(event) {
-    _this.leftDown = false;
-  });
+  leftArrowButton.tappable.beacon.observe(this, "entered", function(event) {_this.leftDown = true;});
+  leftArrowButton.tappable.beacon.observe(this, "exited", function(event) {_this.leftDown = false;});
+
+  this.addEnemies();
+};
+
+PlayScene.prototype.addEnemies = function() {
+  var _this = this;
+  for (var i = 0; i < 5; i ++) {
+    for (var j = 0; j < 8; j ++) {
+      var enemy = this.makeEntity("Enemy", {physics: {x: j * 40, y: i * 35}});
+      this.enemyCount++;
+      enemy.beacon.observe(this, "removedFromScene", function(event) {
+        _this.enemyCount--;
+        if (_this.enemyCount == 0) {
+          // TODO: switch to "YOU WIN" scene
+          _this.switchScene(PlayScene, null, null);
+        }
+      });
+    }
+  }
 };
 
 PlayScene.prototype.onUpdated = function(event) {
@@ -63,10 +79,4 @@ PlayScene.prototype.onUpdated = function(event) {
     this.player.physics.speedX -= 1.5;
   else if (!this.leftDown && this.rightDown)
     this.player.physics.speedX += 1.5;
-  // if (this.leftDown && !this.rightDown)
-  //   this.player.physics.speedX = -3;
-  // else if (!this.leftDown && this.rightDown)
-  //   this.player.physics.speedX = 3;
-  // else
-  //   this.player.physics.speedX = 0;
 };

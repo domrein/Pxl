@@ -19,26 +19,30 @@ var onLoad = function(event) {
   game.spriteStore.addAnim(["ArrowButton_1"], true, "ArrowButton", 1);
 
   // declare entities
+  var killOnCollide = {name: "killOnCollide", type: Plx.FunctionBinder, params: {initFunc: function() {
+    this.entity.fetchComponentByName("physics").beacon.observe(this, "collided", function(event) {
+      this.entity.alive = false;
+    });
+  }}};
+
   var scaleFactor = 3;
   game.entityFactory.registerType("Player", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Player", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
     {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", friction: .7}},
+    killOnCollide,
   ]);
 
   game.entityFactory.registerType("Bullet", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Bullet", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
     {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", speedY: -7}},
     {name: "killOffscreen", type: Plx.KillOffscreen, params: {top: true}},
+    killOnCollide,
   ]);
 
   game.entityFactory.registerType("Enemy", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Enemy", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
     {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "enemy"}},
-    {name: "killOnCollide", type: Plx.FunctionBinder, params: {initFunc: function() {
-      this.entity.fetchComponentByName("physics").beacon.observe(this, "collided", function(event) {
-        this.entity.alive = false;
-      });
-    }}},
+    killOnCollide,
   ]);
 
   // start the game
