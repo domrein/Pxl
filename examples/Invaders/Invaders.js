@@ -22,7 +22,7 @@ var onLoad = function(event) {
   var scaleFactor = 3;
   game.entityFactory.registerType("Player", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Player", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
-    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", friction: .8}},
+    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", friction: .7}},
   ]);
 
   game.entityFactory.registerType("Bullet", [

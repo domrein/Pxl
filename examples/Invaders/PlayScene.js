@@ -60,9 +60,9 @@ PlayScene.prototype.onUpdated = function(event) {
 
   // move player
   if (this.leftDown && !this.rightDown)
-    this.player.physics.speedX -= 1;
+    this.player.physics.speedX -= 1.5;
   else if (!this.leftDown && this.rightDown)
-    this.player.physics.speedX += 1;
+    this.player.physics.speedX += 1.5;
   // if (this.leftDown && !this.rightDown)
   //   this.player.physics.speedX = -3;
   // else if (!this.leftDown && this.rightDown)
