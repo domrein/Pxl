@@ -441,9 +441,9 @@ Plx.Physics.prototype.addCollisionPair = function(typeOne, typeTwo) {
 };
 
 Plx.Physics.prototype.destroy = function() {
-  this.scene.beacon.ignore(this, 'entityAdded', this.onEntityAdded);
-  this.scene.beacon.ignore(this, 'entityRemoved', this.onEntityRemoved);
-  this.scene.beacon.ignore(this, 'updated', this.onSceneUpdated, 1);
+  this.scene.beacon.ignore(this, "entityAdded", this.onEntityAdded);
+  this.scene.beacon.ignore(this, "entityRemoved", this.onEntityRemoved);
+  this.scene.beacon.ignore(this, "updated", this.onSceneUpdated, 1);
 };
 
 Plx.CollisionPair = function(typeOne, typeTwo) {

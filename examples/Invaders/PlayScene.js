@@ -53,7 +53,7 @@ PlayScene.prototype.addEnemies = function() {
   var _this = this;
   for (var i = 0; i < 5; i ++) {
     for (var j = 0; j < 8; j ++) {
-      var enemy = this.makeEntity("Enemy", {physics: {x: j * 40, y: i * 35}});
+      var enemy = this.makeEntity("Enemy", {physics: {x: j * 40 + 10, y: i * 35 + 10}});
       this.enemyCount++;
       enemy.beacon.observe(this, "removedFromScene", function(event) {
         _this.enemyCount--;
@@ -71,7 +71,9 @@ PlayScene.prototype.onUpdated = function(event) {
   this.cooldownCount++;
   if (this.cooldownCount == this.cooldown) {
     this.cooldownCount = 0;
-    this.makeEntity("Bullet", {physics: {x: this.player.physics.x, y: this.player.physics.y}});
+    var bullet = this.makeEntity("Bullet", {});
+    bullet.sprite.loc.x = bullet.physics.x = this.player.physics.x + this.player.physics.width / 2 - bullet.physics.width / 2;
+    bullet.sprite.loc.y = bullet.physics.y = this.player.physics.y - bullet.physics.height / 2;
   }
 
   // move player

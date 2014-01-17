@@ -49,16 +49,22 @@ Plx.Sprite.prototype.init = function() {
 };
 
 Plx.Sprite.prototype.onAnimTimerTimed = function() {
+  if (!this.anim.looping && this.frameIndex == this.anim.frames.length - 1) {
+    this.animTimer.stop();
+    this.beacon.emit("animCompleted", null);
+    return;
+  }
+
   this.frameIndex++;
   if (this.frameIndex >= this.anim.frames.length) {
     if (this.anim.looping)
       this.frameIndex = 0;
     // dispatch anim complete event?
-    this.beacon.emit("animComplete", null);
+    this.beacon.emit("animCompleted", null);
   }
   else if (this.frameIndex >= this.anim.frames.length)
     this.frameIndex = this.anim.frames.length - 1;
-
+  
   var frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
   frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
   this.frame = this.entity.scene.game.spriteStore.frames[frameName];
