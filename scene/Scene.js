@@ -28,10 +28,13 @@ Plx.Scene.prototype.update = function() {
   }
 
   this.beacon.emit("updated", null);
+  // systems should do any cleanup at this point. They should not interact further.
+  this.beacon.emit("updateCompleted", null);
 };
 
 Plx.Scene.prototype.render = function(frameProgress) {
   this.beacon.emit("rendered", {frameProgress:frameProgress});
+  this.beacon.emit("renderCompleted", {frameProgress:frameProgress});
 };
 
 Plx.Scene.prototype.addSystem = function(system) {

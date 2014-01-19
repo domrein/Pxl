@@ -23,8 +23,12 @@ if (!window.requestAnimationFrame) {
 var Plx = {};
 
 Plx.Game = function(width, height, firstSceneClass) {
+  this.beacon = new Plx.Beacon(this);
+
   this.width = width;
   this.height = height;
+  this.onDisplayResize();
+
   this.firstSceneClass = firstSceneClass;
   this.sceneDirector = new Plx.SceneDirector();
   this.scenes = [];
@@ -111,4 +115,22 @@ Plx.Game.prototype.onPreloaderCompleted = function(event) {
 
 Plx.Game.prototype.onImageLoaded = function(event) {
   this.spriteStore.addImage(event.data.image, event.data.path);
+};
+
+Plx.Game.prototype.onDisplayResize = function() {
+  // find display size and get ratio
+  var widthRatio = window.innerWidth / this.width;
+  var heightRatio = window.innerHeight / this.height;
+  this.displayRatio = widthRatio;
+  if (this.height * widthRatio > window.innerHeight)
+    this.displayRatio = heightRatio;
+  this.displayOffsetX = Math.round(window.innerWidth - this.width * this.displayRatio) / 2;
+  this.displayOffsetY = Math.round(window.innerHeight - this.height * this.displayRatio) / 2;
+
+  document.getElementById("canvas").width = this.width * this.displayRatio;
+  document.getElementById("canvas").height = this.height * this.displayRatio;
+  document.getElementById("canvas").style.marginLeft = this.displayOffsetX + "px";
+  document.getElementById("canvas").style.marginTop = this.displayOffsetY + "px";
+
+  this.beacon.emit("displayResized", null);
 };

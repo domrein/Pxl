@@ -1,6 +1,9 @@
+var onResize = null;
 var onLoad = function(event) {
   // create game object
   var game = new Plx.Game(320, 420, PlayScene);
+
+  onResize = function(event) { game.onDisplayResize(); };
 
   // declare images to preload
   game.preloader.addImage("Graphics.png");

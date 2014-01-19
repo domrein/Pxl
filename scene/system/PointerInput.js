@@ -66,7 +66,7 @@ Plx.PointerInput.prototype.onTouchStart = function(event) {
   event.preventDefault(); // This is a hack so that Android dispatches the touchend event (I guess it also disables native scrolling) I guess this also prevents the mouse event from being sent
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
-    this.pointerStart(touch.identifier, touch.clientX, touch.clientY);
+    this.pointerStart(touch.identifier, touch.clientX - this.scene.game.displayOffsetX, touch.clientY - this.scene.game.displayOffsetY);
   }
 };
 
@@ -90,11 +90,15 @@ Plx.PointerInput.prototype.onTouchMove = function(event) {
   event.preventDefault();
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
-    this.pointerMove(touch.identifier, touch.clientX, touch.clientY);
+    this.pointerMove(touch.identifier, touch.clientX - this.scene.game.displayOffsetX, touch.clientY - this.scene.game.displayOffsetY);
   }
 };
 
 Plx.PointerInput.prototype.pointerStart = function(id, x, y) {
+  // scale x, y
+  x = x / this.scene.game.displayRatio;
+  y = y / this.scene.game.displayRatio;
+
   var pointer = this.pointers[id] = {x: x, y: y, target: null};
   for (var i = 0; i < this.pointerComponents.length; i ++) {
     var pointerComponent = this.pointerComponents[i];
@@ -121,6 +125,10 @@ Plx.PointerInput.prototype.pointerEnd = function(id) {
 };
 
 Plx.PointerInput.prototype.pointerMove = function(id, x, y) {
+  // scale x, y
+  x = x / this.scene.game.displayRatio;
+  y = y / this.scene.game.displayRatio;
+
   var pointer = this.pointers[id];
   if (!pointer) {
     pointer = this.pointers[id] = {x: x, y: y, target: null};
