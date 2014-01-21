@@ -1,7 +1,9 @@
 Plx.PointerInput = function() {
   Plx.System.call(this);
-  this.componentTypes = [Plx.Tappable, Plx.Draggable];
+  this.componentTypes = [Plx.Pointerable];
   this.pointerComponents = [];
+  this.componentsInDrag = {};
+  
   // this.pointers is mouse and touch data combined
   this.pointers = {};
 
@@ -41,8 +43,11 @@ Plx.PointerInput.prototype.addComponent = function(component) {
 
 Plx.PointerInput.prototype.removeComponent = function(component) {
   var index = this.pointerComponents.indexOf(component);
-  if (index >= 0)
+  if (index >= 0) {
     this.pointerComponents.splice(index, 1);
+    if (this.componentsInDrag[component.id])
+      delete this.componentsInDrag[component.id];
+  }
 };
 
 // TODO: if we scale the game we probably need to scale these inputs too (in the opposite direction though)
@@ -108,6 +113,10 @@ Plx.PointerInput.prototype.pointerStart = function(id, x, y) {
       pointerComponent.beacon.emit("tapped", null);
       pointerComponent.beacon.emit("entered", null);
       pointer.target = pointerComponent;
+      if (pointerComponent.draggable && !this.componentsInDrag[pointerComponent.id]) {
+        this.componentsInDrag[pointerComponent.id] = {xOffset: x - pointer.target.physics.x, yOffset: y - pointer.target.physics.y};
+        pointerComponent.beacon.emit("dragStarted", null);
+      }
       break;
     }
   }
@@ -120,6 +129,10 @@ Plx.PointerInput.prototype.pointerEnd = function(id) {
   if (pointer.target) {
     pointer.target.beacon.emit("lifted", null);
     pointer.target.beacon.emit("exited", null);
+    if (this.componentsInDrag[pointer.target.id]) {
+      delete this.componentsInDrag[pointer.target.id];
+      pointerComponent.beacon.emit("dragEnded", null);
+    }
   }
   delete this.pointers[id];
 };
@@ -136,11 +149,18 @@ Plx.PointerInput.prototype.pointerMove = function(id, x, y) {
   pointer.x = x;
   pointer.y = y;
   if (pointer.target) {
-    if (pointer.target.collisionCheck(pointer.x, pointer.y)) {
+    if (this.componentsInDrag[pointer.target.id]) {
+      var xOffset = this.componentsInDrag[pointer.target.id].xOffset;
+      var yOffset = this.componentsInDrag[pointer.target.id].yOffset;
+      pointer.target.syncLocation(x, y, xOffset, yOffset);
     }
     else {
-      pointer.target.beacon.emit("exited", null);
-      pointer.target = null;
+      if (pointer.target.collisionCheck(pointer.x, pointer.y)) {
+      }
+      else {
+        pointer.target.beacon.emit("exited", null);
+        pointer.target = null;
+      }
     }
   }
   else {

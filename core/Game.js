@@ -47,7 +47,7 @@ Plx.Game = function(width, height, firstSceneClass) {
   this.entityFactory.registerType("PlxButton", [
     {type: Plx.PhysicsComponent, name: "physics", params: {}},
     {type: Plx.Sprite, name: "sprite", params: {autoSizePhysics: true}},
-    {type: Plx.Tappable, name: "tappable", params: {}},
+    {type: Plx.Pointerable, name: "pointerable", params: {}},
     {type: Plx.Data, name: "data", params: {}},
   ]);
   this.entityFactory.registerType("PlxSprient", [
