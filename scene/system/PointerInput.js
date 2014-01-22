@@ -130,8 +130,8 @@ Plx.PointerInput.prototype.pointerEnd = function(id) {
     pointer.target.beacon.emit("lifted", null);
     pointer.target.beacon.emit("exited", null);
     if (this.componentsInDrag[pointer.target.id]) {
+      pointer.target.beacon.emit("dragEnded", null);
       delete this.componentsInDrag[pointer.target.id];
-      pointerComponent.beacon.emit("dragEnded", null);
     }
   }
   delete this.pointers[id];

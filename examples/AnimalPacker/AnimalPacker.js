@@ -9,14 +9,24 @@ var onLoad = function(event) {
   game.preloader.addImage("Graphics.png");
 
   // declare frames contained within images
-  game.spriteStore.addFrame(0, 0, 29, 11, "Graphics.png", "Snake_1");
+  game.spriteStore.addFrame(0, 0, 16, 8, "Graphics.png", "Turtle_1");
+  game.spriteStore.addFrame(16, 0, 8, 8, "Graphics.png", "Bee_1");
+  game.spriteStore.addFrame(0, 8, 24, 8, "Graphics.png", "Snake_1");
+  game.spriteStore.addFrame(0, 16, 24, 16, "Graphics.png", "Elephant_1");
+  game.spriteStore.addFrame(24, 0, 8, 7, "Graphics.png", "Egg_1");
+  game.spriteStore.addFrame(32, 0, 40, 40, "Graphics.png", "Grid_1");
 
   // declare animations
+  game.spriteStore.addAnim(["Turtle_1"], false, "Turtle", 1);
+  game.spriteStore.addAnim(["Bee_1"], false, "Bee", 1);
   game.spriteStore.addAnim(["Snake_1"], false, "Snake", 1);
+  game.spriteStore.addAnim(["Elephant_1"], false, "Elephant", 1);
+  game.spriteStore.addAnim(["Egg_1"], false, "Egg", 1);
+  game.spriteStore.addAnim(["Grid_1"], false, "Grid", 1);
 
-  var scaleFactor = 3;
+  var scaleFactor = 7;
   game.entityFactory.registerType("Snake", [
-    {name: "sprite", type: Plx.Sprite, params: {animName: "Snake", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
+    {name: "sprite", type: Plx.Sprite, params: {animName: "Egg", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor, z: 5}},
     {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "animal"}},
     {name: "pointerable", type: Plx.Pointerable, params: {draggable: true}},
   ]);
@@ -24,5 +34,3 @@ var onLoad = function(event) {
   // start the game
   game.init();
 };
-
-// {"colors":["929292","6d6d6d","6df7ff","b6fbff","494949","b6b6b6","f4ec79","7cf093","3ae95d","0f8326","ffdb24","ffe76d","ff24ce","ff6dde","920071","db00aa","ffffff","24fff5","3be95d"],"width":25,"pixels":[-1,-1,-1,0,5,5,-1,-1,-1,7,7,-1,12,12,12,12,13,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,5,5,-1,-1,-1,7,8,12,12,12,12,12,13,13,-1,12,12,12,12,13,-1,-1,-1,0,0,0,0,5,-1,-1,8,8,12,12,14,12,14,12,12,12,12,12,12,12,13,13,-1,-1,0,2,3,3,5,-1,-1,-1,-1,15,12,12,12,12,12,12,12,12,14,12,14,12,12,-1,-1,0,2,2,3,0,-1,-1,-1,-1,15,15,12,12,12,12,12,15,12,12,12,12,12,12,-1,-1,0,2,2,2,0,-1,-1,-1,-1,-1,-1,12,-1,12,-1,-1,15,15,12,12,12,12,12,-1,-1,0,0,1,0,0,-1,-1,-1,-1,-1,-1,15,-1,12,-1,-1,-1,15,-1,12,-1,12,-1,-1,4,0,0,1,0,0,5,-1,-1,-1,-1,15,-1,12,-1,12,-1,15,15,-1,15,-1,12,12,4,0,0,0,0,0,0,0,5,-1,-1,15,15,-1,15,-1,12,12,15,-1,-1,15,-1,-1,12,4,1,1,1,0,1,1,1,0,-1,-1,15,-1,-1,15,-1,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,16,16,16,16,16,16,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,16,16,16,16,-1,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,16,16,16,16,16,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,16,16,16,16,16,16,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,16,16,16,16,16,16,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,16,16,16,16,16,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,16,16,16,16,-1,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,16,16,16,16,16,16,16,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]}
