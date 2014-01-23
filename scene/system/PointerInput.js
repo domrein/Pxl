@@ -53,7 +53,8 @@ Plx.PointerInput.prototype.removeComponent = function(component) {
 // TODO: if we scale the game we probably need to scale these inputs too (in the opposite direction though)
 Plx.PointerInput.prototype.onMouseDown = function(event) {
   this.mouseDown = true;
-  this.pointerStart("mouse", event.layerX, event.layerY);
+  var rect = document.getElementById("canvas").getBoundingClientRect();
+  this.pointerStart("mouse", event.layerX - rect.left, event.layerY - rect.top);
 };
 
 Plx.PointerInput.prototype.onMouseUp = function(event) {
@@ -62,8 +63,10 @@ Plx.PointerInput.prototype.onMouseUp = function(event) {
 };
 
 Plx.PointerInput.prototype.onMouseMove = function(event) {
-  if (this.mouseDown)
-    this.pointerMove("mouse", event.layerX, event.layerY);
+  if (this.mouseDown) {
+    var rect = document.getElementById("canvas").getBoundingClientRect();
+    this.pointerMove("mouse", event.layerX - rect.left, event.layerY - rect.top);
+  }
 };
 
 // NOTE: layerX,Y is relative to the element, clientX,Y is relative to the document make these compatible (they just so hapen to be the same in thie case)
@@ -71,7 +74,8 @@ Plx.PointerInput.prototype.onTouchStart = function(event) {
   event.preventDefault(); // This is a hack so that Android dispatches the touchend event (I guess it also disables native scrolling) I guess this also prevents the mouse event from being sent
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
-    this.pointerStart(touch.identifier, touch.clientX - this.scene.game.displayOffsetX, touch.clientY - this.scene.game.displayOffsetY);
+    var rect = document.getElementById("canvas").getBoundingClientRect();
+    this.pointerStart(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
   }
 };
 
@@ -95,7 +99,8 @@ Plx.PointerInput.prototype.onTouchMove = function(event) {
   event.preventDefault();
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
-    this.pointerMove(touch.identifier, touch.clientX - this.scene.game.displayOffsetX, touch.clientY - this.scene.game.displayOffsetY);
+    var rect = document.getElementById("canvas").getBoundingClientRect();
+    this.pointerMove(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
   }
 };
 

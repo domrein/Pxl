@@ -357,6 +357,12 @@ Plx.Physics.prototype.resolveCollisionPairs = function(collisionPairs) {
       componentSpeed = component.speedY;
       otherComponentSpeed = otherComponent.speedY;
     }
+    if (!component.resolutionEnabled || !otherComponent.resolutionEnabled) {
+      component.beacon.emit("collided", {physicsComponent:otherComponent, type:otherComponent.collisionType, colliderDirection:(collisionPair.vertical) ? "down" : "right"});
+      otherComponent.beacon.emit("collided", {physicsComponent:component, type:component.collisionType, colliderDirection:(collisionPair.vertical) ? "up" : "left"});
+
+      continue;
+    }
 
     // move actors up to point of colission
     component.rect.loc.x += component.speedX * collisionPair.intersectTime;
