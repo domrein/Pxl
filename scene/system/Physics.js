@@ -358,7 +358,7 @@ Plx.Physics.prototype.resolveCollisionPairs = function(collisionPairs) {
       otherComponentSpeed = otherComponent.speedY;
     }
 
-    // move actors up to point of colission
+    // move actors up to point of collision
     component.rect.loc.x += component.speedX * collisionPair.intersectTime;
     component.rect.loc.y += component.speedY * collisionPair.intersectTime;
     otherComponent.rect.loc.x += otherComponent.speedX * collisionPair.intersectTime;

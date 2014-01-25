@@ -36,7 +36,8 @@ Plx.Sprite.prototype.init = function() {
   this.animTimer = new Plx.Timer(0, -1, 0, this.entity.beacon, "updated");
   this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed);
 
-  this.play(this.animName);
+  if (this.animName)
+    this.play(this.animName);
 
   this.physics = this.entity.fetchComponent(Plx.PhysicsComponent);
   if (this.physics != null) {
