@@ -11,6 +11,7 @@ Plx.SpriteRenderer = function() {
   this.displayCanvas = document.getElementById("canvas");
   this.displayContext = this.displayCanvas.getContext("2d");
   this.smoothImages = false;
+  this.camera = new Plx.Point();
 };
 
 Plx.SpriteRenderer.prototype = Object.create(Plx.System.prototype);
@@ -85,8 +86,8 @@ Plx.SpriteRenderer.prototype.onRendered = function(event) {
       continue;
     if (!sprite.anim || !sprite.frame)
       continue;
-    var spriteX = sprite.loc.x + sprite.speedX * event.data.frameProgress;
-    var spriteY = sprite.loc.y + sprite.speedY * event.data.frameProgress;
+    var spriteX = sprite.loc.x + sprite.speedX * event.data.frameProgress - this.camera.x;
+    var spriteY = sprite.loc.y + sprite.speedY * event.data.frameProgress - this.camera.y;
     var drawOffsetX = 0;
     var drawOffsetY = 0;
     var image = this.scene.game.spriteStore.images[sprite.frame.image];

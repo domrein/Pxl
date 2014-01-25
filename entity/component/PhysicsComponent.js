@@ -37,6 +37,7 @@ Plx.PhysicsComponent.prototype.reset = function() {
   this.collisionType = "none";
   this.gravity = 0;
   this.collisionEnabled = true;
+  this.resolutionEnabled = true;
   // console.log "created, PhysicsComponent.count: //{PhysicsComponent.count}"
 };
 
