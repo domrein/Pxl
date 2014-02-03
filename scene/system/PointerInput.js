@@ -65,7 +65,7 @@ Plx.PointerInput.prototype.onMouseUp = function(event) {
 Plx.PointerInput.prototype.onMouseMove = function(event) {
   if (this.mouseDown) {
     var rect = document.getElementById("canvas").getBoundingClientRect();
-    this.pointerMove("mouse", event.layerX - rect.left, event.layerY - rect.top);
+    this.pointerMove("mouse", event.clientX - rect.left, event.clientY - rect.top);
   }
 };
 
