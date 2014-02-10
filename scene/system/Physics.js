@@ -1,3 +1,6 @@
+// TODO: rewrite physics system
+// TODO: we're adding in speed wrong. We shouldn't add speed right away. speedX/Y is a predictor for movement over the frame, not something to be added imddediately.
+//   we also mispredict speed because we add it immediately
 var calcIntersectTime = function(leftActor, rightActor, topActor, bottomActor) {
   var curActor = leftActor;
   var otherActor = rightActor;
