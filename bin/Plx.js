@@ -439,35 +439,7 @@ Plx.Easing.PI_D2 = Math.PI / 2, Plx.Easing.easeLinear = function(t, b, c, d) {
 }, Plx.Data = function() {
     Plx.Component.call(this), this.data = {};
 }, Plx.Data.prototype = Object.create(Plx.Component.prototype), Plx.Data.prototype.constructor = Plx.Data, 
-Plx.Draggable = function() {
-    Plx.Component.call(this), this.beacon.observe(this, "added", this.onAdded), this.physicsComponent = null, 
-    this.mouseInput = null, this.dragging = !1, this.dragOffset = new Plx.Point(), this.startDragLoc = new Plx.Point(), 
-    this.startDragFunc = null, this.precedence = 5, this.enabled = !0;
-}, Plx.Draggable.prototype = Object.create(Plx.Component.prototype), Plx.Draggable.prototype.constructor = Plx.Draggable, 
-Plx.Draggable.prototype.onAdded = function() {
-    this.physicsComponent = this.entity.fetchComponent(Plx.PhysicsComponent);
-}, Plx.Draggable.prototype.onMouseDown = function(event) {
-    this.enabled && this.collisionCheck(event) && (this.dragging = !0, event.consumed = !0, 
-    this.startDragLoc.x = this.physicsComponent.rect.loc.x, this.startDragLoc.y = this.physicsComponent.rect.loc.y, 
-    this.dragOffset.x = event.data.x - this.physicsComponent.rect.loc.x, this.dragOffset.y = event.data.y - this.physicsComponent.rect.loc.y, 
-    this.syncToDragLocation(event.data.x, event.data.y), this.mouseInput.beacon.observe(this, "mouseMove", this.onMouseMove), 
-    this.startDragFunc && this.startDragFunc(event), this.beacon.emit("dragStart", {}));
-}, Plx.Draggable.prototype.collisionCheck = function(event) {
-    return this.physicsComponent.rect.contains(new Point(event.data.x, event.data.y)) ? !0 : !1;
-}, Plx.Draggable.prototype.onMouseUp = function(event) {
-    this.dragging && (event.data.hasOwnProperty("x") && event.data.hasOwnProperty("y") && this.syncToDragLocation(event.data.x, event.data.y), 
-    this.mouseInput.beacon.ignore(this, "mouseMove", this.onMouseMove), this.dragging = !1, 
-    this.beacon.emit("dragEnd", {}));
-}, Plx.Draggable.prototype.onMouseMove = function(event) {
-    this.syncToDragLocation(event.data.x, event.data.y);
-}, Plx.Draggable.prototype.syncToDragLocation = function(x, y) {
-    this.physicsComponent.rect.loc.x = x - this.dragOffset.x, this.physicsComponent.rect.loc.y = y - this.dragOffset.y;
-}, Plx.Draggable.prototype.setMouseInput = function(mouseInput, precedence) {
-    this.mouseInput = mouseInput, precedence = precedence || 5, this.mouseInput && (this.mouseInput.beacon.ignore(this, "mouseDown", this.onMouseDown, this.precedence), 
-    this.mouseInput.beacon.ignore(this, "mouseUp", this.onMouseUp, this.precedence)), 
-    this.precedence = precedence, this.mouseInput.beacon.observe(this, "mouseDown", this.onMouseDown, this.precedence), 
-    this.mouseInput.beacon.observe(this, "mouseUp", this.onMouseUp, this.precedence);
-}, Plx.FunctionBinder = function() {
+Plx.FunctionBinder = function() {
     Plx.Component.call(this), this.resetFunc = null, this.initFunc = null;
 }, Plx.FunctionBinder.prototype = Object.create(Plx.Component.prototype), Plx.FunctionBinder.prototype.constructor = Plx.FunctionBinder, 
 Plx.FunctionBinder.prototype.reset = function() {
@@ -475,7 +447,11 @@ Plx.FunctionBinder.prototype.reset = function() {
     this.initFunc && (this.initFunc = this.initFunc.bind(this)), this.resetFunc && this.resetFunc();
 }, Plx.FunctionBinder.prototype.init = function() {
     Plx.Component.prototype.init.call(this), this.initFunc && this.initFunc();
-}, Plx.KillOffscreen = function() {
+}, Plx.GridItem = function() {
+    Plx.Component.call(this), this.shape = [];
+}, Plx.GridItem.prototype = Object.create(Plx.Component.prototype), Plx.GridItem.prototype.constructor = Plx.GridItem, 
+Plx.GridItem.prototype.reset = function() {}, Plx.GridItem.prototype.init = function() {}, 
+Plx.KillOffscreen = function() {
     Plx.Component.call(this), this.reset();
 }, Plx.KillOffscreen.prototype = Object.create(Plx.Component.prototype), Plx.KillOffscreen.prototype.constructor = Plx.KillOffscreen, 
 Plx.KillOffscreen.prototype.reset = function() {
@@ -494,7 +470,8 @@ Plx.PhysicsComponent.count = 0, Plx.PhysicsComponent.prototype.reset = function(
     Plx.Component.prototype.reset.call(this), this.rect.reset(), this.lastRect.reset(), 
     this.nextRect.reset(), this.pendingMove.reset(), this.speedX = 0, this.speedY = 0, 
     this.capSpeed = !1, this.speedXMax = 0, this.speedYMax = 0, this.friction = 1, this.mass = 1, 
-    this.sponginess = .1, this.collisionType = "none", this.gravity = 0, this.collisionEnabled = !0;
+    this.sponginess = .1, this.collisionType = "none", this.gravity = 0, this.collisionEnabled = !0, 
+    this.resolutionEnabled = !0;
 }, Plx.PhysicsComponent.prototype.init = function() {}, Object.defineProperty(Plx.PhysicsComponent.prototype, "x", {
     get: function() {
         return this.rect.loc.x;
@@ -628,15 +605,6 @@ Plx.Sprite.prototype.reset = function() {
 }, Plx.Sprite.prototype.pause = function() {}, Plx.Sprite.prototype.resume = function() {}, 
 Plx.Sprite.prototype.setZIndex = function() {
     this.beacon.emit("updatedZIndex", {});
-}, Plx.Tappable = function() {
-    Plx.Component.call(this), this.reset();
-}, Plx.Tappable.prototype = Object.create(Plx.Component.prototype), Plx.Tappable.prototype.constructor = Plx.Tappable, 
-Plx.Tappable.prototype.reset = function() {
-    Plx.Component.prototype.reset.call(this), this.beacon.reset(), this.enabled = !0;
-}, Plx.Tappable.prototype.init = function() {
-    this.physics = this.entity.fetchComponent(Plx.PhysicsComponent);
-}, Plx.Tappable.prototype.collisionCheck = function(x, y) {
-    return this.physics.rect.contains(new Plx.Point(x, y)) ? !0 : !1;
 }, Plx.Scene = function() {
     this.paused = !1, this.beacon = new Plx.Beacon(this), this.entities = [], this.systems = [], 
     this.game = null;
@@ -715,7 +683,12 @@ Plx.Tappable.prototype.reset = function() {
 }, Plx.System.prototype.addComponent = function() {}, Plx.System.prototype.removeComponent = function() {}, 
 Plx.System.prototype.update = function() {}, Plx.System.prototype.destroy = function() {
     this.beacon.destroy();
-}, Plx.KeyboardInput = function() {
+}, Plx.GridPlacement = function() {
+    Plx.System.call(this), this.componentTypes = [ Plx.GridItem ], this.width = 0, this.height = 0;
+}, Plx.GridPlacement.prototype = Object.create(Plx.System.prototype), Plx.GridPlacement.prototype.constructor = Plx.GridPlacement, 
+Plx.GridPlacement.prototype.update = function() {}, Plx.GridPlacement.prototype.addComponent = function() {}, 
+Plx.GridPlacement.prototype.removeComponent = function() {}, Plx.GridPlacement.prototype.destroy = function() {}, 
+Plx.KeyboardInput = function() {
     Plx.System.call(this), this.keys = [];
     for (var i = 0; 255 > i; i++) this.keys.push(!1);
     var _this = this;
@@ -925,18 +898,39 @@ Plx.Physics.prototype.onAddedToScene = function() {
         if (collisionPair.leftActor ? (component = collisionPair.leftActor, otherComponent = collisionPair.rightActor, 
         componentSpeed = component.speedX, otherComponentSpeed = otherComponent.speedX) : collisionPair.topActor && (component = collisionPair.topActor, 
         otherComponent = collisionPair.bottomActor, componentSpeed = component.speedY, otherComponentSpeed = otherComponent.speedY), 
-        component.rect.loc.x += component.speedX * collisionPair.intersectTime, component.rect.loc.y += component.speedY * collisionPair.intersectTime, 
-        otherComponent.rect.loc.x += otherComponent.speedX * collisionPair.intersectTime, 
-        otherComponent.rect.loc.y += otherComponent.speedY * collisionPair.intersectTime, 
-        calcPostCollisionSpeed(component, otherComponent, collisionPair.vertical), component.pendingMove.x = component.speedX * (1 - collisionPair.intersectTime), 
-        component.pendingMove.y = component.speedY * (1 - collisionPair.intersectTime), 
-        otherComponent.pendingMove.x = otherComponent.speedX * (1 - collisionPair.intersectTime), 
-        otherComponent.pendingMove.y = otherComponent.speedY * (1 - collisionPair.intersectTime), 
-        component.nextRect.loc.x = component.rect.loc.x + component.pendingMove.x, component.nextRect.loc.y = component.rect.loc.y + component.pendingMove.y, 
-        otherComponent.nextRect.loc.x = otherComponent.rect.loc.x + otherComponent.pendingMove.x, 
-        otherComponent.nextRect.loc.y = otherComponent.rect.loc.y + otherComponent.pendingMove.y, 
-        1 == component.sponginess && 1 == otherComponent.sponginess) ;
-        component.beacon.emit("collided", {
+        component.resolutionEnabled && otherComponent.resolutionEnabled) {
+            if (component.rect.loc.x += component.speedX * collisionPair.intersectTime, component.rect.loc.y += component.speedY * collisionPair.intersectTime, 
+            otherComponent.rect.loc.x += otherComponent.speedX * collisionPair.intersectTime, 
+            otherComponent.rect.loc.y += otherComponent.speedY * collisionPair.intersectTime, 
+            calcPostCollisionSpeed(component, otherComponent, collisionPair.vertical), component.pendingMove.x = component.speedX * (1 - collisionPair.intersectTime), 
+            component.pendingMove.y = component.speedY * (1 - collisionPair.intersectTime), 
+            otherComponent.pendingMove.x = otherComponent.speedX * (1 - collisionPair.intersectTime), 
+            otherComponent.pendingMove.y = otherComponent.speedY * (1 - collisionPair.intersectTime), 
+            component.nextRect.loc.x = component.rect.loc.x + component.pendingMove.x, component.nextRect.loc.y = component.rect.loc.y + component.pendingMove.y, 
+            otherComponent.nextRect.loc.x = otherComponent.rect.loc.x + otherComponent.pendingMove.x, 
+            otherComponent.nextRect.loc.y = otherComponent.rect.loc.y + otherComponent.pendingMove.y, 
+            1 == component.sponginess && 1 == otherComponent.sponginess) ;
+            component.beacon.emit("collided", {
+                physicsComponent: otherComponent,
+                type: otherComponent.collisionType,
+                colliderDirection: collisionPair.vertical ? "down" : "right"
+            }), otherComponent.beacon.emit("collided", {
+                physicsComponent: component,
+                type: component.collisionType,
+                colliderDirection: collisionPair.vertical ? "up" : "left"
+            });
+            for (var i = collisionPairs.length - 1; i >= 0; i--) {
+                var colPair = collisionPairs[i], killPair = !1;
+                (colPair.leftActor == component || colPair.rightActor == component || colPair.topActor == component || colPair.bottomActor == component) && (killPair = !0), 
+                (colPair.leftActor == otherComponent || colPair.rightActor == otherComponent || colPair.topActor == otherComponent || colPair.bottomActor == otherComponent) && (killPair = !0), 
+                killPair && collisionPairs.splice(i, 1);
+            }
+            collisionPairs.concat(this.findComponentCollisionPairs(component, collisionPair.intersectTime)), 
+            collisionPairs.concat(this.findComponentCollisionPairs(otherComponent, collisionPair.intersectTime)), 
+            collisionPairs.sort(function(a, b) {
+                return a.intersectTime - b.intersectTime;
+            });
+        } else component.beacon.emit("collided", {
             physicsComponent: otherComponent,
             type: otherComponent.collisionType,
             colliderDirection: collisionPair.vertical ? "down" : "right"
@@ -944,17 +938,6 @@ Plx.Physics.prototype.onAddedToScene = function() {
             physicsComponent: component,
             type: component.collisionType,
             colliderDirection: collisionPair.vertical ? "up" : "left"
-        });
-        for (var i = collisionPairs.length - 1; i >= 0; i--) {
-            var colPair = collisionPairs[i], killPair = !1;
-            (colPair.leftActor == component || colPair.rightActor == component || colPair.topActor == component || colPair.bottomActor == component) && (killPair = !0), 
-            (colPair.leftActor == otherComponent || colPair.rightActor == otherComponent || colPair.topActor == otherComponent || colPair.bottomActor == otherComponent) && (killPair = !0), 
-            killPair && collisionPairs.splice(i, 1);
-        }
-        collisionPairs.concat(this.findComponentCollisionPairs(component, collisionPair.intersectTime)), 
-        collisionPairs.concat(this.findComponentCollisionPairs(otherComponent, collisionPair.intersectTime)), 
-        collisionPairs.sort(function(a, b) {
-            return a.intersectTime - b.intersectTime;
         });
     }
 }, Plx.Physics.prototype.onSceneUpdated = function() {
@@ -1043,16 +1026,21 @@ Plx.PointerInput.prototype.update = function() {}, Plx.PointerInput.prototype.ad
     var index = this.pointerComponents.indexOf(component);
     index >= 0 && (this.pointerComponents.splice(index, 1), this.componentsInDrag[component.id] && delete this.componentsInDrag[component.id]);
 }, Plx.PointerInput.prototype.onMouseDown = function(event) {
-    this.mouseDown = !0, this.pointerStart("mouse", event.layerX, event.layerY);
+    this.mouseDown = !0;
+    var rect = document.getElementById("canvas").getBoundingClientRect();
+    this.pointerStart("mouse", event.clientX - rect.left, event.clientY - rect.top);
 }, Plx.PointerInput.prototype.onMouseUp = function() {
     this.mouseDown = !1, this.pointerEnd("mouse");
 }, Plx.PointerInput.prototype.onMouseMove = function(event) {
-    this.mouseDown && this.pointerMove("mouse", event.layerX, event.layerY);
+    if (this.mouseDown) {
+        var rect = document.getElementById("canvas").getBoundingClientRect();
+        this.pointerMove("mouse", event.clientX - rect.left, event.clientY - rect.top);
+    }
 }, Plx.PointerInput.prototype.onTouchStart = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
-        var touch = event.changedTouches[i];
-        this.pointerStart(touch.identifier, touch.clientX - this.scene.game.displayOffsetX, touch.clientY - this.scene.game.displayOffsetY);
+        var touch = event.changedTouches[i], rect = document.getElementById("canvas").getBoundingClientRect();
+        this.pointerStart(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
     }
 }, Plx.PointerInput.prototype.onTouchEnd = function(event) {
     event.preventDefault();
@@ -1067,8 +1055,8 @@ Plx.PointerInput.prototype.update = function() {}, Plx.PointerInput.prototype.ad
 }, Plx.PointerInput.prototype.onTouchMove = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
-        var touch = event.changedTouches[i];
-        this.pointerMove(touch.identifier, touch.clientX - this.scene.game.displayOffsetX, touch.clientY - this.scene.game.displayOffsetY);
+        var touch = event.changedTouches[i], rect = document.getElementById("canvas").getBoundingClientRect();
+        this.pointerMove(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
     }
 }, Plx.PointerInput.prototype.pointerStart = function(id, x, y) {
     x /= this.scene.game.displayRatio, y /= this.scene.game.displayRatio;
@@ -1123,7 +1111,8 @@ Plx.PointerInput.prototype.update = function() {}, Plx.PointerInput.prototype.ad
     Plx.System.call(this), this.componentTypes = [ Plx.Sprite ], this.sprites = [], 
     this.beacon.observe(this, "addedToScene", this.onAddedToScene), this.canvas = document.createElement("canvas"), 
     this.context = this.canvas.getContext("2d"), this.displayCanvas = document.getElementById("canvas"), 
-    this.displayContext = this.displayCanvas.getContext("2d"), this.smoothImages = !1;
+    this.displayContext = this.displayCanvas.getContext("2d"), this.smoothImages = !1, 
+    this.camera = new Plx.Point();
 }, Plx.SpriteRenderer.prototype = Object.create(Plx.System.prototype), Plx.SpriteRenderer.prototype.constructor = Plx.SpriteRenderer, 
 Plx.SpriteRenderer.prototype.onAddedToScene = function() {
     this.scene.beacon.observe(this, "added", this.onSceneAddedToGame), this.scene.beacon.observe(this, "rendered", this.onRendered, 10), 
@@ -1158,7 +1147,7 @@ Plx.SpriteRenderer.prototype.onAddedToScene = function() {
     for (var i = 0; i < this.sprites.length; i++) {
         var sprite = this.sprites[i];
         if (sprite.visible && sprite.anim && sprite.frame) {
-            var spriteX = sprite.loc.x + sprite.speedX * event.data.frameProgress, spriteY = sprite.loc.y + sprite.speedY * event.data.frameProgress, drawOffsetX = 0, drawOffsetY = 0, image = this.scene.game.spriteStore.images[sprite.frame.image];
+            var spriteX = sprite.loc.x + sprite.speedX * event.data.frameProgress - this.camera.x, spriteY = sprite.loc.y + sprite.speedY * event.data.frameProgress - this.camera.y, drawOffsetX = 0, drawOffsetY = 0, image = this.scene.game.spriteStore.images[sprite.frame.image];
             if (sprite.flippedX || sprite.flippedY || sprite.rotation || 1 != sprite.alpha) {
                 if (this.context.save(), sprite.rotation && (this.context.translate(Math.round(spriteX + sprite.anchor.x * sprite.scaleX), Math.round(spriteY + sprite.anchor.y * sprite.scaleY)), 
                 drawOffsetX = -sprite.anchor.x * sprite.scaleX, drawOffsetY = -sprite.anchor.y * sprite.scaleY, 
