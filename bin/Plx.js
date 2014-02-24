@@ -783,7 +783,7 @@ var calcIntersectTime = function(leftActor, rightActor, topActor, bottomActor) {
 }, adjustPendingSpeed = function(speedProp, actorOne, actorTwo) {
     if (0 == actorOne.mass) return actorOne[speedProp];
     if (0 == actorTwo.mass) return actorTwo[speedProp];
-    if (-1 != actorOne.mass) {
+    if (-1 != actorOne.mass && -1 != actorTwo.mass) {
         var myMassMod = .9, otherMassMod = 1, actorOneMass = actorOne.mass, actorTwoMass = actorTwo.mass;
         -1 == actorOneMass && (actorOneMass = 100 * actorTwoMass), -1 == actorTwoMass && (actorTwoMass = 100 * actorOneMass);
         var myMass = actorOneMass * myMassMod, otherMass = actorTwoMass * otherMassMod, mySpeed = actorOne[speedProp] * (1 - actorOne.sponginess), otherSpeed = actorTwo[speedProp] * (1 - actorOne.sponginess), updatedSpeed = (myMass - otherMass) / (myMass + otherMass) * mySpeed + 2 * otherMass / (myMass + otherMass) * otherSpeed;
