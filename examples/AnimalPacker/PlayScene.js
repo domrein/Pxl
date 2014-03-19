@@ -4,7 +4,7 @@ var PlayScene = function() {
   var physics = new Plx.Physics();
   physics.addCollisionPair("animal", "animal");
   this.addSystem(physics);
-  this.addSystem(new Plx.PointerInput());
+  this.addSystem(new Plx.PointerSys());
 
   this.beacon.observe(this, "added", this.onAdded);
   this.beacon.observe(this, "updated", this.onUpdated);

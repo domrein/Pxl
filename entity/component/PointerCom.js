@@ -1,12 +1,12 @@
-Plx.Pointerable = function() {
+Plx.PointerCom = function() {
   Plx.Component.call(this);
   this.reset();
 };
 
-Plx.Pointerable.prototype = Object.create(Plx.Component.prototype);
-Plx.Pointerable.prototype.constructor = Plx.Pointerable;
+Plx.PointerCom.prototype = Object.create(Plx.Component.prototype);
+Plx.PointerCom.prototype.constructor = Plx.PointerCom;
 
-Plx.Pointerable.prototype.reset = function() {
+Plx.PointerCom.prototype.reset = function() {
   Plx.Component.prototype.reset.call(this);
   this.beacon.reset();
   this.enabled = true;
@@ -15,7 +15,7 @@ Plx.Pointerable.prototype.reset = function() {
   this.syncLoc = null; // for overriding syncLocation
 };
 
-Plx.Pointerable.prototype.init = function() {
+Plx.PointerCom.prototype.init = function() {
   this.physics = this.entity.fetchComponent(Plx.PhysicsComponent);
   if (this.colCheck)
     this.colCheck = this.colCheck.bind(this);
@@ -23,17 +23,17 @@ Plx.Pointerable.prototype.init = function() {
     this.syncLoc = this.syncLoc.bind(this);
 };
 
-Plx.Pointerable.prototype.collisionCheck = function(x, y) {
+Plx.PointerCom.prototype.collisionCheck = function(x, y) {
   if (this.colCheck)
     return this.colCheck(x, y);
 
   if (this.physics.rect.contains(new Plx.Point(x, y)))
     return true;
-
+  
   return false;
 };
 
-Plx.Pointerable.prototype.syncLocation = function(x, y, xOffset, yOffset) {
+Plx.PointerCom.prototype.syncLocation = function(x, y, xOffset, yOffset) {
   if (this.syncLoc) {
     this.syncLoc(x, y);
     return;

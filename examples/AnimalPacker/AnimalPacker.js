@@ -28,7 +28,7 @@ var onLoad = function(event) {
   game.entityFactory.registerType("Snake", [
     {name: "sprite", type: Plx.Sprite, params: {animName: "Egg", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor, z: 5}},
     {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "animal"}},
-    {name: "pointerable", type: Plx.Pointerable, params: {draggable: true}},
+    {name: "pointerable", type: Plx.PointerCom, params: {draggable: true}},
   ]);
 
   // start the game

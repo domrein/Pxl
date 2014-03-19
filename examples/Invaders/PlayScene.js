@@ -4,7 +4,7 @@ var PlayScene = function() {
   var physics = new Plx.Physics();
   physics.addCollisionPair("player", "enemy");
   this.addSystem(physics);
-  this.addSystem(new Plx.PointerInput());
+  this.addSystem(new Plx.PointerSys());
 
   this.beacon.observe(this, "added", this.onAdded);
   this.beacon.observe(this, "updated", this.onUpdated);
@@ -38,13 +38,13 @@ PlayScene.prototype.onAdded = function(event) {
   var rightArrowButton = this.makeEntity("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4}});
   rightArrowButton.physics.x = this.game.width - rightArrowButton.physics.width - arrowPadding;
   rightArrowButton.physics.y = this.game.height - rightArrowButton.physics.height - arrowPadding;
-  rightArrowButton.pointerable.beacon.observe(this, "entered", function(event) {_this.rightDown = true;});
-  rightArrowButton.pointerable.beacon.observe(this, "exited", function(event) {_this.rightDown = false;});
+  rightArrowButton.pointer.beacon.observe(this, "entered", function(event) {_this.rightDown = true;});
+  rightArrowButton.pointer.beacon.observe(this, "exited", function(event) {_this.rightDown = false;});
   var leftArrowButton = this.makeEntity("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4, flippedX: true}, physics: {x: 90}});
   leftArrowButton.physics.x = arrowPadding;
   leftArrowButton.physics.y = this.game.height - leftArrowButton.physics.height - arrowPadding;
-  leftArrowButton.pointerable.beacon.observe(this, "entered", function(event) {_this.leftDown = true;});
-  leftArrowButton.pointerable.beacon.observe(this, "exited", function(event) {_this.leftDown = false;});
+  leftArrowButton.pointer.beacon.observe(this, "entered", function(event) {_this.leftDown = true;});
+  leftArrowButton.pointer.beacon.observe(this, "exited", function(event) {_this.leftDown = false;});
 
   this.addEnemies();
 };

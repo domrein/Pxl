@@ -1,6 +1,6 @@
-Plx.PointerInput = function() {
+Plx.PointerSys = function() {
   Plx.System.call(this);
-  this.componentTypes = [Plx.Pointerable];
+  this.componentTypes = [Plx.PointerCom];
   this.pointerComponents = [];
   this.componentsInDrag = {};
   
@@ -30,18 +30,17 @@ Plx.PointerInput = function() {
   document.getElementById("canvas").addEventListener("touchleave", this.touchLeaveFunc, false);
 };
 
-Plx.PointerInput.prototype = Object.create(Plx.System.prototype);
-Plx.PointerInput.prototype.constructor = Plx.PointerInput;
+Plx.PointerSys.prototype = Object.create(Plx.System.prototype);
+Plx.PointerSys.prototype.constructor = Plx.PointerSys;
 
-Plx.PointerInput.prototype.update = function() {
-  
+Plx.PointerSys.prototype.update = function() {
 };
 
-Plx.PointerInput.prototype.addComponent = function(component) {
+Plx.PointerSys.prototype.addComponent = function(component) {
   this.pointerComponents.push(component);
 };
 
-Plx.PointerInput.prototype.removeComponent = function(component) {
+Plx.PointerSys.prototype.removeComponent = function(component) {
   var index = this.pointerComponents.indexOf(component);
   if (index >= 0) {
     this.pointerComponents.splice(index, 1);
@@ -50,25 +49,25 @@ Plx.PointerInput.prototype.removeComponent = function(component) {
   }
 };
 
-Plx.PointerInput.prototype.onMouseDown = function(event) {
+Plx.PointerSys.prototype.onMouseDown = function(event) {
   this.mouseDown = true;
   var rect = document.getElementById("canvas").getBoundingClientRect();
   this.pointerStart("mouse", event.clientX - rect.left, event.clientY - rect.top);
 };
 
-Plx.PointerInput.prototype.onMouseUp = function(event) {
+Plx.PointerSys.prototype.onMouseUp = function(event) {
   this.mouseDown = false;
   this.pointerEnd("mouse");
 };
 
-Plx.PointerInput.prototype.onMouseMove = function(event) {
+Plx.PointerSys.prototype.onMouseMove = function(event) {
   if (this.mouseDown) {
     var rect = document.getElementById("canvas").getBoundingClientRect();
     this.pointerMove("mouse", event.clientX - rect.left, event.clientY - rect.top);
   }
 };
 
-Plx.PointerInput.prototype.onTouchStart = function(event) {
+Plx.PointerSys.prototype.onTouchStart = function(event) {
   event.preventDefault(); // This is a hack so that Android dispatches the touchend event (I guess it also disables native scrolling) I guess this also prevents the mouse event from being sent
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
@@ -77,7 +76,7 @@ Plx.PointerInput.prototype.onTouchStart = function(event) {
   }
 };
 
-Plx.PointerInput.prototype.onTouchEnd = function(event) {
+Plx.PointerSys.prototype.onTouchEnd = function(event) {
   event.preventDefault();
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
@@ -85,15 +84,15 @@ Plx.PointerInput.prototype.onTouchEnd = function(event) {
   }
 };
 
-Plx.PointerInput.prototype.onTouchCancel = function(event) {
+Plx.PointerSys.prototype.onTouchCancel = function(event) {
   this.onTouchEnd(event);
 };
 
-Plx.PointerInput.prototype.onTouchLeave = function(event) {
+Plx.PointerSys.prototype.onTouchLeave = function(event) {
   this.onTouchEnd(event);
 };
 
-Plx.PointerInput.prototype.onTouchMove = function(event) {
+Plx.PointerSys.prototype.onTouchMove = function(event) {
   event.preventDefault();
   for (var i = 0; i < event.changedTouches.length; i ++) {
     var touch = event.changedTouches[i];
@@ -102,7 +101,7 @@ Plx.PointerInput.prototype.onTouchMove = function(event) {
   }
 };
 
-Plx.PointerInput.prototype.pointerStart = function(id, x, y) {
+Plx.PointerSys.prototype.pointerStart = function(id, x, y) {
   // scale x, y
   x = x / this.scene.game.displayRatio;
   y = y / this.scene.game.displayRatio;
@@ -125,7 +124,7 @@ Plx.PointerInput.prototype.pointerStart = function(id, x, y) {
   }
 };
 
-Plx.PointerInput.prototype.pointerEnd = function(id) {
+Plx.PointerSys.prototype.pointerEnd = function(id) {
   var pointer = this.pointers[id];
   if (!pointer)
     return;
@@ -140,7 +139,7 @@ Plx.PointerInput.prototype.pointerEnd = function(id) {
   delete this.pointers[id];
 };
 
-Plx.PointerInput.prototype.pointerMove = function(id, x, y) {
+Plx.PointerSys.prototype.pointerMove = function(id, x, y) {
   // scale x, y
   x = x / this.scene.game.displayRatio;
   y = y / this.scene.game.displayRatio;
@@ -180,7 +179,7 @@ Plx.PointerInput.prototype.pointerMove = function(id, x, y) {
   }
 };
 
-Plx.PointerInput.prototype.destroy = function() {
+Plx.PointerSys.prototype.destroy = function() {
   document.getElementById("canvas").removeEventListener("mousedown", this.mouseDownFunc, false);
   document.getElementById("canvas").removeEventListener("mouseup", this.mouseUpFunc, false);
   document.getElementById("canvas").removeEventListener("mousemove", this.mouseMoveFunc, false);

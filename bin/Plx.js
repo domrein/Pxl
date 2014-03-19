@@ -31,8 +31,8 @@ Plx.Game = function(width, height, firstSceneClass) {
             autoSizePhysics: !0
         }
     }, {
-        type: Plx.Pointerable,
-        name: "pointerable",
+        type: Plx.PointerCom,
+        name: "pointer",
         params: {}
     }, {
         type: Plx.Data,
@@ -447,10 +447,10 @@ Plx.FunctionBinder.prototype.reset = function() {
     this.initFunc && (this.initFunc = this.initFunc.bind(this)), this.resetFunc && this.resetFunc();
 }, Plx.FunctionBinder.prototype.init = function() {
     Plx.Component.prototype.init.call(this), this.initFunc && this.initFunc();
-}, Plx.GridItem = function() {
-    Plx.Component.call(this), this.shape = [];
-}, Plx.GridItem.prototype = Object.create(Plx.Component.prototype), Plx.GridItem.prototype.constructor = Plx.GridItem, 
-Plx.GridItem.prototype.reset = function() {}, Plx.GridItem.prototype.init = function() {}, 
+}, Plx.GridPlacerCom = function() {
+    Plx.Component.call(this), this.data = {};
+}, Plx.GridPlacerCom.prototype = Object.create(Plx.Component.prototype), Plx.GridPlacerCom.prototype.constructor = Plx.GridPlacerCom, 
+Plx.GridPlacerCom.prototype.reset = function() {}, Plx.GridPlacerCom.prototype.init = function() {}, 
 Plx.KillOffscreen = function() {
     Plx.Component.call(this), this.reset();
 }, Plx.KillOffscreen.prototype = Object.create(Plx.Component.prototype), Plx.KillOffscreen.prototype.constructor = Plx.KillOffscreen, 
@@ -556,18 +556,18 @@ Plx.PixelBlotMap.setBlotColor = function(red, green, blue) {
 }, Plx.PixelBlot = function(loc, mapIndex) {
     this.loc = loc, this.mapIndex = mapIndex, this.alpha = 1, this.red = 0, this.green = 0, 
     this.blue = 0;
-}, Plx.Pointerable = function() {
+}, Plx.PointerCom = function() {
     Plx.Component.call(this), this.reset();
-}, Plx.Pointerable.prototype = Object.create(Plx.Component.prototype), Plx.Pointerable.prototype.constructor = Plx.Pointerable, 
-Plx.Pointerable.prototype.reset = function() {
+}, Plx.PointerCom.prototype = Object.create(Plx.Component.prototype), Plx.PointerCom.prototype.constructor = Plx.PointerCom, 
+Plx.PointerCom.prototype.reset = function() {
     Plx.Component.prototype.reset.call(this), this.beacon.reset(), this.enabled = !0, 
     this.draggable = !1, this.colCheck = null, this.syncLoc = null;
-}, Plx.Pointerable.prototype.init = function() {
+}, Plx.PointerCom.prototype.init = function() {
     this.physics = this.entity.fetchComponent(Plx.PhysicsComponent), this.colCheck && (this.colCheck = this.colCheck.bind(this)), 
     this.syncLoc && (this.syncLoc = this.syncLoc.bind(this));
-}, Plx.Pointerable.prototype.collisionCheck = function(x, y) {
+}, Plx.PointerCom.prototype.collisionCheck = function(x, y) {
     return this.colCheck ? this.colCheck(x, y) : this.physics.rect.contains(new Plx.Point(x, y)) ? !0 : !1;
-}, Plx.Pointerable.prototype.syncLocation = function(x, y, xOffset, yOffset) {
+}, Plx.PointerCom.prototype.syncLocation = function(x, y, xOffset, yOffset) {
     return this.syncLoc ? (this.syncLoc(x, y), void 0) : (this.physics.x = x - xOffset, 
     this.physics.y = y - yOffset, void 0);
 }, Plx.Sprite = function() {
@@ -683,11 +683,11 @@ Plx.Sprite.prototype.setZIndex = function() {
 }, Plx.System.prototype.addComponent = function() {}, Plx.System.prototype.removeComponent = function() {}, 
 Plx.System.prototype.update = function() {}, Plx.System.prototype.destroy = function() {
     this.beacon.destroy();
-}, Plx.GridPlacement = function() {
+}, Plx.GridPlacerSys = function() {
     Plx.System.call(this), this.componentTypes = [ Plx.GridItem ], this.width = 0, this.height = 0;
-}, Plx.GridPlacement.prototype = Object.create(Plx.System.prototype), Plx.GridPlacement.prototype.constructor = Plx.GridPlacement, 
-Plx.GridPlacement.prototype.update = function() {}, Plx.GridPlacement.prototype.addComponent = function() {}, 
-Plx.GridPlacement.prototype.removeComponent = function() {}, Plx.GridPlacement.prototype.destroy = function() {}, 
+}, Plx.GridPlacerSys.prototype = Object.create(Plx.System.prototype), Plx.GridPlacerSys.prototype.constructor = Plx.GridPlacerSys, 
+Plx.GridPlacerSys.prototype.update = function() {}, Plx.GridPlacerSys.prototype.addComponent = function() {}, 
+Plx.GridPlacerSys.prototype.removeComponent = function() {}, Plx.GridPlacerSys.prototype.destroy = function() {}, 
 Plx.KeyboardInput = function() {
     Plx.System.call(this), this.keys = [];
     for (var i = 0; 255 > i; i++) this.keys.push(!1);
@@ -783,7 +783,7 @@ var calcIntersectTime = function(leftActor, rightActor, topActor, bottomActor) {
 }, adjustPendingSpeed = function(speedProp, actorOne, actorTwo) {
     if (0 == actorOne.mass) return actorOne[speedProp];
     if (0 == actorTwo.mass) return actorTwo[speedProp];
-    if (-1 != actorOne.mass && -1 != actorTwo.mass) {
+    if (-1 != actorOne.mass) {
         var myMassMod = .9, otherMassMod = 1, actorOneMass = actorOne.mass, actorTwoMass = actorTwo.mass;
         -1 == actorOneMass && (actorOneMass = 100 * actorTwoMass), -1 == actorTwoMass && (actorTwoMass = 100 * actorOneMass);
         var myMass = actorOneMass * myMassMod, otherMass = actorTwoMass * otherMassMod, mySpeed = actorOne[speedProp] * (1 - actorOne.sponginess), otherSpeed = actorTwo[speedProp] * (1 - actorOne.sponginess), updatedSpeed = (myMass - otherMass) / (myMass + otherMass) * mySpeed + 2 * otherMass / (myMass + otherMass) * otherSpeed;
@@ -991,8 +991,8 @@ Plx.PixelBlotRenderer.prototype.onAddedToScene = function() {
     }
 }, Plx.PixelBlotRenderer.prototype.destroy = function() {
     this.scene.beacon.ignore(this, "entityRemoved", this.onEntityRemoved), this.scene.beacon.ignore(this, "rendered", this.onRendered, 10);
-}, Plx.PointerInput = function() {
-    Plx.System.call(this), this.componentTypes = [ Plx.Pointerable ], this.pointerComponents = [], 
+}, Plx.PointerSys = function() {
+    Plx.System.call(this), this.componentTypes = [ Plx.PointerCom ], this.pointerComponents = [], 
     this.componentsInDrag = {}, this.pointers = {};
     var _this = this;
     this.mouseDownFunc = function(event) {
@@ -1019,46 +1019,46 @@ Plx.PixelBlotRenderer.prototype.onAddedToScene = function() {
     document.getElementById("canvas").addEventListener("touchmove", this.touchMoveFunc, !1), 
     document.getElementById("canvas").addEventListener("touchcancel", this.touchCancelFunc, !1), 
     document.getElementById("canvas").addEventListener("touchleave", this.touchLeaveFunc, !1);
-}, Plx.PointerInput.prototype = Object.create(Plx.System.prototype), Plx.PointerInput.prototype.constructor = Plx.PointerInput, 
-Plx.PointerInput.prototype.update = function() {}, Plx.PointerInput.prototype.addComponent = function(component) {
+}, Plx.PointerSys.prototype = Object.create(Plx.System.prototype), Plx.PointerSys.prototype.constructor = Plx.PointerSys, 
+Plx.PointerSys.prototype.update = function() {}, Plx.PointerSys.prototype.addComponent = function(component) {
     this.pointerComponents.push(component);
-}, Plx.PointerInput.prototype.removeComponent = function(component) {
+}, Plx.PointerSys.prototype.removeComponent = function(component) {
     var index = this.pointerComponents.indexOf(component);
     index >= 0 && (this.pointerComponents.splice(index, 1), this.componentsInDrag[component.id] && delete this.componentsInDrag[component.id]);
-}, Plx.PointerInput.prototype.onMouseDown = function(event) {
+}, Plx.PointerSys.prototype.onMouseDown = function(event) {
     this.mouseDown = !0;
     var rect = document.getElementById("canvas").getBoundingClientRect();
     this.pointerStart("mouse", event.clientX - rect.left, event.clientY - rect.top);
-}, Plx.PointerInput.prototype.onMouseUp = function() {
+}, Plx.PointerSys.prototype.onMouseUp = function() {
     this.mouseDown = !1, this.pointerEnd("mouse");
-}, Plx.PointerInput.prototype.onMouseMove = function(event) {
+}, Plx.PointerSys.prototype.onMouseMove = function(event) {
     if (this.mouseDown) {
         var rect = document.getElementById("canvas").getBoundingClientRect();
         this.pointerMove("mouse", event.clientX - rect.left, event.clientY - rect.top);
     }
-}, Plx.PointerInput.prototype.onTouchStart = function(event) {
+}, Plx.PointerSys.prototype.onTouchStart = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
         var touch = event.changedTouches[i], rect = document.getElementById("canvas").getBoundingClientRect();
         this.pointerStart(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
     }
-}, Plx.PointerInput.prototype.onTouchEnd = function(event) {
+}, Plx.PointerSys.prototype.onTouchEnd = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
         var touch = event.changedTouches[i];
         this.pointerEnd(touch.identifier);
     }
-}, Plx.PointerInput.prototype.onTouchCancel = function(event) {
+}, Plx.PointerSys.prototype.onTouchCancel = function(event) {
     this.onTouchEnd(event);
-}, Plx.PointerInput.prototype.onTouchLeave = function(event) {
+}, Plx.PointerSys.prototype.onTouchLeave = function(event) {
     this.onTouchEnd(event);
-}, Plx.PointerInput.prototype.onTouchMove = function(event) {
+}, Plx.PointerSys.prototype.onTouchMove = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
         var touch = event.changedTouches[i], rect = document.getElementById("canvas").getBoundingClientRect();
         this.pointerMove(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
     }
-}, Plx.PointerInput.prototype.pointerStart = function(id, x, y) {
+}, Plx.PointerSys.prototype.pointerStart = function(id, x, y) {
     x /= this.scene.game.displayRatio, y /= this.scene.game.displayRatio;
     for (var pointer = this.pointers[id] = {
         x: x,
@@ -1075,12 +1075,12 @@ Plx.PointerInput.prototype.update = function() {}, Plx.PointerInput.prototype.ad
             break;
         }
     }
-}, Plx.PointerInput.prototype.pointerEnd = function(id) {
+}, Plx.PointerSys.prototype.pointerEnd = function(id) {
     var pointer = this.pointers[id];
     pointer && (pointer.target && (pointer.target.beacon.emit("lifted", null), pointer.target.beacon.emit("exited", null), 
     this.componentsInDrag[pointer.target.id] && (pointer.target.beacon.emit("dragEnded", null), 
     delete this.componentsInDrag[pointer.target.id])), delete this.pointers[id]);
-}, Plx.PointerInput.prototype.pointerMove = function(id, x, y) {
+}, Plx.PointerSys.prototype.pointerMove = function(id, x, y) {
     x /= this.scene.game.displayRatio, y /= this.scene.game.displayRatio;
     var pointer = this.pointers[id];
     if (pointer || (pointer = this.pointers[id] = {
@@ -1098,7 +1098,7 @@ Plx.PointerInput.prototype.update = function() {}, Plx.PointerInput.prototype.ad
             break;
         }
     }
-}, Plx.PointerInput.prototype.destroy = function() {
+}, Plx.PointerSys.prototype.destroy = function() {
     document.getElementById("canvas").removeEventListener("mousedown", this.mouseDownFunc, !1), 
     document.getElementById("canvas").removeEventListener("mouseup", this.mouseUpFunc, !1), 
     document.getElementById("canvas").removeEventListener("mousemove", this.mouseMoveFunc, !1), 
