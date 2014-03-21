@@ -37,18 +37,17 @@ Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
 
   entity.reset();
   // set defaults on all components
-  // TODO: defaults can only be primitives right now, make it so we can set nested variables and objects as defaults
   for (i = 0; i < entity.components.length; i ++) {
     listItem = entityType.componentList[i];
     component = entity.components[i];
     for (var key in listItem.params)
-      component[key] = listItem.params[key];
+      component[key] = this.clone(listItem.params[key]);
   }
   // set any default overrides
   for (var defaultOverride in defaultOverrides) {
     component = entity.fetchComponentByName(defaultOverride);
     for (key in defaultOverrides[defaultOverride])
-      component[key] = defaultOverrides[defaultOverride][key];
+      component[key] = this.clone(defaultOverrides[defaultOverride][key]);
   }
 
   // call init on components after they've all been created, added and defaults initialized
@@ -61,3 +60,19 @@ Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
 Plx.EntityFactory.prototype.returnEntity = function(entity) {
   this.entityPool[entity.typeName].push(entity);
 };
+
+// this is used for cloning default and override objects
+Plx.EntityFactory.prototype.clone = function(source) {
+  if (typeof source != "object" || source == null)
+    return source;
+
+  var dest = {};
+  for (var key in source) {
+    if (typeof source[key] == "object" && source[key] != null)
+      dest[key] = clone(source[key]);
+    else
+      dest[key] = source[key];
+  }
+
+  return dest;
+}

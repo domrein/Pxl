@@ -4,6 +4,8 @@ Plx.Component = function() {
   this.entity = null;
   this.name = null;
   this.id = Plx.Component.idCounter++;
+  this.data = {};
+  this.initFunc = null;
 };
 
 Plx.Component.idCounter = 0;
@@ -15,7 +17,8 @@ Plx.Component.prototype.reset = function() {
 
 // called once all default values have been set
 Plx.Component.prototype.init = function() {
-
+  if (this.initFunc)
+    this.initFunc();
 };
 
 Plx.Component.prototype.destroy = function() {

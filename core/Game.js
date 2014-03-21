@@ -32,7 +32,7 @@ Plx.Game = function(width, height, firstSceneClass) {
   this.firstSceneClass = firstSceneClass;
   this.sceneDirector = new Plx.SceneDirector();
   this.scenes = [];
-this.lastTime = -1;
+  this.lastTime = -1;
   this.updateRate = 1000 / 60;
   this.deltaTime = 0;
   this.preloader = new Plx.Preloader();
@@ -48,7 +48,7 @@ this.lastTime = -1;
     {type: Plx.PhysicsComponent, name: "physics", params: {}},
     {type: Plx.Sprite, name: "sprite", params: {autoSizePhysics: true}},
     {type: Plx.PointerCom, name: "pointer", params: {}},
-    {type: Plx.Data, name: "data", params: {}},
+    {type: Plx.DataCom, name: "data", params: {}},
   ]);
   this.entityFactory.registerType("PlxSprient", [
     {type: Plx.PhysicsComponent, name: "physics", params: {}},
