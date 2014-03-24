@@ -11,6 +11,7 @@ Plx.Sprite.prototype.constructor = Plx.Sprite;
 
 Plx.Sprite.prototype.reset = function() {
   Plx.Component.prototype.reset.call(this);
+  
   this.loc.reset();
   this.z = 0;
   this.visible = true;
@@ -33,6 +34,8 @@ Plx.Sprite.prototype.reset = function() {
 };
 
 Plx.Sprite.prototype.init = function() {
+  Plx.Component.prototype.init.call(this);
+  
   this.animTimer = new Plx.Timer(0, -1, 0, this.entity.beacon, "updated");
   this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed);
 

@@ -17,6 +17,7 @@ Plx.KillOffscreen.prototype.reset = function(event) {
 };
 
 Plx.KillOffscreen.prototype.init = function() {
+  Plx.Component.prototype.init.call(this);
   this.physicsComponent = this.entity.fetchComponent(Plx.PhysicsComponent);
   this.physicsComponent.beacon.observe(this, "updated", this.onPhysicsUpdated);
 };

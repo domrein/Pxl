@@ -6,6 +6,7 @@ Plx.System = function() {
   });
   this.scene = null;
   this.componentTypes = [];
+  this.components = [];
 };
 
 // TODO: pull this up into System
@@ -36,9 +37,11 @@ Plx.System.prototype.onEntityRemoved = function(event) {
 };
 
 Plx.System.prototype.addComponent = function(component) {
+  this.components.push(component);
 };
 
 Plx.System.prototype.removeComponent = function(component) {
+  this.components.splice(this.components.indexOf(component), 1);
 };
 
 Plx.System.prototype.update = function() {

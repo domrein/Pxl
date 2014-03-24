@@ -12,6 +12,7 @@ Plx.PhysicsComponent.count = 0;
 
 Plx.PhysicsComponent.prototype.reset = function() {
   Plx.Component.prototype.reset.call(this);
+  
   this.rect.reset();
   // TODO: refactor this into speed.x
   this.speedX = 0;
@@ -28,7 +29,7 @@ Plx.PhysicsComponent.prototype.reset = function() {
 };
 
 Plx.PhysicsComponent.prototype.init = function() {
-
+  Plx.Component.prototype.init.call(this);
 };
 
 Object.defineProperty(Plx.PhysicsComponent.prototype, "x", {

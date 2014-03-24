@@ -15,6 +15,7 @@ Plx.Component.prototype.reset = function() {
   this.beacon.reset();
 };
 
+// TODO: have a custom function run at beginning and end of init call
 // called once all default values have been set
 Plx.Component.prototype.init = function() {
   if (this.initFunc)

@@ -9,6 +9,7 @@ Plx.FunctionBinder.prototype.constructor = Plx.FunctionBinder;
 
 Plx.FunctionBinder.prototype.reset = function() {
   Plx.Component.prototype.reset.call(this);
+  
   if (this.resetFunc)
     this.resetFunc = this.resetFunc.bind(this);
   if (this.initFunc)
@@ -19,6 +20,7 @@ Plx.FunctionBinder.prototype.reset = function() {
 
 Plx.FunctionBinder.prototype.init = function() {
   Plx.Component.prototype.init.call(this);
+
   if (this.initFunc)
     this.initFunc();
 };

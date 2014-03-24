@@ -116,7 +116,12 @@ Plx.PointerSys.prototype.pointerStart = function(id, x, y) {
       pointerComponent.beacon.emit("entered", null);
       pointer.target = pointerComponent;
       if (pointerComponent.draggable && !this.componentsInDrag[pointerComponent.id]) {
-        this.componentsInDrag[pointerComponent.id] = {xOffset: x - pointer.target.physics.x, yOffset: y - pointer.target.physics.y};
+        this.componentsInDrag[pointerComponent.id] = {
+          startX: pointer.target.physics.x,
+          startY: pointer.target.physics.y,
+          xOffset: x - pointer.target.physics.x,
+          yOffset: y - pointer.target.physics.y
+        };
         pointerComponent.beacon.emit("dragStarted", null);
       }
       break;

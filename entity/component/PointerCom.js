@@ -8,6 +8,7 @@ Plx.PointerCom.prototype.constructor = Plx.PointerCom;
 
 Plx.PointerCom.prototype.reset = function() {
   Plx.Component.prototype.reset.call(this);
+  
   this.beacon.reset();
   this.enabled = true;
   this.draggable = false;
@@ -16,6 +17,8 @@ Plx.PointerCom.prototype.reset = function() {
 };
 
 Plx.PointerCom.prototype.init = function() {
+  Plx.Component.prototype.init.call(this);
+
   this.physics = this.entity.fetchComponent(Plx.PhysicsComponent);
   if (this.colCheck)
     this.colCheck = this.colCheck.bind(this);
