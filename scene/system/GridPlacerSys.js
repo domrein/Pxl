@@ -40,29 +40,35 @@ Plx.GridPlacerSys.prototype.update = function() {
 Plx.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var physics = event.beacon.owner.physics;
   var gridPlacer = event.beacon.owner.entity.componentMap.gridPlacer;
-  var x = Math.floor((physics.x - this.gridOffset.x) / this.gridCellSize);
-  var y = Math.floor((physics.y - this.gridOffset.y) / this.gridCellSize);
+  var x = Math.round((physics.x - this.gridOffset.x) / this.gridCellSize);
+  var y = Math.round((physics.y - this.gridOffset.y) / this.gridCellSize);
+  console.log(x);
+  console.log(y);
   var validPlacement = this.validatePlacement(x, y, gridPlacer.grid);
   if (validPlacement) {
     this.placeComponent(x, y, gridPlacer);
     event.beacon.emit("gridPlacementSucceeded", {});
 
     var tween = new Plx.Tween(physics, "x", this.scene.beacon, "updated");
-    tween.beacon.observe(this, "completed", function() {});
     tween.start(physics.x, x * this.gridCellSize + this.gridOffset.x, 5);
     
     tween = new Plx.Tween(physics, "y", this.scene.beacon, "updated");
-    tween.beacon.observe(this, "completed", function() {});
     tween.start(physics.y, y * this.gridCellSize + this.gridOffset.y, 5);
   }
   else {
     event.beacon.emit("gridPlacementFailed", {});
+
+    tween = new Plx.Tween(physics, "x", this.scene.beacon, "updated");
+    tween.start(physics.x, event.beacon.owner.dragStart.x, 5);
+    
+    tween = new Plx.Tween(physics, "y", this.scene.beacon, "updated");
+    tween.start(physics.y, event.beacon.owner.dragStart.y, 5);
   }
 };
 
 Plx.GridPlacerSys.prototype.validatePlacement = function(x, y, componentGrid) {
   var valid = true;
-  if (x < 0 || x >= this.width || y < 0 || y >= this.height)
+  if (x < 0 || x + componentGrid[0].length >= this.width || y < 0 || y + componentGrid.length >= this.height)
     valid = false;
   else {
     for (var i = 0; i < componentGrid.length; i++) {
@@ -84,10 +90,14 @@ Plx.GridPlacerSys.prototype.placeComponent = function(x, y, component) {
     var line = component.grid[i];
     for (var j = 0; j < line.length; j++) {
       var character = line[j];
-      if (character == "x")
-        this.grid[i + y][j + x] = "x";
+      if (character == "x") {
+        var index = j + x;
+        var oldString = this.grid[i + y];
+        this.grid[i + y] = oldString.substr(0, index) +  "x" + oldString.substr(index + 1);
+      }
     }
   }
+  console.log(this.grid);
 };
 
 Plx.GridPlacerSys.prototype.removeComponent = function(x, y, component) {

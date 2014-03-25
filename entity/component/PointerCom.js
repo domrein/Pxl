@@ -12,6 +12,7 @@ Plx.PointerCom.prototype.reset = function() {
   this.beacon.reset();
   this.enabled = true;
   this.draggable = false;
+  this.dragStart = null; // stores location of drag start
   this.colCheck = null; // for overriding collision check
   this.syncLoc = null; // for overriding syncLocation
 };

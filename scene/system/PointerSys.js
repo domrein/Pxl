@@ -117,11 +117,10 @@ Plx.PointerSys.prototype.pointerStart = function(id, x, y) {
       pointer.target = pointerComponent;
       if (pointerComponent.draggable && !this.componentsInDrag[pointerComponent.id]) {
         this.componentsInDrag[pointerComponent.id] = {
-          startX: pointer.target.physics.x,
-          startY: pointer.target.physics.y,
           xOffset: x - pointer.target.physics.x,
           yOffset: y - pointer.target.physics.y
         };
+        pointerComponent.dragStart = new Plx.Point(pointer.target.physics.x, pointer.target.physics.y);
         pointerComponent.beacon.emit("dragStarted", null);
       }
       break;
@@ -138,6 +137,7 @@ Plx.PointerSys.prototype.pointerEnd = function(id) {
     pointer.target.beacon.emit("exited", null);
     if (this.componentsInDrag[pointer.target.id]) {
       pointer.target.beacon.emit("dragEnded", null);
+      pointer.target.dragStart = null;
       delete this.componentsInDrag[pointer.target.id];
     }
   }
