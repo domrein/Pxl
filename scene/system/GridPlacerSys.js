@@ -25,13 +25,7 @@ Plx.GridPlacerSys.prototype.resizeGrid = function(width, height) {
   // TODO: run through the grid and see if the resize has invalidated items? (May need to update gridCell on the components)
   this.width = width;
   this.height = height;
-  this.grid = [];
-  for (var i = 0; i < height; i ++) {
-    var row = "";
-    for (var j = 0; j < width; j ++)
-      row += ".";
-    this.grid.push(row);
-  }
+  this.rebuildGrid();
 };
 
 Plx.GridPlacerSys.prototype.update = function() {
@@ -47,6 +41,7 @@ Plx.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var validPlacement = this.validatePlacement(x, y, gridPlacer.grid);
   if (validPlacement) {
     this.placeComponent(x, y, gridPlacer);
+    this.rebuildGrid();
     event.beacon.emit("gridPlacementSucceeded", {});
 
     var tween = new Plx.Tween(physics, "x", this.scene.beacon, "updated");
@@ -68,7 +63,7 @@ Plx.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
 
 Plx.GridPlacerSys.prototype.validatePlacement = function(x, y, componentGrid) {
   var valid = true;
-  if (x < 0 || x + componentGrid[0].length >= this.width || y < 0 || y + componentGrid.length >= this.height)
+  if (x < 0 || x + componentGrid[0].length > this.width || y < 0 || y + componentGrid.length > this.height)
     valid = false;
   else {
     for (var i = 0; i < componentGrid.length; i++) {
@@ -99,6 +94,39 @@ Plx.GridPlacerSys.prototype.placeComponent = function(x, y, component) {
   }
   console.log(this.grid);
 };
+
+Plx.GridPlacerSys.prototype.rebuildGrid = function() {
+  var _this = this;
+  this.grid = [];
+  for (var i = 0; i < this.height; i ++) {
+    var row = "";
+    for (var j = 0; j < this.width; j ++)
+      row += ".";
+    this.grid.push(row);
+  }
+
+  this.components.forEach(function(component) {
+    if (component.gridCell) {
+      var physics = component.entity.componentMap.physics;
+      var x = Math.round((physics.x - _this.gridOffset.x) / _this.gridCellSize);
+      var y = Math.round((physics.y - _this.gridOffset.y) / _this.gridCellSize);
+      _this.placeComponent(x, y, component)
+    }
+  });
+};
+
+Plx.GridPlacerSys.prototype.countEmptySpots = function() {
+  var count = 0;
+  this.grid.forEach(function(row) {
+    for (var i = 0; i < row.length; i++) {
+      if (row[i] == ".")
+        count ++;
+    }
+  });
+
+  return count;
+};
+
 
 Plx.GridPlacerSys.prototype.removeComponent = function(x, y, component) {
   // this.placedComponents.push({x: x, y: y, component: component});
