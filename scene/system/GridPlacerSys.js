@@ -18,6 +18,7 @@ Plx.GridPlacerSys.prototype.constructor = Plx.GridPlacerSys;
 Plx.GridPlacerSys.prototype.addComponent = function(component) {
   Plx.System.prototype.addComponent.call(this, component);
   // TODO: make all the dependencies optional
+  component.entity.componentMap.pointer.beacon.observe(this, "dragStarted", this.onComponentDragStarted);
   component.entity.componentMap.pointer.beacon.observe(this, "dragEnded", this.onComponentDragEnded);
 };
 
@@ -31,6 +32,10 @@ Plx.GridPlacerSys.prototype.resizeGrid = function(width, height) {
 Plx.GridPlacerSys.prototype.update = function() {
 };
 
+Plx.GridPlacerSys.prototype.onComponentDragStarted = function(event) {
+  this.rebuildGrid(event.beacon.owner.entity.componentMap.gridPlacer);
+};
+
 Plx.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var physics = event.beacon.owner.physics;
   var gridPlacer = event.beacon.owner.entity.componentMap.gridPlacer;
@@ -38,11 +43,11 @@ Plx.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var y = Math.round((physics.y - this.gridOffset.y) / this.gridCellSize);
   console.log(x);
   console.log(y);
-  var validPlacement = this.validatePlacement(x, y, gridPlacer.grid);
+  var validPlacement = this.validatePlacement(x, y, gridPlacer);
   if (validPlacement) {
     this.placeComponent(x, y, gridPlacer);
     this.rebuildGrid();
-    event.beacon.emit("gridPlacementSucceeded", {});
+    gridPlacer.beacon.emit("gridPlacementSucceeded", {});
 
     var tween = new Plx.Tween(physics, "x", this.scene.beacon, "updated");
     tween.start(physics.x, x * this.gridCellSize + this.gridOffset.x, 5);
@@ -61,13 +66,17 @@ Plx.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   }
 };
 
-Plx.GridPlacerSys.prototype.validatePlacement = function(x, y, componentGrid) {
+Plx.GridPlacerSys.prototype.validatePlacement = function(x, y, gridPlacer) {
   var valid = true;
-  if (x < 0 || x + componentGrid[0].length > this.width || y < 0 || y + componentGrid.length > this.height)
+  if (x < 0 || x + gridPlacer.grid[0].length > this.width || y < 0 || y + gridPlacer.grid.length > this.height)
     valid = false;
   else {
-    for (var i = 0; i < componentGrid.length; i++) {
-      var line = componentGrid[i];
+    // this.components.forEach(function(component) {
+    //   if (!component.gridCell || gridPlacer === component)
+    //     continue;
+    // });
+    for (var i = 0; i < gridPlacer.grid.length; i++) {
+      var line = gridPlacer.grid[i];
       for (var j = 0; j < line.length; j++) {
         var character = line[j];
         if (character == "x" && this.grid[i + y].charAt(j + x) == "x")
@@ -75,7 +84,7 @@ Plx.GridPlacerSys.prototype.validatePlacement = function(x, y, componentGrid) {
       }
     }
   }
-
+  
   return valid;
 };
 
@@ -95,7 +104,7 @@ Plx.GridPlacerSys.prototype.placeComponent = function(x, y, component) {
   console.log(this.grid);
 };
 
-Plx.GridPlacerSys.prototype.rebuildGrid = function() {
+Plx.GridPlacerSys.prototype.rebuildGrid = function(componentExclusion) {
   var _this = this;
   this.grid = [];
   for (var i = 0; i < this.height; i ++) {
@@ -106,6 +115,8 @@ Plx.GridPlacerSys.prototype.rebuildGrid = function() {
   }
 
   this.components.forEach(function(component) {
+    if (component === componentExclusion)
+      return;
     if (component.gridCell) {
       var physics = component.entity.componentMap.physics;
       var x = Math.round((physics.x - _this.gridOffset.x) / _this.gridCellSize);
