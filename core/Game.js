@@ -33,6 +33,7 @@ Plx.Game = function(width, height, firstSceneClass) {
   this.sceneDirector = new Plx.SceneDirector();
   this.scenes = [];
   this.lastTime = -1;
+  this.time = -1;
   this.updateRate = 1000 / 60;
   this.deltaTime = 0;
   this.preloader = new Plx.Preloader();
@@ -61,11 +62,11 @@ Plx.Game.prototype.init = function() {
 };
 
 Plx.Game.prototype.update = function(event) {
-  var time = new Date().getTime();
+  this.time = new Date().getTime();
   if (this.lastTime == -1)
-    this.lastTime = time;
-  this.deltaTime += time - this.lastTime;
-  this.lastTime = time;
+    this.lastTime = this.time;
+  this.deltaTime += this.time - this.lastTime;
+  this.lastTime = this.time;
   // if we've missed a ton of frames, then the user has navigated away or something, so just skip them
   if (this.deltaTime > this.updateRate * 10)
     this.deltaTime = 0;

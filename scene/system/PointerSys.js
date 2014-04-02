@@ -114,6 +114,12 @@ Plx.PointerSys.prototype.pointerStart = function(id, x, y) {
     if (pointerComponent.collisionCheck(pointer.x, pointer.y)) {
       pointerComponent.beacon.emit("tapped", null);
       pointerComponent.beacon.emit("entered", null);
+      if (this.scene.game.time - pointerComponent.lastTapTime < 250) {
+        pointerComponent.beacon.emit("doubleTapped", null);
+        pointerComponent.lastTapTime = -1;
+      }
+      else
+        pointerComponent.lastTapTime = this.scene.game.time;
       pointer.target = pointerComponent;
       if (pointerComponent.draggable && !this.componentsInDrag[pointerComponent.id]) {
         this.componentsInDrag[pointerComponent.id] = {

@@ -15,6 +15,7 @@ Plx.PointerCom.prototype.reset = function() {
   this.dragStart = null; // stores location of drag start
   this.colCheck = null; // for overriding collision check
   this.syncLoc = null; // for overriding syncLocation
+  this.lastTapTime = -1;
 };
 
 Plx.PointerCom.prototype.init = function() {
