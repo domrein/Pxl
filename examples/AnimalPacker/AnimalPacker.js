@@ -1,7 +1,7 @@
 var onResize = null;
 var onLoad = function(event) {
   // create game object
-  var game = new Plx.Game(320, 420, PlayScene);
+  var game = new Pxl.Game(320, 420, PlayScene);
 
   onResize = function(event) { game.onDisplayResize(); };
 
@@ -26,9 +26,9 @@ var onLoad = function(event) {
 
   var scaleFactor = 7;
   game.entityFactory.registerType("Snake", [
-    {name: "sprite", type: Plx.Sprite, params: {animName: "Egg", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor, z: 5}},
-    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "animal"}},
-    {name: "pointerable", type: Plx.PointerCom, params: {draggable: true}},
+    {name: "sprite", type: Pxl.Sprite, params: {animName: "Egg", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor, z: 5}},
+    {name: "physics", type: Pxl.PhysicsComponent, params: {collisionType: "animal"}},
+    {name: "pointerable", type: Pxl.PointerCom, params: {draggable: true}},
   ]);
 
   // start the game

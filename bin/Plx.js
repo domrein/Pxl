@@ -11,45 +11,45 @@ window.requestAnimationFrame || [ "webkit", "moz" ].forEach(function(vendor) {
     return lastTime = currTime + timeToCall, id;
 });
 
-var Plx = {};
+var Pxl = {};
 
-Plx.Game = function(width, height, firstSceneClass) {
-    this.beacon = new Plx.Beacon(this), this.width = width, this.height = height, this.onDisplayResize(), 
-    this.firstSceneClass = firstSceneClass, this.sceneDirector = new Plx.SceneDirector(), 
+Pxl.Game = function(width, height, firstSceneClass) {
+    this.beacon = new Pxl.Beacon(this), this.width = width, this.height = height, this.onDisplayResize(), 
+    this.firstSceneClass = firstSceneClass, this.sceneDirector = new Pxl.SceneDirector(), 
     this.scenes = [], this.lastTime = -1, this.updateRate = 1e3 / 60, this.deltaTime = 0, 
-    this.preloader = new Plx.Preloader(), this.preloader.beacon.observe(this, "imageLoaded", this.onImageLoaded), 
-    this.preloader.beacon.observe(this, "completed", this.onPreloaderCompleted), this.spriteStore = new Plx.SpriteStore(), 
-    this.saveData = new Plx.SaveData(), this.entityFactory = new Plx.EntityFactory(this), 
-    this.entityFactory.registerType("PlxButton", [ {
-        type: Plx.PhysicsComponent,
+    this.preloader = new Pxl.Preloader(), this.preloader.beacon.observe(this, "imageLoaded", this.onImageLoaded), 
+    this.preloader.beacon.observe(this, "completed", this.onPreloaderCompleted), this.spriteStore = new Pxl.SpriteStore(), 
+    this.saveData = new Pxl.SaveData(), this.entityFactory = new Pxl.EntityFactory(this), 
+    this.entityFactory.registerType("PxlButton", [ {
+        type: Pxl.PhysicsComponent,
         name: "physics",
         params: {}
     }, {
-        type: Plx.Sprite,
+        type: Pxl.Sprite,
         name: "sprite",
         params: {
             autoSizePhysics: !0
         }
     }, {
-        type: Plx.PointerCom,
+        type: Pxl.PointerCom,
         name: "pointer",
         params: {}
     }, {
-        type: Plx.Data,
+        type: Pxl.Data,
         name: "data",
         params: {}
-    } ]), this.entityFactory.registerType("PlxSprient", [ {
-        type: Plx.PhysicsComponent,
+    } ]), this.entityFactory.registerType("PxlSprient", [ {
+        type: Pxl.PhysicsComponent,
         name: "physics",
         params: {}
     }, {
-        type: Plx.Sprite,
+        type: Pxl.Sprite,
         name: "sprite",
         params: {}
     } ]);
-}, Plx.Game.prototype.init = function() {
+}, Pxl.Game.prototype.init = function() {
     this.preloader.load();
-}, Plx.Game.prototype.update = function() {
+}, Pxl.Game.prototype.update = function() {
     var time = new Date().getTime();
     -1 == this.lastTime && (this.lastTime = time), this.deltaTime += time - this.lastTime, 
     this.lastTime = time, this.deltaTime > 10 * this.updateRate && (this.deltaTime = 0);
@@ -62,21 +62,21 @@ Plx.Game = function(width, height, firstSceneClass) {
     window.requestAnimationFrame(function(event) {
         _this.update(event);
     });
-}, Plx.Game.prototype.addScene = function(sceneClass, handoffData) {
+}, Pxl.Game.prototype.addScene = function(sceneClass, handoffData) {
     var scene = new sceneClass();
     scene.game = this, scene.init(handoffData), scene.beacon.observe(this, "completed", this.onSceneCompleted), 
     this.scenes.push(scene), scene.beacon.emit("added", null);
-}, Plx.Game.prototype.onSceneCompleted = function(event) {
+}, Pxl.Game.prototype.onSceneCompleted = function(event) {
     event.beacon.ignore(this, "completed", this.onSceneCompleted);
     for (var scene, i = this.scenes.length - 1; i >= 0; i--) scene = this.scenes[i], 
     event.beacon.owner == scene && this.scenes.splice(i, 1);
     event.beacon.owner.destroy(), this.addScene(event.data.sceneClass, event.data.handoffData);
-}, Plx.Game.prototype.onPreloaderCompleted = function() {
+}, Pxl.Game.prototype.onPreloaderCompleted = function() {
     this.preloader.beacon.ignore(this, "completed", this.onPreloaderCompleted), this.addScene(this.firstSceneClass), 
     this.update();
-}, Plx.Game.prototype.onImageLoaded = function(event) {
+}, Pxl.Game.prototype.onImageLoaded = function(event) {
     this.spriteStore.addImage(event.data.image, event.data.path);
-}, Plx.Game.prototype.onDisplayResize = function() {
+}, Pxl.Game.prototype.onDisplayResize = function() {
     var widthRatio = window.innerWidth / this.width, heightRatio = window.innerHeight / this.height;
     this.displayRatio = widthRatio, this.height * widthRatio > window.innerHeight && (this.displayRatio = heightRatio), 
     this.displayOffsetX = Math.round(window.innerWidth - this.width * this.displayRatio) / 2, 
@@ -85,48 +85,48 @@ Plx.Game = function(width, height, firstSceneClass) {
     document.getElementById("canvas").style.marginLeft = this.displayOffsetX + "px", 
     document.getElementById("canvas").style.marginTop = this.displayOffsetY + "px", 
     this.beacon.emit("displayResized", null);
-}, Plx.Beacon = function(owner) {
+}, Pxl.Beacon = function(owner) {
     this.owner = owner, this.reset();
-}, Plx.Beacon.prototype.reset = function() {
+}, Pxl.Beacon.prototype.reset = function() {
     this.observerGroups = [];
-}, Plx.Beacon.prototype.observe = function(observer, signal, callback, precedence) {
+}, Pxl.Beacon.prototype.observe = function(observer, signal, callback, precedence) {
     if (precedence = precedence || 5, !observer) throw new Error("observer required to observe");
     if (!signal) throw new Error("signal required to observe");
     if (!callback) throw new Error("callback required to observe");
-    for (var observerGroup = new Plx.ObserverGroup(observer, signal, callback, precedence), inserted = !1, i = 0; i < this.observerGroups.length; i++) if (this.observerGroups[i].precedence > observerGroup.precedence) {
+    for (var observerGroup = new Pxl.ObserverGroup(observer, signal, callback, precedence), inserted = !1, i = 0; i < this.observerGroups.length; i++) if (this.observerGroups[i].precedence > observerGroup.precedence) {
         this.observerGroups.splice(i, 0, observerGroup), inserted = !0;
         break;
     }
     inserted || this.observerGroups.push(observerGroup);
-}, Plx.Beacon.prototype.ignore = function(observer, signal, callback) {
+}, Pxl.Beacon.prototype.ignore = function(observer, signal, callback) {
     for (var i = this.observerGroups.length - 1; i >= 0; i--) {
         var observerGroup = this.observerGroups[i];
         observerGroup.observer == observer && observerGroup.signal == signal && observerGroup.callback == callback && this.observerGroups.splice(i, 1);
     }
-}, Plx.Beacon.prototype.emit = function(signal, data) {
-    for (var observerGroup, event = new Plx.Event(this, data), matches = null, i = 0; i < this.observerGroups.length; i++) observerGroup = this.observerGroups[i], 
+}, Pxl.Beacon.prototype.emit = function(signal, data) {
+    for (var observerGroup, event = new Pxl.Event(this, data), matches = null, i = 0; i < this.observerGroups.length; i++) observerGroup = this.observerGroups[i], 
     observerGroup.signal == signal && (matches || (matches = []), matches.push(observerGroup));
     if (matches) for (i = 0; i < matches.length; i++) observerGroup = matches[i], event.consumed || observerGroup.callback.call(observerGroup.observer, event);
-}, Plx.Beacon.prototype.destroy = function() {
+}, Pxl.Beacon.prototype.destroy = function() {
     this.observerGroups = [];
-}, Plx.ObserverGroup = function(observer, signal, callback, precedence) {
+}, Pxl.ObserverGroup = function(observer, signal, callback, precedence) {
     this.observer = observer, this.signal = signal, this.callback = callback, this.precedence = precedence;
-}, Plx.Event = function(beacon, data) {
+}, Pxl.Event = function(beacon, data) {
     this.beacon = beacon, this.data = data, this.consumed = !1;
-}, Plx.Point = function(x, y) {
+}, Pxl.Point = function(x, y) {
     this.reset(x, y);
-}, Plx.Point.prototype.reset = function(x, y) {
+}, Pxl.Point.prototype.reset = function(x, y) {
     this.x = x || 0, this.y = y || 0;
-}, Plx.Point.prototype.calcAngle = function(point) {
+}, Pxl.Point.prototype.calcAngle = function(point) {
     return xDist = point.x - this.x, yDist = point.y - this.y, Math.atan2(yDist, xDist);
-}, Plx.Point.prototype.calcDist = function(point) {
+}, Pxl.Point.prototype.calcDist = function(point) {
     return xDist = point.x - this.x, yDist = point.y - this.y, Math.pow(Math.pow(xDist, 2) + Math.pow(yDist, 2), .5);
-}, Plx.Preloader = function() {
-    this.imagePaths = [], this.totalImages = 0, this.beacon = new Plx.Beacon(this), 
+}, Pxl.Preloader = function() {
+    this.imagePaths = [], this.totalImages = 0, this.beacon = new Pxl.Beacon(this), 
     this.canvas = document.getElementById("canvas"), this.context = this.canvas.getContext("2d");
-}, Plx.Preloader.prototype.addImage = function(imagePath) {
+}, Pxl.Preloader.prototype.addImage = function(imagePath) {
     this.imagePaths.push(imagePath);
-}, Plx.Preloader.prototype.load = function() {
+}, Pxl.Preloader.prototype.load = function() {
     this.totalImages = this.imagePaths.length, this.render();
     for (var i = 0; i < this.imagePaths.length; i++) {
         var imagePath = this.imagePaths[i], image = new Image(), _this = this;
@@ -134,7 +134,7 @@ Plx.Game = function(width, height, firstSceneClass) {
             _this.onImageLoaded(event);
         }, image.src = imagePath;
     }
-}, Plx.Preloader.prototype.onImageLoaded = function(event) {
+}, Pxl.Preloader.prototype.onImageLoaded = function(event) {
     for (var i = this.imagePaths.length - 1; i >= 0; i--) {
         var imagePath = this.imagePaths[i];
         if (-1 != event.currentTarget.src.indexOf(imagePath)) {
@@ -146,32 +146,32 @@ Plx.Game = function(width, height, firstSceneClass) {
         }
     }
     this.render(), this.imagePaths.length || this.beacon.emit("completed", {});
-}, Plx.Preloader.prototype.render = function() {
+}, Pxl.Preloader.prototype.render = function() {
     this.context.fillStyle = "#000000", this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     var padding = Math.round(this.canvas.width / 10), width = Math.round(this.canvas.width - 2 * padding), height = Math.round(padding), innerPadding = Math.round(this.canvas.width / 100), innerWidth = Math.round(width - 2 * innerPadding), innerHeight = Math.round(height - 2 * innerPadding), percentComplete = 1 - this.imagePaths.length / this.totalImages;
     this.context.fillStyle = this.context.strokeStyle = "#EEEEEE", this.context.strokeRect(padding, this.canvas.height / 2 - height / 2, width, height), 
     this.context.fillRect(padding + innerPadding, this.canvas.height / 2 - innerHeight / 2, Math.round(innerWidth * percentComplete), innerHeight);
-}, Plx.Rectangle = function() {
-    this.loc = new Plx.Point(), this.reset();
-}, Plx.Rectangle.prototype.reset = function() {
+}, Pxl.Rectangle = function() {
+    this.loc = new Pxl.Point(), this.reset();
+}, Pxl.Rectangle.prototype.reset = function() {
     this.loc.reset(), this.width = 0, this.height = 0;
-}, Plx.Rectangle.prototype.intersects = function(rectangle) {
+}, Pxl.Rectangle.prototype.intersects = function(rectangle) {
     var intersectionFound = !0;
     return rectangle.loc.x >= this.loc.x + this.width ? intersectionFound = !1 : rectangle.loc.x + rectangle.width <= this.loc.x ? intersectionFound = !1 : rectangle.loc.y >= this.loc.y + this.height ? intersectionFound = !1 : rectangle.loc.y + rectangle.height <= this.loc.y && (intersectionFound = !1), 
     intersectionFound;
-}, Plx.Rectangle.prototype.contains = function(point) {
+}, Pxl.Rectangle.prototype.contains = function(point) {
     var inside = !0;
     return (point.x < this.loc.x || point.x > this.loc.x + this.width) && (inside = !1), 
     (point.y < this.loc.y || point.y > this.loc.y + this.height) && (inside = !1), inside;
-}, Plx.Rectangle.prototype.getLeft = function() {
+}, Pxl.Rectangle.prototype.getLeft = function() {
     return this.loc.x;
-}, Plx.Rectangle.prototype.getRight = function() {
+}, Pxl.Rectangle.prototype.getRight = function() {
     return this.loc.x + this.width;
-}, Plx.Rectangle.prototype.getTop = function() {
+}, Pxl.Rectangle.prototype.getTop = function() {
     return this.loc.y;
-}, Plx.Rectangle.prototype.getBottom = function() {
+}, Pxl.Rectangle.prototype.getBottom = function() {
     return this.loc.y + this.height;
-}, Plx.SaveData = function() {
+}, Pxl.SaveData = function() {
     window.localStorage.gameData || (window.localStorage.gameData = "{}");
     try {
         this.storage = JSON.parse(window.localStorage.gameData);
@@ -180,35 +180,35 @@ Plx.Game = function(width, height, firstSceneClass) {
     }
     this.storage.playCount ? this.storage.playCount++ : this.storage.playCount = 1, 
     this.flush();
-}, Plx.SaveData.prototype.isFirstPlay = function() {
+}, Pxl.SaveData.prototype.isFirstPlay = function() {
     return 1 == this.storage.playCount;
-}, Plx.SaveData.prototype.hasSeenTutorial = function() {
+}, Pxl.SaveData.prototype.hasSeenTutorial = function() {
     return this.storage.hasSeenTutorial || (this.storage.hasSeenTutorial = !1), this.storage.hasSeenTutorial;
-}, Plx.SaveData.prototype.tutorialSeen = function() {
+}, Pxl.SaveData.prototype.tutorialSeen = function() {
     this.storage.hasSeenTutorial = !0, this.flush();
-}, Plx.SaveData.prototype.isLevelLocked = function(level) {
+}, Pxl.SaveData.prototype.isLevelLocked = function(level) {
     return this.storage.levels || (this.storage.levels = {}), this.storage.levels[level] || (this.storage.levels[level] = {
         locked: !0,
         highScore: -1
     }), this.storage.levels[level].locked;
-}, Plx.SaveData.prototype.unlockLevel = function(level) {
+}, Pxl.SaveData.prototype.unlockLevel = function(level) {
     this.storage.levels || (this.storage.levels = {}), this.storage.levels[level] || (this.storage.levels[level] = {
         locked: !0,
         highScore: -1
     }), this.storage.levels[level].locked = !1, this.flush();
-}, Plx.SaveData.prototype.numUnlockedLevels = function() {
+}, Pxl.SaveData.prototype.numUnlockedLevels = function() {
     var unlockedCount = 0;
     for (var level in this.storage.levels) this.storage.levels[level].locked || unlockedCount++;
     return unlockedCount;
-}, Plx.SaveData.prototype.clearData = function() {
+}, Pxl.SaveData.prototype.clearData = function() {
     this.storage = {}, this.flush();
-}, Plx.SaveData.prototype.flush = function() {
+}, Pxl.SaveData.prototype.flush = function() {
     window.localStorage.gameData = JSON.stringify(this.storage);
-}, Plx.SpriteStore = function() {
+}, Pxl.SpriteStore = function() {
     this.images = {}, this.frames = {}, this.anims = {};
-}, Plx.SpriteStore.prototype.addImage = function(image, name) {
+}, Pxl.SpriteStore.prototype.addImage = function(image, name) {
     this.images[name] = image;
-}, Plx.SpriteStore.prototype.addFrame = function(x, y, width, height, imageName, name) {
+}, Pxl.SpriteStore.prototype.addFrame = function(x, y, width, height, imageName, name) {
     this.frames[name] = {
         x: x,
         y: y,
@@ -216,59 +216,59 @@ Plx.Game = function(width, height, firstSceneClass) {
         height: height,
         image: imageName
     };
-}, Plx.SpriteStore.prototype.addAnim = function(frameNames, looping, name, frameRate) {
+}, Pxl.SpriteStore.prototype.addAnim = function(frameNames, looping, name, frameRate) {
     this.anims[name] = {
         frames: frameNames,
         looping: looping,
         frameRate: frameRate
     };
-}, Plx.SpriteStore.prototype.getAnimWidthHeight = function(animName) {
+}, Pxl.SpriteStore.prototype.getAnimWidthHeight = function(animName) {
     var frame = this.frames[this.anims[animName].frames[0]];
     return [ frame.width, frame.height ];
-}, Plx.Timer = function(duration, reps, delay, heartbeatBeacon, heartbeatEvent) {
+}, Pxl.Timer = function(duration, reps, delay, heartbeatBeacon, heartbeatEvent) {
     this.duration = duration, this.reps = reps, this.delay = delay, this.heartbeatBeacon = heartbeatBeacon, 
-    this.heartbeatEvent = heartbeatEvent, this.beacon = new Plx.Beacon(this), this.curCount = 0, 
+    this.heartbeatEvent = heartbeatEvent, this.beacon = new Pxl.Beacon(this), this.curCount = 0, 
     this.curRep = 0, this.heartbeatOn = !1, this.curDelay = 0, this.isRunning = !1;
-}, Plx.Timer.oneShot = function(duration, delay, heartbeatBeacon, heartbeatEvent, callback) {
-    var timer = new Plx.Timer(duration, 1, delay, heartbeatBeacon, heartbeatEvent);
+}, Pxl.Timer.oneShot = function(duration, delay, heartbeatBeacon, heartbeatEvent, callback) {
+    var timer = new Pxl.Timer(duration, 1, delay, heartbeatBeacon, heartbeatEvent);
     return timer.beacon.observe(this, "completed", callback), timer.start(), timer;
-}, Plx.Timer.prototype.start = function() {
+}, Pxl.Timer.prototype.start = function() {
     this.heartbeatOn || (this.heartbeatBeacon.observe(this, this.heartbeatEvent, this.onHeartbeat), 
     this.heartbeatOn = !0), this.curCount = 0, this.curRep = 0, this.curDelay = this.delay, 
     this.isRunning = !0;
-}, Plx.Timer.prototype.stop = function() {
+}, Pxl.Timer.prototype.stop = function() {
     this.heartbeatOn && (this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat), 
     this.heartbeatOn = !1);
-}, Plx.Timer.prototype.reset = function() {
+}, Pxl.Timer.prototype.reset = function() {
     this.curCount = 0, this.curRep = 0, this.curDelay = 0;
-}, Plx.Timer.prototype.onHeartbeat = function() {
+}, Pxl.Timer.prototype.onHeartbeat = function() {
     return this.curDelay > 0 ? (this.curDelay--, void 0) : (this.curCount++, this.curCount == this.duration && (this.curCount = 0, 
     this.curRep++, this.beacon.emit("timed", null), this.curRep == this.reps && (this.beacon.emit("completed", null), 
     this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat), this.heartbeatOn = !1)), 
     void 0);
-}, Plx.Tween = function(target, property, heartbeatBeacon, heartbeatEvent) {
+}, Pxl.Tween = function(target, property, heartbeatBeacon, heartbeatEvent) {
     this.target = target, this.property = property, this.heartbeatBeacon = heartbeatBeacon, 
-    this.heartbeatEvent = heartbeatEvent, this.beacon = new Plx.Beacon(this), this.time = 0, 
+    this.heartbeatEvent = heartbeatEvent, this.beacon = new Pxl.Beacon(this), this.time = 0, 
     this.heartbeatOn = !1, this.startValue = 0, this.endValue = 0, this.duration = 0;
-}, Plx.Tween.move = function(target, changeX, changeY, duration, delay) {
-    return Plx.Tween.moveTo(target, target.physics.rect.loc.x + changeX, target.physics.rect.loc.y + changeY, duration, delay);
-}, Plx.Tween.moveTo = function(target, destX, destY, duration, delay) {
-    var tweenX = new Plx.Tween(target.physics, "x", target.scene.beacon, "updated"), tweenY = new Plx.Tween(target.physics, "y", target.scene.beacon, "updated");
+}, Pxl.Tween.move = function(target, changeX, changeY, duration, delay) {
+    return Pxl.Tween.moveTo(target, target.physics.rect.loc.x + changeX, target.physics.rect.loc.y + changeY, duration, delay);
+}, Pxl.Tween.moveTo = function(target, destX, destY, duration, delay) {
+    var tweenX = new Pxl.Tween(target.physics, "x", target.scene.beacon, "updated"), tweenY = new Pxl.Tween(target.physics, "y", target.scene.beacon, "updated");
     if (delay) {
-        var timer = new Plx.Timer(delay, 1, 0, target.scene.beacon, "updated");
+        var timer = new Pxl.Timer(delay, 1, 0, target.scene.beacon, "updated");
         timer.start(), timer.beacon.observe(this, "timed", function() {
             tweenX.start(target.physics.rect.loc.x, destX, duration), tweenY.start(target.physics.rect.loc.y, destY, duration);
         });
     } else tweenX.start(target.physics.rect.loc.x, destX, duration), tweenY.start(target.physics.rect.loc.y, destY, duration);
     return [ tweenX, tweenY ];
-}, Plx.Tween.prototype.start = function(startValue, endValue, duration) {
+}, Pxl.Tween.prototype.start = function(startValue, endValue, duration) {
     this.startValue = startValue, this.endValue = endValue, this.duration = duration, 
     this.heartbeatOn || (this.heartbeatBeacon.observe(this, this.heartbeatEvent, this.onHeartbeat), 
     this.heartbeatOn = !0), this.time = 0;
-}, Plx.Tween.prototype.onHeartbeat = function() {
+}, Pxl.Tween.prototype.onHeartbeat = function() {
     if (0 == this.time) "x" == this.property && (this.target.rect.loc.x = this.startValue), 
     "y" == this.property && (this.target.rect.loc.y = this.startValue), this.time++; else if (this.time < this.duration) {
-        var changeAmount = Plx.Easing.easeInOutSine(this.time, this.startValue, this.endValue - this.startValue, this.duration) - Plx.Easing.easeInOutSine(this.time - 1, this.startValue, this.endValue - this.startValue, this.duration);
+        var changeAmount = Pxl.Easing.easeInOutSine(this.time, this.startValue, this.endValue - this.startValue, this.duration) - Pxl.Easing.easeInOutSine(this.time - 1, this.startValue, this.endValue - this.startValue, this.duration);
         "x" == this.property && (this.target.speedX = changeAmount), "y" == this.property && (this.target.speedY = changeAmount), 
         this.time++;
     } else "x" == this.property && (this.target.rect.loc.x = this.endValue, this.target.speedX = 0), 
@@ -277,108 +277,108 @@ Plx.Game = function(width, height, firstSceneClass) {
         target: this.target
     }), this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat), this.heartbeatOn = !1;
     this.target.beacon.emit("updated", null);
-}, Plx.Tween.prototype.destroy = function() {}, Plx.Easing = {}, Plx.Easing.PI_M2 = 2 * Math.PI, 
-Plx.Easing.PI_D2 = Math.PI / 2, Plx.Easing.easeLinear = function(t, b, c, d) {
+}, Pxl.Tween.prototype.destroy = function() {}, Pxl.Easing = {}, Pxl.Easing.PI_M2 = 2 * Math.PI, 
+Pxl.Easing.PI_D2 = Math.PI / 2, Pxl.Easing.easeLinear = function(t, b, c, d) {
     return c * t / d + b;
-}, Plx.Easing.easeInSine = function(t, b, c, d) {
-    return -c * Math.cos(t / d * Plx.Easing.PI_D2) + c + b;
-}, Plx.Easing.easeOutSine = function(t, b, c, d) {
-    return c * Math.sin(t / d * Plx.Easing.PI_D2) + b;
-}, Plx.Easing.easeInOutSine = function(t, b, c, d) {
+}, Pxl.Easing.easeInSine = function(t, b, c, d) {
+    return -c * Math.cos(t / d * Pxl.Easing.PI_D2) + c + b;
+}, Pxl.Easing.easeOutSine = function(t, b, c, d) {
+    return c * Math.sin(t / d * Pxl.Easing.PI_D2) + b;
+}, Pxl.Easing.easeInOutSine = function(t, b, c, d) {
     return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
-}, Plx.Easing.easeInQuint = function(t, b, c, d) {
+}, Pxl.Easing.easeInQuint = function(t, b, c, d) {
     return c * (t /= d) * t * t * t * t + b;
-}, Plx.Easing.easeOutQuint = function(t, b, c, d) {
+}, Pxl.Easing.easeOutQuint = function(t, b, c, d) {
     return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
-}, Plx.Easing.easeInOutQuint = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutQuint = function(t, b, c, d) {
     return (t /= d / 2) < 1 ? c / 2 * t * t * t * t * t + b : c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
-}, Plx.Easing.easeInQuart = function(t, b, c, d) {
+}, Pxl.Easing.easeInQuart = function(t, b, c, d) {
     return c * (t /= d) * t * t * t + b;
-}, Plx.Easing.easeOutQuart = function(t, b, c, d) {
+}, Pxl.Easing.easeOutQuart = function(t, b, c, d) {
     return -c * ((t = t / d - 1) * t * t * t - 1) + b;
-}, Plx.Easing.easeInOutQuart = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutQuart = function(t, b, c, d) {
     return (t /= d / 2) < 1 ? c / 2 * t * t * t * t + b : -c / 2 * ((t -= 2) * t * t * t - 2) + b;
-}, Plx.Easing.easeInQuad = function(t, b, c, d) {
+}, Pxl.Easing.easeInQuad = function(t, b, c, d) {
     return c * (t /= d) * t + b;
-}, Plx.Easing.easeOutQuad = function(t, b, c, d) {
+}, Pxl.Easing.easeOutQuad = function(t, b, c, d) {
     return -c * (t /= d) * (t - 2) + b;
-}, Plx.Easing.easeInOutQuad = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutQuad = function(t, b, c, d) {
     return (t /= d / 2) < 1 ? c / 2 * t * t + b : -c / 2 * (--t * (t - 2) - 1) + b;
-}, Plx.Easing.easeInExpo = function(t, b, c, d) {
+}, Pxl.Easing.easeInExpo = function(t, b, c, d) {
     return 0 == t ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
-}, Plx.Easing.easeOutExpo = function(t, b, c, d) {
+}, Pxl.Easing.easeOutExpo = function(t, b, c, d) {
     return t == d ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
-}, Plx.Easing.easeInOutExpo = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutExpo = function(t, b, c, d) {
     return 0 == t ? b : t == d ? b + c : (t /= d / 2) < 1 ? c / 2 * Math.pow(2, 10 * (t - 1)) + b : c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
-}, Plx.Easing.easeInElastic = function(t, b, c, d, a, p) {
+}, Pxl.Easing.easeInElastic = function(t, b, c, d, a, p) {
     if (0 == t) return b;
     if (1 == (t /= d)) return b + c;
     if (p || (p = .3 * d), !a || a < Math.abs(c)) {
         a = c;
         var s = p / 4;
-    } else s = p / Plx.Easing.PI_M2 * Math.asin(c / a);
-    return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * Plx.Easing.PI_M2 / p)) + b;
-}, Plx.Easing.easeOutElastic = function(t, b, c, d, a, p) {
+    } else s = p / Pxl.Easing.PI_M2 * Math.asin(c / a);
+    return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * Pxl.Easing.PI_M2 / p)) + b;
+}, Pxl.Easing.easeOutElastic = function(t, b, c, d, a, p) {
     if (0 == t) return b;
     if (1 == (t /= d)) return b + c;
     if (p || (p = .3 * d), !a || a < Math.abs(c)) {
         a = c;
         var s = p / 4;
-    } else s = p / Plx.Easing.PI_M2 * Math.asin(c / a);
-    return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * Plx.Easing.PI_M2 / p) + c + b;
-}, Plx.Easing.easeInOutElastic = function(t, b, c, d, a, p) {
+    } else s = p / Pxl.Easing.PI_M2 * Math.asin(c / a);
+    return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * Pxl.Easing.PI_M2 / p) + c + b;
+}, Pxl.Easing.easeInOutElastic = function(t, b, c, d, a, p) {
     if (a = a || null, p = p || null, 0 == t) return b;
     if (2 == (t /= d / 2)) return b + c;
     if (p || (p = .3 * d * 1.5), !a || a < Math.abs(c)) {
         a = c;
         var s = p / 4;
-    } else s = p / Plx.Easing.PI_M2 * Math.asin(c / a);
-    return 1 > t ? -.5 * a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * Plx.Easing.PI_M2 / p) + b : a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * Plx.Easing.PI_M2 / p) * .5 + c + b;
-}, Plx.Easing.easeInCircular = function(t, b, c, d) {
+    } else s = p / Pxl.Easing.PI_M2 * Math.asin(c / a);
+    return 1 > t ? -.5 * a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * Pxl.Easing.PI_M2 / p) + b : a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * Pxl.Easing.PI_M2 / p) * .5 + c + b;
+}, Pxl.Easing.easeInCircular = function(t, b, c, d) {
     return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
-}, Plx.Easing.easeOutCircular = function(t, b, c, d) {
+}, Pxl.Easing.easeOutCircular = function(t, b, c, d) {
     return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
-}, Plx.Easing.easeInOutCircular = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutCircular = function(t, b, c, d) {
     return (t /= d / 2) < 1 ? -c / 2 * (Math.sqrt(1 - t * t) - 1) + b : c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
-}, Plx.Easing.easeInBack = function(t, b, c, d, s) {
+}, Pxl.Easing.easeInBack = function(t, b, c, d, s) {
     return s = s || 1.70158, c * (t /= d) * t * ((s + 1) * t - s) + b;
-}, Plx.Easing.easeOutBack = function(t, b, c, d, s) {
+}, Pxl.Easing.easeOutBack = function(t, b, c, d, s) {
     return s = s || 1.70158, c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
-}, Plx.Easing.easeInOutBack = function(t, b, c, d, s) {
+}, Pxl.Easing.easeInOutBack = function(t, b, c, d, s) {
     return s = s || 1.70158, (t /= d / 2) < 1 ? c / 2 * t * t * (((s *= 1.525) + 1) * t - s) + b : c / 2 * ((t -= 2) * t * (((s *= 1.525) + 1) * t + s) + 2) + b;
-}, Plx.Easing.easeInBounce = function(t, b, c, d) {
-    return c - Plx.Easing.easeOutBounce(d - t, 0, c, d) + b;
-}, Plx.Easing.easeOutBounce = function(t, b, c, d) {
+}, Pxl.Easing.easeInBounce = function(t, b, c, d) {
+    return c - Pxl.Easing.easeOutBounce(d - t, 0, c, d) + b;
+}, Pxl.Easing.easeOutBounce = function(t, b, c, d) {
     return (t /= d) < 1 / 2.75 ? 7.5625 * c * t * t + b : 2 / 2.75 > t ? c * (7.5625 * (t -= 1.5 / 2.75) * t + .75) + b : 2.5 / 2.75 > t ? c * (7.5625 * (t -= 2.25 / 2.75) * t + .9375) + b : c * (7.5625 * (t -= 2.625 / 2.75) * t + .984375) + b;
-}, Plx.Easing.easeInOutBounce = function(t, b, c, d) {
-    return d / 2 > t ? .5 * Plx.Easing.easeInBounce(2 * t, 0, c, d) + b : .5 * Plx.Easing.easeOutBounce(2 * t - d, 0, c, d) + .5 * c + b;
-}, Plx.Easing.easeInCubic = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutBounce = function(t, b, c, d) {
+    return d / 2 > t ? .5 * Pxl.Easing.easeInBounce(2 * t, 0, c, d) + b : .5 * Pxl.Easing.easeOutBounce(2 * t - d, 0, c, d) + .5 * c + b;
+}, Pxl.Easing.easeInCubic = function(t, b, c, d) {
     return c * (t /= d) * t * t + b;
-}, Plx.Easing.easeOutCubic = function(t, b, c, d) {
+}, Pxl.Easing.easeOutCubic = function(t, b, c, d) {
     return c * ((t = t / d - 1) * t * t + 1) + b;
-}, Plx.Easing.easeInOutCubic = function(t, b, c, d) {
+}, Pxl.Easing.easeInOutCubic = function(t, b, c, d) {
     return (t /= d / 2) < 1 ? c / 2 * t * t * t + b : c / 2 * ((t -= 2) * t * t + 2) + b;
-}, Plx.Utils = {}, Plx.Utils.random = function(min, max, round) {
+}, Pxl.Utils = {}, Pxl.Utils.random = function(min, max, round) {
     var num = Math.random() * (max - min) + min;
     return round && (num = Math.round(num)), num;
-}, Plx.Utils.randomOffset = function(dist, distVariance) {
+}, Pxl.Utils.randomOffset = function(dist, distVariance) {
     var angle = Math.random() * Math.PI * 2;
     return dist += Math.random() * distVariance, new Point(Math.cos(angle) * dist, Math.sin(angle) * dist);
-}, Plx.Utils.removeFromArray = function(array, targetObject, removeAll) {
+}, Pxl.Utils.removeFromArray = function(array, targetObject, removeAll) {
     0 != removeAll && (removeAll = !0);
     for (var i = array.length - 1; i >= 0; i--) {
         var object = array[i];
         if (object == targetObject && (array.splice(i, 1), !removeAll)) return;
     }
-}, Plx.Entity = function() {
-    this.beacon = new Plx.Beacon(this), this.id = Plx.Entity.idCounter++, this.components = [], 
+}, Pxl.Entity = function() {
+    this.beacon = new Pxl.Beacon(this), this.id = Pxl.Entity.idCounter++, this.components = [], 
     this.componentMap = {}, this.typeName = null, this.reset();
-}, Plx.Entity.idCounter = 0, Plx.Entity.prototype.reset = function() {
+}, Pxl.Entity.idCounter = 0, Pxl.Entity.prototype.reset = function() {
     for (var i = 0; i < this.components.length; i++) this.components[i].reset();
     this.beacon.reset(), this.alive = !0, this.scene = null, this.game = null;
-}, Plx.Entity.prototype.update = function() {
+}, Pxl.Entity.prototype.update = function() {
     this.beacon.emit("updated", null);
-}, Plx.Entity.prototype.addComponent = function(component) {
+}, Pxl.Entity.prototype.addComponent = function(component) {
     return component.entity = this, component.game = this.game, component.beacon.emit("added", null), 
     this.components.push(component), this.componentMap[component.name] = component, 
     Object.defineProperty(this, component.name, {
@@ -386,33 +386,33 @@ Plx.Easing.PI_D2 = Math.PI / 2, Plx.Easing.easeLinear = function(t, b, c, d) {
             return this.componentMap[component.name];
         }
     }), component;
-}, Plx.Entity.prototype.fetchComponent = function(componentClass) {
+}, Pxl.Entity.prototype.fetchComponent = function(componentClass) {
     for (var i = 0; i < this.components.length; i++) {
         var component = this.components[i];
         if (component instanceof componentClass) return component;
     }
     return null;
-}, Plx.Entity.prototype.fetchComponentByName = function(name) {
+}, Pxl.Entity.prototype.fetchComponentByName = function(name) {
     return this.componentMap[name];
-}, Plx.Entity.prototype.destroy = function() {
+}, Pxl.Entity.prototype.destroy = function() {
     this.beacon.destroy();
     for (var i = 0; i < this.components.length; i++) {
         var component = this.components[i];
         component.destroy();
     }
     this.components = [];
-}, Plx.EntityFactory = function(game) {
+}, Pxl.EntityFactory = function(game) {
     this.entityPool = {}, this.entityTypes = {}, this.game = game;
-}, Plx.EntityFactory.prototype.registerType = function(name, componentList) {
+}, Pxl.EntityFactory.prototype.registerType = function(name, componentList) {
     if (this.entityTypes[name]) throw new Error("type (" + name + ") already registered in EntityFactory");
     this.entityTypes[name] = {
         componentList: componentList
     }, this.entityPool[name] = [];
-}, Plx.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
+}, Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
     var entityType = this.entityTypes[typeName];
     if (!entityType) throw new Error("type (" + typeName + ") not found in entityTypes");
     if (this.entityPool[typeName].length) var entity = this.entityPool[typeName].pop(); else {
-        entity = new Plx.Entity(), entity.typeName = typeName, entity.game = this.game;
+        entity = new Pxl.Entity(), entity.typeName = typeName, entity.game = this.game;
         for (var i = 0; i < entityType.componentList.length; i++) {
             var listItem = entityType.componentList[i], component = new listItem.type();
             component.entity = entity, component.name = listItem.name, entity.addComponent(component);
@@ -428,92 +428,92 @@ Plx.Easing.PI_D2 = Math.PI / 2, Plx.Easing.easeLinear = function(t, b, c, d) {
     }
     for (i = 0; i < entity.components.length; i++) entity.components[i].init();
     return entity;
-}, Plx.EntityFactory.prototype.returnEntity = function(entity) {
+}, Pxl.EntityFactory.prototype.returnEntity = function(entity) {
     this.entityPool[entity.typeName].push(entity);
-}, Plx.Component = function() {
-    this.beacon = new Plx.Beacon(this), this.entity = null, this.name = null, this.id = Plx.Component.idCounter++;
-}, Plx.Component.idCounter = 0, Plx.Component.prototype.reset = function() {
+}, Pxl.Component = function() {
+    this.beacon = new Pxl.Beacon(this), this.entity = null, this.name = null, this.id = Pxl.Component.idCounter++;
+}, Pxl.Component.idCounter = 0, Pxl.Component.prototype.reset = function() {
     this.beacon.reset();
-}, Plx.Component.prototype.init = function() {}, Plx.Component.prototype.destroy = function() {
+}, Pxl.Component.prototype.init = function() {}, Pxl.Component.prototype.destroy = function() {
     this.beacon.destroy();
-}, Plx.Data = function() {
-    Plx.Component.call(this), this.data = {};
-}, Plx.Data.prototype = Object.create(Plx.Component.prototype), Plx.Data.prototype.constructor = Plx.Data, 
-Plx.FunctionBinder = function() {
-    Plx.Component.call(this), this.resetFunc = null, this.initFunc = null;
-}, Plx.FunctionBinder.prototype = Object.create(Plx.Component.prototype), Plx.FunctionBinder.prototype.constructor = Plx.FunctionBinder, 
-Plx.FunctionBinder.prototype.reset = function() {
-    Plx.Component.prototype.reset.call(this), this.resetFunc && (this.resetFunc = this.resetFunc.bind(this)), 
+}, Pxl.Data = function() {
+    Pxl.Component.call(this), this.data = {};
+}, Pxl.Data.prototype = Object.create(Pxl.Component.prototype), Pxl.Data.prototype.constructor = Pxl.Data, 
+Pxl.FunctionBinder = function() {
+    Pxl.Component.call(this), this.resetFunc = null, this.initFunc = null;
+}, Pxl.FunctionBinder.prototype = Object.create(Pxl.Component.prototype), Pxl.FunctionBinder.prototype.constructor = Pxl.FunctionBinder, 
+Pxl.FunctionBinder.prototype.reset = function() {
+    Pxl.Component.prototype.reset.call(this), this.resetFunc && (this.resetFunc = this.resetFunc.bind(this)), 
     this.initFunc && (this.initFunc = this.initFunc.bind(this)), this.resetFunc && this.resetFunc();
-}, Plx.FunctionBinder.prototype.init = function() {
-    Plx.Component.prototype.init.call(this), this.initFunc && this.initFunc();
-}, Plx.GridPlacerCom = function() {
-    Plx.Component.call(this), this.data = {};
-}, Plx.GridPlacerCom.prototype = Object.create(Plx.Component.prototype), Plx.GridPlacerCom.prototype.constructor = Plx.GridPlacerCom, 
-Plx.GridPlacerCom.prototype.reset = function() {}, Plx.GridPlacerCom.prototype.init = function() {}, 
-Plx.KillOffscreen = function() {
-    Plx.Component.call(this), this.reset();
-}, Plx.KillOffscreen.prototype = Object.create(Plx.Component.prototype), Plx.KillOffscreen.prototype.constructor = Plx.KillOffscreen, 
-Plx.KillOffscreen.prototype.reset = function() {
-    Plx.Component.prototype.reset.call(this), this.left = !1, this.right = !1, this.top = !1, 
+}, Pxl.FunctionBinder.prototype.init = function() {
+    Pxl.Component.prototype.init.call(this), this.initFunc && this.initFunc();
+}, Pxl.GridPlacerCom = function() {
+    Pxl.Component.call(this), this.data = {};
+}, Pxl.GridPlacerCom.prototype = Object.create(Pxl.Component.prototype), Pxl.GridPlacerCom.prototype.constructor = Pxl.GridPlacerCom, 
+Pxl.GridPlacerCom.prototype.reset = function() {}, Pxl.GridPlacerCom.prototype.init = function() {}, 
+Pxl.KillOffscreen = function() {
+    Pxl.Component.call(this), this.reset();
+}, Pxl.KillOffscreen.prototype = Object.create(Pxl.Component.prototype), Pxl.KillOffscreen.prototype.constructor = Pxl.KillOffscreen, 
+Pxl.KillOffscreen.prototype.reset = function() {
+    Pxl.Component.prototype.reset.call(this), this.left = !1, this.right = !1, this.top = !1, 
     this.bottom = !1, this.physicsComponent = null;
-}, Plx.KillOffscreen.prototype.init = function() {
-    this.physicsComponent = this.entity.fetchComponent(Plx.PhysicsComponent), this.physicsComponent.beacon.observe(this, "updated", this.onPhysicsUpdated);
-}, Plx.KillOffscreen.prototype.onPhysicsUpdated = function() {
+}, Pxl.KillOffscreen.prototype.init = function() {
+    this.physicsComponent = this.entity.fetchComponent(Pxl.PhysicsComponent), this.physicsComponent.beacon.observe(this, "updated", this.onPhysicsUpdated);
+}, Pxl.KillOffscreen.prototype.onPhysicsUpdated = function() {
     this.left && this.physicsComponent.rect.loc.x + this.physicsComponent.rect.width < 0 ? this.entity.alive = !1 : this.right && this.physicsComponent.rect.loc.x > this.entity.scene.game.width ? this.entity.alive = !1 : this.top && this.physicsComponent.rect.loc.y + this.physicsComponent.rect.height < 0 ? this.entity.alive = !1 : this.bottom && this.physicsComponent.rect.loc.y > this.entity.scene.game.height && (this.entity.alive = !1);
-}, Plx.PhysicsComponent = function() {
-    Plx.Component.call(this), this.rect = new Plx.Rectangle(), this.lastRect = new Plx.Rectangle(), 
-    this.nextRect = new Plx.Rectangle(), this.pendingMove = new Plx.Point(), Plx.PhysicsComponent.count++, 
+}, Pxl.PhysicsComponent = function() {
+    Pxl.Component.call(this), this.rect = new Pxl.Rectangle(), this.lastRect = new Pxl.Rectangle(), 
+    this.nextRect = new Pxl.Rectangle(), this.pendingMove = new Pxl.Point(), Pxl.PhysicsComponent.count++, 
     this.reset();
-}, Plx.PhysicsComponent.prototype = Object.create(Plx.Component.prototype), Plx.PhysicsComponent.prototype.constructor = Plx.PhysicsComponent, 
-Plx.PhysicsComponent.count = 0, Plx.PhysicsComponent.prototype.reset = function() {
-    Plx.Component.prototype.reset.call(this), this.rect.reset(), this.lastRect.reset(), 
+}, Pxl.PhysicsComponent.prototype = Object.create(Pxl.Component.prototype), Pxl.PhysicsComponent.prototype.constructor = Pxl.PhysicsComponent, 
+Pxl.PhysicsComponent.count = 0, Pxl.PhysicsComponent.prototype.reset = function() {
+    Pxl.Component.prototype.reset.call(this), this.rect.reset(), this.lastRect.reset(), 
     this.nextRect.reset(), this.pendingMove.reset(), this.speedX = 0, this.speedY = 0, 
     this.capSpeed = !1, this.speedXMax = 0, this.speedYMax = 0, this.friction = 1, this.mass = 1, 
     this.sponginess = .1, this.collisionType = "none", this.gravity = 0, this.collisionEnabled = !0, 
     this.resolutionEnabled = !0;
-}, Plx.PhysicsComponent.prototype.init = function() {}, Object.defineProperty(Plx.PhysicsComponent.prototype, "x", {
+}, Pxl.PhysicsComponent.prototype.init = function() {}, Object.defineProperty(Pxl.PhysicsComponent.prototype, "x", {
     get: function() {
         return this.rect.loc.x;
     },
     set: function(value) {
         this.rect.loc.x = value;
     }
-}), Object.defineProperty(Plx.PhysicsComponent.prototype, "y", {
+}), Object.defineProperty(Pxl.PhysicsComponent.prototype, "y", {
     get: function() {
         return this.rect.loc.y;
     },
     set: function(value) {
         this.rect.loc.y = value;
     }
-}), Object.defineProperty(Plx.PhysicsComponent.prototype, "width", {
+}), Object.defineProperty(Pxl.PhysicsComponent.prototype, "width", {
     get: function() {
         return this.rect.width;
     },
     set: function(value) {
         this.rect.width = value, this.nextRect.width = value;
     }
-}), Object.defineProperty(Plx.PhysicsComponent.prototype, "height", {
+}), Object.defineProperty(Pxl.PhysicsComponent.prototype, "height", {
     get: function() {
         return this.rect.height;
     },
     set: function(value) {
         this.rect.height = value, this.nextRect.height = value;
     }
-}), Plx.PhysicsComponent.prototype.setX = function(x, syncLast) {
+}), Pxl.PhysicsComponent.prototype.setX = function(x, syncLast) {
     syncLast = syncLast || !1, this.lastRect.loc.x = syncLast ? x : this.rect.loc.x, 
     this.rect.loc.x = x;
-}, Plx.PhysicsComponent.prototype.setY = function(y, syncLast) {
+}, Pxl.PhysicsComponent.prototype.setY = function(y, syncLast) {
     syncLast = syncLast || !1, this.lastRect.loc.y = syncLast ? y : this.rect.loc.y, 
     this.rect.loc.y = y;
-}, Plx.PhysicsComponent.prototype.setWidth = function(width) {
+}, Pxl.PhysicsComponent.prototype.setWidth = function(width) {
     this.rect.width = width, this.nextRect.width = width;
-}, Plx.PhysicsComponent.prototype.setHeight = function(height) {
+}, Pxl.PhysicsComponent.prototype.setHeight = function(height) {
     this.rect.height = height, this.nextRect.height = height;
-}, Plx.PhysicsComponent.prototype.destroy = function() {
-    Plx.PhysicsComponent.count--;
-}, Plx.PixelBlotMap = function(map, width) {
-    Plx.Component.call(this), this.loc = new Point(), this.speedX = 0, this.speedY = 0, 
+}, Pxl.PhysicsComponent.prototype.destroy = function() {
+    Pxl.PhysicsComponent.count--;
+}, Pxl.PixelBlotMap = function(map, width) {
+    Pxl.Component.call(this), this.loc = new Point(), this.speedX = 0, this.speedY = 0, 
     this.pixelBlots = [], this.blotSize = 4, this.map = map.replace(/\s/g, ""), this.colorMap = {};
     for (var i = 0; i < this.map.length; i++) {
         var character = this.map[i];
@@ -522,19 +522,19 @@ Plx.PhysicsComponent.count = 0, Plx.PhysicsComponent.prototype.reset = function(
             continue;
 
           default:
-            this.pixelBlots.push(new Plx.PixelBlot(new Plx.Point(i % width, Math.floor(i / width)), i));
+            this.pixelBlots.push(new Pxl.PixelBlot(new Pxl.Point(i % width, Math.floor(i / width)), i));
         }
     }
     this.visible = !0, this.physicsComponent = null, this.beacon.observe(this, "added", this.onAdded);
-}, Plx.PixelBlotMap.prototype = Object.create(Plx.Component.prototype), Plx.PixelBlotMap.prototype.constructor = Plx.PixelBlotMap, 
-Plx.PixelBlotMap.setBlotColor = function(red, green, blue) {
+}, Pxl.PixelBlotMap.prototype = Object.create(Pxl.Component.prototype), Pxl.PixelBlotMap.prototype.constructor = Pxl.PixelBlotMap, 
+Pxl.PixelBlotMap.setBlotColor = function(red, green, blue) {
     for (var i = 0; i < this.pixelBlots.length; i++) {
         var blot = this.pixelBlots[i];
         blot.red = red, blot.green = green, blot.blue = blue;
     }
-}, Plx.PixelBlotMap.setBlotColorMap = function(colorMap) {
+}, Pxl.PixelBlotMap.setBlotColorMap = function(colorMap) {
     this.colorMap = colorMap, this.updateBlotColors();
-}, Plx.PixelBlotMap.updateBlotColors = function() {
+}, Pxl.PixelBlotMap.updateBlotColors = function() {
     for (var i = 0; i < this.map.length; i++) {
         var character = this.map[i];
         if (this.colorMap[character]) for (var j = 0; j < this.map.length; j++) {
@@ -546,46 +546,46 @@ Plx.PixelBlotMap.setBlotColor = function(red, green, blue) {
             }
         }
     }
-}, Plx.PixelBlotMap.onAdded = function() {
+}, Pxl.PixelBlotMap.onAdded = function() {
     this.entity.beacon.observe(this, "addedToScene", this.onAddedToScene);
-}, Plx.PixelBlotMap.onAddedToScene = function() {
+}, Pxl.PixelBlotMap.onAddedToScene = function() {
     this.physicsComponent = this.entity.fetchComponent(PhysicsComponent), null != this.physicsComponent && this.physicsComponent.beacon.observe(this, "updated", this.onPhysicsUpdated);
-}, Plx.PixelBlotMap.onPhysicsUpdated = function() {
+}, Pxl.PixelBlotMap.onPhysicsUpdated = function() {
     this.loc.x = this.physicsComponent.rect.loc.x, this.loc.y = this.physicsComponent.rect.loc.y, 
     this.speedX = this.physicsComponent.speedX, this.speedY = this.physicsComponent.speedY;
-}, Plx.PixelBlot = function(loc, mapIndex) {
+}, Pxl.PixelBlot = function(loc, mapIndex) {
     this.loc = loc, this.mapIndex = mapIndex, this.alpha = 1, this.red = 0, this.green = 0, 
     this.blue = 0;
-}, Plx.PointerCom = function() {
-    Plx.Component.call(this), this.reset();
-}, Plx.PointerCom.prototype = Object.create(Plx.Component.prototype), Plx.PointerCom.prototype.constructor = Plx.PointerCom, 
-Plx.PointerCom.prototype.reset = function() {
-    Plx.Component.prototype.reset.call(this), this.beacon.reset(), this.enabled = !0, 
+}, Pxl.PointerCom = function() {
+    Pxl.Component.call(this), this.reset();
+}, Pxl.PointerCom.prototype = Object.create(Pxl.Component.prototype), Pxl.PointerCom.prototype.constructor = Pxl.PointerCom, 
+Pxl.PointerCom.prototype.reset = function() {
+    Pxl.Component.prototype.reset.call(this), this.beacon.reset(), this.enabled = !0, 
     this.draggable = !1, this.colCheck = null, this.syncLoc = null;
-}, Plx.PointerCom.prototype.init = function() {
-    this.physics = this.entity.fetchComponent(Plx.PhysicsComponent), this.colCheck && (this.colCheck = this.colCheck.bind(this)), 
+}, Pxl.PointerCom.prototype.init = function() {
+    this.physics = this.entity.fetchComponent(Pxl.PhysicsComponent), this.colCheck && (this.colCheck = this.colCheck.bind(this)), 
     this.syncLoc && (this.syncLoc = this.syncLoc.bind(this));
-}, Plx.PointerCom.prototype.collisionCheck = function(x, y) {
-    return this.colCheck ? this.colCheck(x, y) : this.physics.rect.contains(new Plx.Point(x, y)) ? !0 : !1;
-}, Plx.PointerCom.prototype.syncLocation = function(x, y, xOffset, yOffset) {
+}, Pxl.PointerCom.prototype.collisionCheck = function(x, y) {
+    return this.colCheck ? this.colCheck(x, y) : this.physics.rect.contains(new Pxl.Point(x, y)) ? !0 : !1;
+}, Pxl.PointerCom.prototype.syncLocation = function(x, y, xOffset, yOffset) {
     return this.syncLoc ? (this.syncLoc(x, y), void 0) : (this.physics.x = x - xOffset, 
     this.physics.y = y - yOffset, void 0);
-}, Plx.Sprite = function() {
-    Plx.Component.call(this), this.loc = new Plx.Point(), this.anchor = new Plx.Point(), 
-    this.offset = new Plx.Point(), this.reset();
-}, Plx.Sprite.prototype = Object.create(Plx.Component.prototype), Plx.Sprite.prototype.constructor = Plx.Sprite, 
-Plx.Sprite.prototype.reset = function() {
-    Plx.Component.prototype.reset.call(this), this.loc.reset(), this.z = 0, this.visible = !0, 
+}, Pxl.Sprite = function() {
+    Pxl.Component.call(this), this.loc = new Pxl.Point(), this.anchor = new Pxl.Point(), 
+    this.offset = new Pxl.Point(), this.reset();
+}, Pxl.Sprite.prototype = Object.create(Pxl.Component.prototype), Pxl.Sprite.prototype.constructor = Pxl.Sprite, 
+Pxl.Sprite.prototype.reset = function() {
+    Pxl.Component.prototype.reset.call(this), this.loc.reset(), this.z = 0, this.visible = !0, 
     this.speedX = 0, this.speedY = 0, this.rotation = 0, this.anchor.reset(), this.offset.reset(), 
     this.scaleX = 1, this.scaleY = 1, this.anim = null, this.animName = null, this.animTimer = null, 
     this.frame = null, this.frameIndex = 0, this.flippedX = !1, this.flippedY = !1, 
     this.alpha = 1, this.autoSizePhysics = !1;
-}, Plx.Sprite.prototype.init = function() {
-    this.animTimer = new Plx.Timer(0, -1, 0, this.entity.beacon, "updated"), this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed), 
-    this.animName && this.play(this.animName), this.physics = this.entity.fetchComponent(Plx.PhysicsComponent), 
+}, Pxl.Sprite.prototype.init = function() {
+    this.animTimer = new Pxl.Timer(0, -1, 0, this.entity.beacon, "updated"), this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed), 
+    this.animName && this.play(this.animName), this.physics = this.entity.fetchComponent(Pxl.PhysicsComponent), 
     null != this.physics && (this.physics.beacon.observe(this, "updated", this.onPhysicsUpdated), 
     this.autoSizePhysics && (this.physics.width = this.frame.width * this.scaleX, this.physics.height = this.frame.height * this.scaleY));
-}, Plx.Sprite.prototype.onAnimTimerTimed = function() {
+}, Pxl.Sprite.prototype.onAnimTimerTimed = function() {
     if (!this.anim.looping && this.frameIndex == this.anim.frames.length - 1) return this.animTimer.stop(), 
     this.beacon.emit("animCompleted", null), void 0;
     this.frameIndex++, this.frameIndex >= this.anim.frames.length ? (this.anim.looping && (this.frameIndex = 0), 
@@ -593,59 +593,59 @@ Plx.Sprite.prototype.reset = function() {
     var frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
     frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex], 
     this.frame = this.entity.scene.game.spriteStore.frames[frameName];
-}, Plx.Sprite.prototype.onPhysicsUpdated = function() {
+}, Pxl.Sprite.prototype.onPhysicsUpdated = function() {
     this.loc.x = this.physics.rect.loc.x + this.offset.x, this.loc.y = this.physics.rect.loc.y + this.offset.y, 
     this.speedX = this.physics.speedX, this.speedY = this.physics.speedY;
-}, Plx.Sprite.prototype.play = function(animName) {
+}, Pxl.Sprite.prototype.play = function(animName) {
     this.animName = animName, this.anim = this.game.spriteStore.anims[this.animName], 
     this.frameIndex = 0, this.animTimer.duration = this.anim.frameRate, this.animTimer.reset(), 
     this.animTimer.isRunning || this.animTimer.start();
     var frameName = this.anim.frames[this.frameIndex];
     this.frame = this.game.spriteStore.frames[frameName];
-}, Plx.Sprite.prototype.pause = function() {}, Plx.Sprite.prototype.resume = function() {}, 
-Plx.Sprite.prototype.setZIndex = function() {
+}, Pxl.Sprite.prototype.pause = function() {}, Pxl.Sprite.prototype.resume = function() {}, 
+Pxl.Sprite.prototype.setZIndex = function() {
     this.beacon.emit("updatedZIndex", {});
-}, Plx.Scene = function() {
-    this.paused = !1, this.beacon = new Plx.Beacon(this), this.entities = [], this.systems = [], 
+}, Pxl.Scene = function() {
+    this.paused = !1, this.beacon = new Pxl.Beacon(this), this.entities = [], this.systems = [], 
     this.game = null;
-}, Plx.Scene.prototype.init = function() {}, Plx.Scene.prototype.update = function() {
+}, Pxl.Scene.prototype.init = function() {}, Pxl.Scene.prototype.update = function() {
     var entity, i;
     for (i = 0; i < this.entities.length; i++) entity = this.entities[i], entity.update();
     for (i = this.entities.length - 1; i >= 0; i--) entity = this.entities[i], entity.alive || (this.removeEntity(entity), 
     this.entities.splice(i, 1), this.game.entityFactory.returnEntity(entity));
     this.beacon.emit("updated", null), this.beacon.emit("updateCompleted", null);
-}, Plx.Scene.prototype.render = function(frameProgress) {
+}, Pxl.Scene.prototype.render = function(frameProgress) {
     this.beacon.emit("rendered", {
         frameProgress: frameProgress
     }), this.beacon.emit("renderCompleted", {
         frameProgress: frameProgress
     });
-}, Plx.Scene.prototype.addSystem = function(system) {
+}, Pxl.Scene.prototype.addSystem = function(system) {
     return system.scene = this, this.systems.push(system), system.beacon.emit("addedToScene", {}), 
     system;
-}, Plx.Scene.prototype.fetchSystem = function(systemClass) {
+}, Pxl.Scene.prototype.fetchSystem = function(systemClass) {
     for (var i = 0; i < this.systems.length; i++) {
         var system = this.systems[i];
         if (system instanceof systemClass) return system;
     }
     return null;
-}, Plx.Scene.prototype.makeEntity = function(type, defaultOverrides) {
+}, Pxl.Scene.prototype.makeEntity = function(type, defaultOverrides) {
     return this.addEntity(this.game.entityFactory.createType(type, defaultOverrides));
-}, Plx.Scene.prototype.addEntity = function(entity) {
+}, Pxl.Scene.prototype.addEntity = function(entity) {
     return entity.scene = this, this.entities.push(entity), this.beacon.emit("entityAdded", {
         entity: entity
     }), entity.beacon.emit("addedToScene", {}), entity;
-}, Plx.Scene.prototype.removeEntity = function(entity) {
+}, Pxl.Scene.prototype.removeEntity = function(entity) {
     entity.beacon.emit("removedFromScene", null), this.beacon.emit("entityRemoved", {
         entity: entity
     });
-}, Plx.Scene.prototype.switchScene = function(sceneClass, transition, handoffData) {
+}, Pxl.Scene.prototype.switchScene = function(sceneClass, transition, handoffData) {
     this.beacon.emit("completed", {
         sceneClass: sceneClass,
         transition: transition,
         handoffData: handoffData
     }), this.paused = !0;
-}, Plx.Scene.prototype.destroy = function() {
+}, Pxl.Scene.prototype.destroy = function() {
     var i;
     for (i = 0; i < this.entities.length; i++) {
         var entity = this.entities[i];
@@ -656,40 +656,40 @@ Plx.Sprite.prototype.setZIndex = function() {
         system.destroy();
     }
     this.beacon.destroy();
-}, Plx.SceneDirector = function() {
+}, Pxl.SceneDirector = function() {
     this.scenes = [];
-}, Plx.SceneDirector.prototype.addScene = function(scene) {
+}, Pxl.SceneDirector.prototype.addScene = function(scene) {
     this.scenes.push(scene);
-}, Plx.SceneDirector.prototype.swapScenes = function(oldScene, newScene) {
+}, Pxl.SceneDirector.prototype.swapScenes = function(oldScene, newScene) {
     this.scenes.remove(oldScene), this.scenes.add(newScene);
-}, Plx.System = function() {
-    this.beacon = new Plx.Beacon(this), this.beacon.observe(this, "addedToScene", function() {
+}, Pxl.System = function() {
+    this.beacon = new Pxl.Beacon(this), this.beacon.observe(this, "addedToScene", function() {
         this.scene.beacon.observe(this, "entityAdded", this.onEntityAdded), this.scene.beacon.observe(this, "entityRemoved", this.onEntityRemoved);
     }), this.scene = null, this.componentTypes = [];
-}, Plx.System.prototype.onEntityAdded = function(event) {
+}, Pxl.System.prototype.onEntityAdded = function(event) {
     for (var _this = this, entity = event.data.entity, i = 0; i < entity.components.length; i++) {
         var component = entity.components[i];
         this.componentTypes.forEach(function(componentType) {
             component instanceof componentType && _this.addComponent(component);
         });
     }
-}, Plx.System.prototype.onEntityRemoved = function(event) {
+}, Pxl.System.prototype.onEntityRemoved = function(event) {
     for (var _this = this, entity = event.data.entity, i = entity.components.length - 1; i >= 0; i--) {
         var component = entity.components[i];
         this.componentTypes.forEach(function(componentType) {
             component instanceof componentType && _this.removeComponent(component);
         });
     }
-}, Plx.System.prototype.addComponent = function() {}, Plx.System.prototype.removeComponent = function() {}, 
-Plx.System.prototype.update = function() {}, Plx.System.prototype.destroy = function() {
+}, Pxl.System.prototype.addComponent = function() {}, Pxl.System.prototype.removeComponent = function() {}, 
+Pxl.System.prototype.update = function() {}, Pxl.System.prototype.destroy = function() {
     this.beacon.destroy();
-}, Plx.GridPlacerSys = function() {
-    Plx.System.call(this), this.componentTypes = [ Plx.GridItem ], this.width = 0, this.height = 0;
-}, Plx.GridPlacerSys.prototype = Object.create(Plx.System.prototype), Plx.GridPlacerSys.prototype.constructor = Plx.GridPlacerSys, 
-Plx.GridPlacerSys.prototype.update = function() {}, Plx.GridPlacerSys.prototype.addComponent = function() {}, 
-Plx.GridPlacerSys.prototype.removeComponent = function() {}, Plx.GridPlacerSys.prototype.destroy = function() {}, 
-Plx.KeyboardInput = function() {
-    Plx.System.call(this), this.keys = [];
+}, Pxl.GridPlacerSys = function() {
+    Pxl.System.call(this), this.componentTypes = [ Pxl.GridItem ], this.width = 0, this.height = 0;
+}, Pxl.GridPlacerSys.prototype = Object.create(Pxl.System.prototype), Pxl.GridPlacerSys.prototype.constructor = Pxl.GridPlacerSys, 
+Pxl.GridPlacerSys.prototype.update = function() {}, Pxl.GridPlacerSys.prototype.addComponent = function() {}, 
+Pxl.GridPlacerSys.prototype.removeComponent = function() {}, Pxl.GridPlacerSys.prototype.destroy = function() {}, 
+Pxl.KeyboardInput = function() {
+    Pxl.System.call(this), this.keys = [];
     for (var i = 0; 255 > i; i++) this.keys.push(!1);
     var _this = this;
     this.keyDownFunc = function(event) {
@@ -697,16 +697,16 @@ Plx.KeyboardInput = function() {
     }, this.keyUpFunc = function(event) {
         _this.onKeyUp(event);
     }, window.addEventListener("keydown", this.keyDownFunc, !1), window.addEventListener("keyup", this.keyUpFunc, !1);
-}, Plx.KeyboardInput.prototype = Object.create(Plx.System.prototype), Plx.KeyboardInput.prototype.constructor = Plx.KeyboardInput, 
-Plx.KeyboardInput.prototype.onKeyDown = function(event) {
+}, Pxl.KeyboardInput.prototype = Object.create(Pxl.System.prototype), Pxl.KeyboardInput.prototype.constructor = Pxl.KeyboardInput, 
+Pxl.KeyboardInput.prototype.onKeyDown = function(event) {
     this.keys[event.keyCode] = !0, this.beacon.emit("keyDown", {
         keyCode: event.keyCode
     }), this.beacon.emit(this.translateKeyCode(event.keyCode) + "Down", null);
-}, Plx.KeyboardInput.prototype.onKeyUp = function(event) {
+}, Pxl.KeyboardInput.prototype.onKeyUp = function(event) {
     this.keys[event.keyCode] = !1, this.beacon.emit("keyUp", {
         keyCode: event.keyCode
     }), this.beacon.emit(this.translateKeyCode(event.keyCode) + "Up", null);
-}, Plx.KeyboardInput.prototype.getKeyDown = function(keyName) {
+}, Pxl.KeyboardInput.prototype.getKeyDown = function(keyName) {
     switch (keyName) {
       case "space":
         return this.keys[32];
@@ -727,7 +727,7 @@ Plx.KeyboardInput.prototype.onKeyDown = function(event) {
         return this.keys[90];
     }
     return console.log("keyName " + keyName + " does not exist"), !1;
-}, Plx.KeyboardInput.prototype.translateKeyCode = function(keyCode) {
+}, Pxl.KeyboardInput.prototype.translateKeyCode = function(keyCode) {
     switch (keyName = "", keyCode) {
       case 32:
         keyName = "space";
@@ -753,7 +753,7 @@ Plx.KeyboardInput.prototype.onKeyDown = function(event) {
         keyName = "z";
     }
     return keyName;
-}, Plx.KeyboardInput.prototype.destroy = function() {
+}, Pxl.KeyboardInput.prototype.destroy = function() {
     window.removeEventListener("keydown", this.keyDownFunc, !1), window.removeEventListener("keyup", this.keyUpFunc, !1);
 };
 
@@ -808,21 +808,21 @@ var calcIntersectTime = function(leftActor, rightActor, topActor, bottomActor) {
     -1 != actorTwo.mass && (actorTwo.rect.loc.x = actorOne.rect.loc.x + actorOne.rect.width)));
 };
 
-Plx.Physics = function() {
-    Plx.System.call(this), this.componentTypes = [ Plx.PhysicsComponent ], this.collisionPairs = [], 
+Pxl.Physics = function() {
+    Pxl.System.call(this), this.componentTypes = [ Pxl.PhysicsComponent ], this.collisionPairs = [], 
     this.physicsComponents = {}, this.physicsComponents.none = [], this.beacon.observe(this, "addedToScene", this.onAddedToScene);
-}, Plx.Physics.prototype = Object.create(Plx.System.prototype), Plx.Physics.prototype.constructor = Plx.Physics, 
-Plx.Physics.prototype.onAddedToScene = function() {
+}, Pxl.Physics.prototype = Object.create(Pxl.System.prototype), Pxl.Physics.prototype.constructor = Pxl.Physics, 
+Pxl.Physics.prototype.onAddedToScene = function() {
     this.scene.beacon.observe(this, "updated", this.onSceneUpdated, 1);
-}, Plx.Physics.prototype.addComponent = function(component) {
+}, Pxl.Physics.prototype.addComponent = function(component) {
     if (!this.physicsComponents[component.collisionType]) throw new Error("Collion Type " + component.collisionType + ") not registered.");
     this.physicsComponents[component.collisionType].push(component);
-}, Plx.Physics.prototype.removeComponent = function(component) {
+}, Pxl.Physics.prototype.removeComponent = function(component) {
     for (var j = this.physicsComponents[component.collisionType].length - 1; j >= 0; j--) {
         var otherComponent = this.physicsComponents[component.collisionType][j];
         otherComponent == component && this.physicsComponents[component.collisionType].splice(j, 1);
     }
-}, Plx.Physics.prototype.updatePhysicsSpeeds = function(componentList) {
+}, Pxl.Physics.prototype.updatePhysicsSpeeds = function(componentList) {
     for (var i = 0; i < componentList.length; i++) {
         var component = componentList[i];
         component.speedY += component.gravity, 1 != component.friction && (component.speedX *= component.friction, 
@@ -834,14 +834,14 @@ Plx.Physics.prototype.onAddedToScene = function() {
         component.nextRect.loc.x = component.rect.loc.x + component.speedX, component.nextRect.loc.y = component.rect.loc.y + component.speedY, 
         component.beacon.emit("speedUpdated", null);
     }
-}, Plx.Physics.prototype.updatePhysicsLocations = function(componentList) {
+}, Pxl.Physics.prototype.updatePhysicsLocations = function(componentList) {
     for (var i = 0; i < componentList.length; i++) {
         var component = componentList[i];
         component.lastRect.loc.x = component.rect.loc.x, component.lastRect.loc.y = component.rect.loc.y, 
         component.rect.loc.x += component.pendingMove.x, component.rect.loc.y += component.pendingMove.y, 
         component.beacon.emit("updated", null);
     }
-}, Plx.Physics.prototype.calcCollisionData = function(actorOne, actorTwo) {
+}, Pxl.Physics.prototype.calcCollisionData = function(actorOne, actorTwo) {
     var collisionPair = null;
     if (actorOne.nextRect.intersects(actorTwo.nextRect)) {
         var tempLeft = actorOne, tempRight = actorTwo;
@@ -864,7 +864,7 @@ Plx.Physics.prototype.onAddedToScene = function() {
         };
     }
     return collisionPair;
-}, Plx.Physics.prototype.findComponentCollisionPairs = function(component, intersectTimeOffset) {
+}, Pxl.Physics.prototype.findComponentCollisionPairs = function(component, intersectTimeOffset) {
     for (var collisionPairs = [], i = 0; i < this.collisionPairs.length; i++) {
         var pair = this.collisionPairs[i], collideeType = null;
         if (pair.typeOne == component.collisionType && (collideeType = pair.typeOne), pair.typeTwo == component.collisionType && (collideeType = pair.typeTwo), 
@@ -874,7 +874,7 @@ Plx.Physics.prototype.onAddedToScene = function() {
         }
     }
     return collisionPairs;
-}, Plx.Physics.prototype.findAllCollisionPairs = function(sort) {
+}, Pxl.Physics.prototype.findAllCollisionPairs = function(sort) {
     for (var collisionPairs = [], i = 0; i < this.collisionPairs.length; i++) for (var pair = this.collisionPairs[i], listOneType = pair.typeOne, listTwoType = pair.typeTwo, listOne = this.physicsComponents[listOneType], listTwo = this.physicsComponents[listTwoType], j = 0; j < listOne.length; j++) {
         var component = listOne[j];
         if (component.collisionEnabled) {
@@ -892,7 +892,7 @@ Plx.Physics.prototype.onAddedToScene = function() {
     return sort && collisionPairs.sort(function(a, b) {
         return a.intersectTime - b.intersectTime;
     }), collisionPairs;
-}, Plx.Physics.prototype.resolveCollisionPairs = function(collisionPairs) {
+}, Pxl.Physics.prototype.resolveCollisionPairs = function(collisionPairs) {
     for (;collisionPairs.length; ) {
         var component, otherComponent, componentSpeed, otherComponentSpeed, collisionPair = collisionPairs.shift();
         if (collisionPair.leftActor ? (component = collisionPair.leftActor, otherComponent = collisionPair.rightActor, 
@@ -940,41 +940,41 @@ Plx.Physics.prototype.onAddedToScene = function() {
             colliderDirection: collisionPair.vertical ? "up" : "left"
         });
     }
-}, Plx.Physics.prototype.onSceneUpdated = function() {
+}, Pxl.Physics.prototype.onSceneUpdated = function() {
     var key;
     for (key in this.physicsComponents) this.updatePhysicsSpeeds(this.physicsComponents[key]);
     var collisionPairs = this.findAllCollisionPairs(!0);
     this.resolveCollisionPairs(collisionPairs);
     for (key in this.physicsComponents) this.updatePhysicsLocations(this.physicsComponents[key]);
-}, Plx.Physics.prototype.addCollisionPair = function(typeOne, typeTwo) {
+}, Pxl.Physics.prototype.addCollisionPair = function(typeOne, typeTwo) {
     for (var pairFound = !1, i = 0; i < this.collisionPairs.length; i++) {
         var pair = this.collisionPairs[i];
         (pair.typeOne == typeOne && pair.typeTwo == typeTwo || pair.typeOne == typeTwo && pair.typeTwo == typeOne) && (console.log("Collision pair already added to physics system (typeOne: //{typeOne}, typeTwo: //{typeTwo})"), 
         pairFound = !0);
     }
-    pairFound || (this.collisionPairs.push(new Plx.CollisionPair(typeOne, typeTwo)), 
+    pairFound || (this.collisionPairs.push(new Pxl.CollisionPair(typeOne, typeTwo)), 
     this.physicsComponents.hasOwnProperty(typeOne) || (this.physicsComponents[typeOne] = []), 
     this.physicsComponents.hasOwnProperty(typeTwo) || (this.physicsComponents[typeTwo] = []));
-}, Plx.Physics.prototype.destroy = function() {
+}, Pxl.Physics.prototype.destroy = function() {
     this.scene.beacon.ignore(this, "entityAdded", this.onEntityAdded), this.scene.beacon.ignore(this, "entityRemoved", this.onEntityRemoved), 
     this.scene.beacon.ignore(this, "updated", this.onSceneUpdated, 1);
-}, Plx.CollisionPair = function(typeOne, typeTwo) {
+}, Pxl.CollisionPair = function(typeOne, typeTwo) {
     this.typeOne = typeOne, this.typeTwo = typeTwo;
-}, Plx.PixelBlotRenderer = function() {
-    Plx.System.call(this), this.componentTypes = [ Plx.PixelBlotMap ], this.pixelBlotMaps = [], 
+}, Pxl.PixelBlotRenderer = function() {
+    Pxl.System.call(this), this.componentTypes = [ Pxl.PixelBlotMap ], this.pixelBlotMaps = [], 
     this.beacon.observe(this, "addedToScene", this.onAddedToScene), this.canvas = document.getElementById("canvas"), 
     this.context = this.canvas.getContext("2d"), this.flicker = !1, this.alphaFill = 1;
-}, Plx.PixelBlotRenderer.prototype = Object.create(Plx.System.prototype), Plx.PixelBlotRenderer.prototype.constructor = Plx.PixelBlotRenderer, 
-Plx.PixelBlotRenderer.prototype.onAddedToScene = function() {
+}, Pxl.PixelBlotRenderer.prototype = Object.create(Pxl.System.prototype), Pxl.PixelBlotRenderer.prototype.constructor = Pxl.PixelBlotRenderer, 
+Pxl.PixelBlotRenderer.prototype.onAddedToScene = function() {
     this.scene.beacon.observe(this, "rendered", this.onRendered, 10);
-}, Plx.PixelBlotRenderer.prototype.addComponent = function(component) {
+}, Pxl.PixelBlotRenderer.prototype.addComponent = function(component) {
     this.pixelBlotMaps.push(component);
-}, Plx.PixelBlotRenderer.prototype.removeComponent = function(component) {
+}, Pxl.PixelBlotRenderer.prototype.removeComponent = function(component) {
     for (var j = this.pixelBlotMaps.length - 1; j >= 0; j--) {
         var otherComponent = this.pixelBlotMaps[j];
         component == otherComponent && this.pixelBlotMaps.splice(j, 1);
     }
-}, Plx.PixelBlotRenderer.prototype.onRendered = function(event) {
+}, Pxl.PixelBlotRenderer.prototype.onRendered = function(event) {
     this.context.fillStyle = "rgba(0, 0, 0, " + this.alphaFill + ")", this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (var i = 0; i < this.pixelBlotMaps.length; i++) {
         var blotMap = this.pixelBlotMaps[i];
@@ -989,10 +989,10 @@ Plx.PixelBlotRenderer.prototype.onAddedToScene = function() {
             }
         }
     }
-}, Plx.PixelBlotRenderer.prototype.destroy = function() {
+}, Pxl.PixelBlotRenderer.prototype.destroy = function() {
     this.scene.beacon.ignore(this, "entityRemoved", this.onEntityRemoved), this.scene.beacon.ignore(this, "rendered", this.onRendered, 10);
-}, Plx.PointerSys = function() {
-    Plx.System.call(this), this.componentTypes = [ Plx.PointerCom ], this.pointerComponents = [], 
+}, Pxl.PointerSys = function() {
+    Pxl.System.call(this), this.componentTypes = [ Pxl.PointerCom ], this.pointerComponents = [], 
     this.componentsInDrag = {}, this.pointers = {};
     var _this = this;
     this.mouseDownFunc = function(event) {
@@ -1019,46 +1019,46 @@ Plx.PixelBlotRenderer.prototype.onAddedToScene = function() {
     document.getElementById("canvas").addEventListener("touchmove", this.touchMoveFunc, !1), 
     document.getElementById("canvas").addEventListener("touchcancel", this.touchCancelFunc, !1), 
     document.getElementById("canvas").addEventListener("touchleave", this.touchLeaveFunc, !1);
-}, Plx.PointerSys.prototype = Object.create(Plx.System.prototype), Plx.PointerSys.prototype.constructor = Plx.PointerSys, 
-Plx.PointerSys.prototype.update = function() {}, Plx.PointerSys.prototype.addComponent = function(component) {
+}, Pxl.PointerSys.prototype = Object.create(Pxl.System.prototype), Pxl.PointerSys.prototype.constructor = Pxl.PointerSys, 
+Pxl.PointerSys.prototype.update = function() {}, Pxl.PointerSys.prototype.addComponent = function(component) {
     this.pointerComponents.push(component);
-}, Plx.PointerSys.prototype.removeComponent = function(component) {
+}, Pxl.PointerSys.prototype.removeComponent = function(component) {
     var index = this.pointerComponents.indexOf(component);
     index >= 0 && (this.pointerComponents.splice(index, 1), this.componentsInDrag[component.id] && delete this.componentsInDrag[component.id]);
-}, Plx.PointerSys.prototype.onMouseDown = function(event) {
+}, Pxl.PointerSys.prototype.onMouseDown = function(event) {
     this.mouseDown = !0;
     var rect = document.getElementById("canvas").getBoundingClientRect();
     this.pointerStart("mouse", event.clientX - rect.left, event.clientY - rect.top);
-}, Plx.PointerSys.prototype.onMouseUp = function() {
+}, Pxl.PointerSys.prototype.onMouseUp = function() {
     this.mouseDown = !1, this.pointerEnd("mouse");
-}, Plx.PointerSys.prototype.onMouseMove = function(event) {
+}, Pxl.PointerSys.prototype.onMouseMove = function(event) {
     if (this.mouseDown) {
         var rect = document.getElementById("canvas").getBoundingClientRect();
         this.pointerMove("mouse", event.clientX - rect.left, event.clientY - rect.top);
     }
-}, Plx.PointerSys.prototype.onTouchStart = function(event) {
+}, Pxl.PointerSys.prototype.onTouchStart = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
         var touch = event.changedTouches[i], rect = document.getElementById("canvas").getBoundingClientRect();
         this.pointerStart(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
     }
-}, Plx.PointerSys.prototype.onTouchEnd = function(event) {
+}, Pxl.PointerSys.prototype.onTouchEnd = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
         var touch = event.changedTouches[i];
         this.pointerEnd(touch.identifier);
     }
-}, Plx.PointerSys.prototype.onTouchCancel = function(event) {
+}, Pxl.PointerSys.prototype.onTouchCancel = function(event) {
     this.onTouchEnd(event);
-}, Plx.PointerSys.prototype.onTouchLeave = function(event) {
+}, Pxl.PointerSys.prototype.onTouchLeave = function(event) {
     this.onTouchEnd(event);
-}, Plx.PointerSys.prototype.onTouchMove = function(event) {
+}, Pxl.PointerSys.prototype.onTouchMove = function(event) {
     event.preventDefault();
     for (var i = 0; i < event.changedTouches.length; i++) {
         var touch = event.changedTouches[i], rect = document.getElementById("canvas").getBoundingClientRect();
         this.pointerMove(touch.identifier, touch.clientX - rect.left, touch.clientY - rect.top);
     }
-}, Plx.PointerSys.prototype.pointerStart = function(id, x, y) {
+}, Pxl.PointerSys.prototype.pointerStart = function(id, x, y) {
     x /= this.scene.game.displayRatio, y /= this.scene.game.displayRatio;
     for (var pointer = this.pointers[id] = {
         x: x,
@@ -1075,12 +1075,12 @@ Plx.PointerSys.prototype.update = function() {}, Plx.PointerSys.prototype.addCom
             break;
         }
     }
-}, Plx.PointerSys.prototype.pointerEnd = function(id) {
+}, Pxl.PointerSys.prototype.pointerEnd = function(id) {
     var pointer = this.pointers[id];
     pointer && (pointer.target && (pointer.target.beacon.emit("lifted", null), pointer.target.beacon.emit("exited", null), 
     this.componentsInDrag[pointer.target.id] && (pointer.target.beacon.emit("dragEnded", null), 
     delete this.componentsInDrag[pointer.target.id])), delete this.pointers[id]);
-}, Plx.PointerSys.prototype.pointerMove = function(id, x, y) {
+}, Pxl.PointerSys.prototype.pointerMove = function(id, x, y) {
     x /= this.scene.game.displayRatio, y /= this.scene.game.displayRatio;
     var pointer = this.pointers[id];
     if (pointer || (pointer = this.pointers[id] = {
@@ -1098,7 +1098,7 @@ Plx.PointerSys.prototype.update = function() {}, Plx.PointerSys.prototype.addCom
             break;
         }
     }
-}, Plx.PointerSys.prototype.destroy = function() {
+}, Pxl.PointerSys.prototype.destroy = function() {
     document.getElementById("canvas").removeEventListener("mousedown", this.mouseDownFunc, !1), 
     document.getElementById("canvas").removeEventListener("mouseup", this.mouseUpFunc, !1), 
     document.getElementById("canvas").removeEventListener("mousemove", this.mouseMoveFunc, !1), 
@@ -1107,24 +1107,24 @@ Plx.PointerSys.prototype.update = function() {}, Plx.PointerSys.prototype.addCom
     document.getElementById("canvas").removeEventListener("touchmove", this.touchMoveFunc, !1), 
     document.getElementById("canvas").removeEventListener("touchcancel", this.touchCancelFunc, !1), 
     document.getElementById("canvas").removeEventListener("touchleave", this.touchLeaveFunc, !1);
-}, Plx.SpriteRenderer = function() {
-    Plx.System.call(this), this.componentTypes = [ Plx.Sprite ], this.sprites = [], 
+}, Pxl.SpriteRenderer = function() {
+    Pxl.System.call(this), this.componentTypes = [ Pxl.Sprite ], this.sprites = [], 
     this.beacon.observe(this, "addedToScene", this.onAddedToScene), this.canvas = document.createElement("canvas"), 
     this.context = this.canvas.getContext("2d"), this.displayCanvas = document.getElementById("canvas"), 
     this.displayContext = this.displayCanvas.getContext("2d"), this.smoothImages = !1, 
-    this.camera = new Plx.Point();
-}, Plx.SpriteRenderer.prototype = Object.create(Plx.System.prototype), Plx.SpriteRenderer.prototype.constructor = Plx.SpriteRenderer, 
-Plx.SpriteRenderer.prototype.onAddedToScene = function() {
+    this.camera = new Pxl.Point();
+}, Pxl.SpriteRenderer.prototype = Object.create(Pxl.System.prototype), Pxl.SpriteRenderer.prototype.constructor = Pxl.SpriteRenderer, 
+Pxl.SpriteRenderer.prototype.onAddedToScene = function() {
     this.scene.beacon.observe(this, "added", this.onSceneAddedToGame), this.scene.beacon.observe(this, "rendered", this.onRendered, 10), 
     this.scene.beacon.observe(this, "renderCompleted", this.onRenderCompleted);
-}, Plx.SpriteRenderer.prototype.onSceneAddedToGame = function() {
+}, Pxl.SpriteRenderer.prototype.onSceneAddedToGame = function() {
     this.canvas.width = this.scene.game.width, this.canvas.height = this.scene.game.height, 
     this.scene.game.beacon.observe(this, "displayResized", this.onDisplayResized), this.onDisplayResized();
-}, Plx.SpriteRenderer.prototype.onDisplayResized = function() {
+}, Pxl.SpriteRenderer.prototype.onDisplayResized = function() {
     this.smoothImages || (this.context.imageSmoothingEnabled = !1, this.context.mozImageSmoothingEnabled = !1, 
     this.context.webkitImageSmoothingEnabled = !1, this.displayContext.imageSmoothingEnabled = !1, 
     this.displayContext.mozImageSmoothingEnabled = !1, this.displayContext.webkitImageSmoothingEnabled = !1);
-}, Plx.SpriteRenderer.prototype.addComponent = function(component) {
+}, Pxl.SpriteRenderer.prototype.addComponent = function(component) {
     for (var inserted = !1, i = 0; i < this.sprites.length; i++) {
         var sprite = this.sprites[i];
         if (sprite.z > component.z) {
@@ -1133,16 +1133,16 @@ Plx.SpriteRenderer.prototype.onAddedToScene = function() {
         }
     }
     inserted || this.sprites.push(component), component.beacon.observe(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
-}, Plx.SpriteRenderer.prototype.removeComponent = function(component) {
+}, Pxl.SpriteRenderer.prototype.removeComponent = function(component) {
     for (var i = this.sprites.length - 1; i >= 0; i--) {
         var otherComponent = this.sprites[i];
         component == otherComponent && (component.beacon.ignore(this, "updatedZIndex", this.onSpriteUpdatedZIndex), 
         this.sprites.splice(i, 1));
     }
-}, Plx.SpriteRenderer.prototype.onSpriteUpdatedZIndex = function(event) {
+}, Pxl.SpriteRenderer.prototype.onSpriteUpdatedZIndex = function(event) {
     var sprite = event.beacon.owner;
     this.removeComponent(sprite), this.addComponent(sprite);
-}, Plx.SpriteRenderer.prototype.onRendered = function(event) {
+}, Pxl.SpriteRenderer.prototype.onRendered = function(event) {
     this.context.fillStyle = "rgba(0, 0, 0, 1)", this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (var i = 0; i < this.sprites.length; i++) {
         var sprite = this.sprites[i];
@@ -1162,9 +1162,9 @@ Plx.SpriteRenderer.prototype.onAddedToScene = function() {
         }
     }
     this.beacon.emit("renderingCompleted", null);
-}, Plx.SpriteRenderer.prototype.onRenderCompleted = function() {
+}, Pxl.SpriteRenderer.prototype.onRenderCompleted = function() {
     this.displayContext.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height, 0, 0, this.displayCanvas.width, this.displayCanvas.height);
-}, Plx.SpriteRenderer.prototype.destroy = function() {
+}, Pxl.SpriteRenderer.prototype.destroy = function() {
     this.scene.beacon.ignore(this, "entityAdded", this.onEntityAdded), this.scene.beacon.ignore(this, "entityRemoved", this.onEntityRemoved), 
     this.scene.beacon.ignore(this, "rendered", this.onRendered, 10);
 };

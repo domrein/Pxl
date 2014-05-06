@@ -1,10 +1,10 @@
 var PlayScene = function() {
-  Plx.Scene.call(this);
-  this.addSystem(new Plx.SpriteRenderer());
-  var physics = new Plx.Physics();
+  Pxl.Scene.call(this);
+  this.addSystem(new Pxl.SpriteRenderer());
+  var physics = new Pxl.Physics();
   physics.addCollisionPair("player", "enemy");
   this.addSystem(physics);
-  this.addSystem(new Plx.PointerSys());
+  this.addSystem(new Pxl.PointerSys());
 
   this.beacon.observe(this, "added", this.onAdded);
   this.beacon.observe(this, "updated", this.onUpdated);
@@ -19,7 +19,7 @@ var PlayScene = function() {
   this.enemyCount = 0;
 };
 
-PlayScene.prototype = Object.create(Plx.Scene.prototype);
+PlayScene.prototype = Object.create(Pxl.Scene.prototype);
 PlayScene.prototype.constructor = PlayScene;
 
 PlayScene.prototype.onAdded = function(event) {
@@ -35,12 +35,12 @@ PlayScene.prototype.onAdded = function(event) {
   
   // controls
   var arrowPadding = 10;
-  var rightArrowButton = this.makeEntity("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4}});
+  var rightArrowButton = this.makeEntity("PxlButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4}});
   rightArrowButton.physics.x = this.game.width - rightArrowButton.physics.width - arrowPadding;
   rightArrowButton.physics.y = this.game.height - rightArrowButton.physics.height - arrowPadding;
   rightArrowButton.pointer.beacon.observe(this, "entered", function(event) {_this.rightDown = true;});
   rightArrowButton.pointer.beacon.observe(this, "exited", function(event) {_this.rightDown = false;});
-  var leftArrowButton = this.makeEntity("PlxButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4, flippedX: true}, physics: {x: 90}});
+  var leftArrowButton = this.makeEntity("PxlButton", {sprite: {animName: "ArrowButton", scaleX: 4, scaleY: 4, flippedX: true}, physics: {x: 90}});
   leftArrowButton.physics.x = arrowPadding;
   leftArrowButton.physics.y = this.game.height - leftArrowButton.physics.height - arrowPadding;
   leftArrowButton.pointer.beacon.observe(this, "entered", function(event) {_this.leftDown = true;});

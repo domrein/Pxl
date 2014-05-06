@@ -1,0 +1,11 @@
+{
+  "name": "tight-like-a-dish",
+  "version": "0.0.1",
+  "dependencies": {
+    "grunt": "^0.4.4",
+    "install": "^0.1.7",
+    "grunt-contrib-uglify": "^0.4.0",
+    "npm": "^1.4.7",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

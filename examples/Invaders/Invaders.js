@@ -1,7 +1,7 @@
 var onResize = null;
 var onLoad = function(event) {
   // create game object
-  var game = new Plx.Game(320, 420, PlayScene);
+  var game = new Pxl.Game(320, 420, PlayScene);
 
   onResize = function(event) { game.onDisplayResize(); };
 
@@ -22,7 +22,7 @@ var onLoad = function(event) {
   game.spriteStore.addAnim(["ArrowButton_1"], false, "ArrowButton", 1);
 
   // declare entities
-  var killOnCollide = {name: "killOnCollide", type: Plx.FunctionBinder, params: {initFunc: function() {
+  var killOnCollide = {name: "killOnCollide", type: Pxl.FunctionBinder, params: {initFunc: function() {
     this.entity.fetchComponentByName("physics").beacon.observe(this, "collided", function(event) {
       this.entity.alive = false;
     });
@@ -30,21 +30,21 @@ var onLoad = function(event) {
 
   var scaleFactor = 3;
   game.entityFactory.registerType("Player", [
-    {name: "sprite", type: Plx.Sprite, params: {animName: "Player", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
-    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", friction: .7}},
+    {name: "sprite", type: Pxl.Sprite, params: {animName: "Player", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
+    {name: "physics", type: Pxl.PhysicsComponent, params: {collisionType: "player", friction: .7}},
     killOnCollide,
   ]);
 
   game.entityFactory.registerType("Bullet", [
-    {name: "sprite", type: Plx.Sprite, params: {animName: "Bullet", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
-    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "player", speedY: -7}},
-    {name: "killOffscreen", type: Plx.KillOffscreen, params: {top: true}},
+    {name: "sprite", type: Pxl.Sprite, params: {animName: "Bullet", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
+    {name: "physics", type: Pxl.PhysicsComponent, params: {collisionType: "player", speedY: -7}},
+    {name: "killOffscreen", type: Pxl.KillOffscreen, params: {top: true}},
     killOnCollide,
   ]);
 
   game.entityFactory.registerType("Enemy", [
-    {name: "sprite", type: Plx.Sprite, params: {animName: "Enemy", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
-    {name: "physics", type: Plx.PhysicsComponent, params: {collisionType: "enemy"}},
+    {name: "sprite", type: Pxl.Sprite, params: {animName: "Enemy", autoSizePhysics: true, scaleX: scaleFactor, scaleY: scaleFactor}},
+    {name: "physics", type: Pxl.PhysicsComponent, params: {collisionType: "enemy"}},
     killOnCollide,
   ]);
 
