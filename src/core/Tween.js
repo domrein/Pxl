@@ -85,18 +85,19 @@ Pxl.Tween.prototype.start = function(startValue, endValue, duration) {
 
 Pxl.Tween.prototype.onHeartbeat = function(event) {
   if (this.time == 0) {
-    if (this.property == 'x')
-      this.target.rect.loc.x = this.startValue;
-    if (this.property == 'y')
-      this.target.rect.loc.y = this.startValue;
+    this.target[this.property] = this.startValue;
     this.time++;
   }
   else if (this.time < this.duration) {
     var changeAmount = Pxl.Easing.easeInOutSine(this.time, this.startValue, this.endValue - this.startValue, this.duration) - Pxl.Easing.easeInOutSine(this.time - 1, this.startValue, this.endValue - this.startValue, this.duration);
+    
+    // TODO: the physics system should handle the speed adjustments
     if (this.property == 'x')
       this.target.speedX = changeAmount;
-    if (this.property == 'y')
+    else if (this.property == 'y')
       this.target.speedY = changeAmount;
+    else
+      this.target[this.property] += changeAmount;
     this.time++;
   }
   else {
@@ -104,10 +105,12 @@ Pxl.Tween.prototype.onHeartbeat = function(event) {
       this.target.rect.loc.x = this.endValue;
       this.target.speedX = 0;
     }
-    if (this.property == 'y') {
+    else if (this.property == 'y') {
       this.target.rect.loc.y = this.endValue;
       this.target.speedY = 0;
     }
+    else
+      this.target[this.property] = this.endValue;
     
     this.beacon.emit('completed', {target:this.target}); //TODO: update this event to completed in assimilate
     this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat);
