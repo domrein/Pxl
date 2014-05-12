@@ -33,6 +33,24 @@ Pxl.Sprite.prototype.reset = function() {
   this.autoSizePhysics = false;
 };
 
+Object.defineProperty(Pxl.Sprite.prototype, "anchorX", {
+  get: function() {
+    return this.achor.x;
+  },
+  set: function(value) {
+    this.anchor.x = value;
+  }
+});
+
+Object.defineProperty(Pxl.Sprite.prototype, "anchorY", {
+  get: function() {
+    return this.achor.y;
+  },
+  set: function(value) {
+    this.anchor.y = value;
+  }
+});
+
 Pxl.Sprite.prototype.init = function() {
   Pxl.Component.prototype.init.call(this);
   
