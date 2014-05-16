@@ -28,6 +28,8 @@ Pxl.Timer.prototype.start = function() {
   this.curRep = 0;
   this.curDelay = this.delay;
   this.isRunning = true;
+
+  return this;
 };
 
 Pxl.Timer.prototype.stop = function() {
@@ -35,12 +37,16 @@ Pxl.Timer.prototype.stop = function() {
     this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat);
     this.heartbeatOn = false;
   }
+
+  return this;
 };
 
 Pxl.Timer.prototype.reset = function() {
   this.curCount = 0;
   this.curRep = 0;
   this.curDelay = 0;
+
+  return this;
 };
 
 Pxl.Timer.prototype.onHeartbeat = function(event) {

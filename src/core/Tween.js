@@ -34,17 +34,24 @@
 // @c is the change between the beginning and destination value of the property.
 // @d is the total time of the tween.
 
-Pxl.Tween = function(target, property, heartbeatBeacon, heartbeatEvent) {
+// TODO: curry this and add defaults
+  // we can probably just default heartbeatBeacon to the target and do "updated", delay of zero etc
+Pxl.Tween = function(target, property, heartbeatBeacon, heartbeatEvent, delay, easeFunc) {
+  easeFunc = easeFunc || Pxl.Easing.easeInOutSine;
+  delay = delay || 0;
+
   this.target = target;
   this.property = property;
   this.heartbeatBeacon = heartbeatBeacon;
   this.heartbeatEvent = heartbeatEvent;
   this.beacon = new Pxl.Beacon(this);
-  this.time = 0;
+  this.time = 0 - delay;
   this.heartbeatOn = false;
   this.startValue = 0;
   this.endValue = 0;
   this.duration = 0;
+  this.delay = delay;
+  this.easeFunc = easeFunc;
 };
 
 // utility function to move entity with a physics component
@@ -80,16 +87,18 @@ Pxl.Tween.prototype.start = function(startValue, endValue, duration) {
     this.heartbeatOn = true;
   }
   
-  this.time = 0;
+  this.time = 0 - this.delay;
+
+  return this;
 };
 
 Pxl.Tween.prototype.onHeartbeat = function(event) {
-  if (this.time == 0) {
+  if (this.time <= 0) {
     this.target[this.property] = this.startValue;
     this.time++;
   }
   else if (this.time < this.duration) {
-    var changeAmount = Pxl.Easing.easeInOutSine(this.time, this.startValue, this.endValue - this.startValue, this.duration) - Pxl.Easing.easeInOutSine(this.time - 1, this.startValue, this.endValue - this.startValue, this.duration);
+    var changeAmount = this.easeFunc(this.time, this.startValue, this.endValue - this.startValue, this.duration) - this.easeFunc(this.time - 1, this.startValue, this.endValue - this.startValue, this.duration);
     
     // TODO: the physics system should handle the speed adjustments
     if (this.property == 'x')

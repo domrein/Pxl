@@ -86,8 +86,8 @@ Pxl.SpriteRenderer.prototype.onRendered = function(event) {
       continue;
     if (!sprite.anim || !sprite.frame)
       continue;
-    var spriteX = sprite.loc.x + sprite.speedX * event.data.frameProgress - this.camera.x;
-    var spriteY = sprite.loc.y + sprite.speedY * event.data.frameProgress - this.camera.y;
+    var spriteX = sprite.loc.x + sprite.speedX * event.data.frameProgress - (sprite.anchor.x * sprite.scaleX) - this.camera.x;
+    var spriteY = sprite.loc.y + sprite.speedY * event.data.frameProgress - (sprite.anchor.y * sprite.scaleY) - this.camera.y;
     var drawOffsetX = 0;
     var drawOffsetY = 0;
     var image = this.scene.game.spriteStore.images[sprite.frame.image];
