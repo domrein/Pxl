@@ -1,7 +1,7 @@
-Pxl.SpriteRenderer = function() {
+Pxl.Canvas2dDisplaySys = function() {
   Pxl.System.call(this);
-  this.componentTypes = [Pxl.Sprite];
-  this.sprites = [];
+  this.componentTypes = [Pxl.Sprite, Pxl.Text];
+  this.displayComs = [];
   this.beacon.observe(this, "addedToScene", this.onAddedToScene);
   // internal canvas for drawing
   this.canvas = document.createElement("canvas");
@@ -14,16 +14,16 @@ Pxl.SpriteRenderer = function() {
   this.camera = new Pxl.Point();
 };
 
-Pxl.SpriteRenderer.prototype = Object.create(Pxl.System.prototype);
-Pxl.SpriteRenderer.prototype.constructor = Pxl.SpriteRenderer;
+Pxl.Canvas2dDisplaySys.prototype = Object.create(Pxl.System.prototype);
+Pxl.Canvas2dDisplaySys.prototype.constructor = Pxl.Canvas2dDisplaySys;
 
-Pxl.SpriteRenderer.prototype.onAddedToScene = function(event) {
+Pxl.Canvas2dDisplaySys.prototype.onAddedToScene = function(event) {
   this.scene.beacon.observe(this, "added", this.onSceneAddedToGame);
   this.scene.beacon.observe(this, "rendered", this.onRendered, 10);
   this.scene.beacon.observe(this, "renderCompleted", this.onRenderCompleted);
 };
 
-Pxl.SpriteRenderer.prototype.onSceneAddedToGame = function(event) {
+Pxl.Canvas2dDisplaySys.prototype.onSceneAddedToGame = function(event) {
   // NOTE: whenever you adjust the width/height of the canvas, anything like imageSmoothing will be reset to default
   this.canvas.width = this.scene.game.width;
   this.canvas.height = this.scene.game.height;
@@ -31,7 +31,7 @@ Pxl.SpriteRenderer.prototype.onSceneAddedToGame = function(event) {
   this.onDisplayResized();
 };
 
-Pxl.SpriteRenderer.prototype.onDisplayResized = function(event) {
+Pxl.Canvas2dDisplaySys.prototype.onDisplayResized = function(event) {
   if (!this.smoothImages) {
     // Make sure we aren't smoothing any of our sweet pixel art
     this.context.imageSmoothingEnabled = false;
@@ -45,43 +45,43 @@ Pxl.SpriteRenderer.prototype.onDisplayResized = function(event) {
   }
 };
 
-Pxl.SpriteRenderer.prototype.addComponent = function(component) {
+Pxl.Canvas2dDisplaySys.prototype.addComponent = function(component) {
   var inserted = false
   // TODO: this number is blowing up as we add components!
-  for (var i = 0; i < this.sprites.length; i++) {
-    var sprite = this.sprites[i];
+  for (var i = 0; i < this.displayComs.length; i++) {
+    var sprite = this.displayComs[i];
     if (sprite.z > component.z) {
       inserted = true;
-      this.sprites.splice(i, 0, component);
+      this.displayComs.splice(i, 0, component);
       break;
     }
   }
   if (!inserted)
-    this.sprites.push(component);
+    this.displayComs.push(component);
   component.beacon.observe(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
 };
 
-Pxl.SpriteRenderer.prototype.removeComponent = function(component) {
-  for (var i = this.sprites.length - 1; i >= 0; i--) {
-    var otherComponent = this.sprites[i];
+Pxl.Canvas2dDisplaySys.prototype.removeComponent = function(component) {
+  for (var i = this.displayComs.length - 1; i >= 0; i--) {
+    var otherComponent = this.displayComs[i];
     if (component != otherComponent)
       continue;
     component.beacon.ignore(this, "updatedZIndex", this.onSpriteUpdatedZIndex);
-    this.sprites.splice(i, 1);
+    this.displayComs.splice(i, 1);
   }
 };
 
-Pxl.SpriteRenderer.prototype.onSpriteUpdatedZIndex = function(event) {
+Pxl.Canvas2dDisplaySys.prototype.onSpriteUpdatedZIndex = function(event) {
   var sprite = event.beacon.owner;
   this.removeComponent(sprite);
   this.addComponent(sprite);
 };
 
-Pxl.SpriteRenderer.prototype.onRendered = function(event) {
+Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
   this.context.fillStyle = "rgba(0, 0, 0, 1)";
   this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  for (var i = 0; i < this.sprites.length; i++) {
-    var sprite = this.sprites[i];
+  for (var i = 0; i < this.displayComs.length; i++) {
+    var sprite = this.displayComs[i];
     if (!sprite.visible)
       continue;
     if (!sprite.anim || !sprite.frame)
@@ -126,14 +126,14 @@ Pxl.SpriteRenderer.prototype.onRendered = function(event) {
   this.beacon.emit("renderingCompleted", null);
 };
 
-Pxl.SpriteRenderer.prototype.onRenderCompleted = function(event) {
+Pxl.Canvas2dDisplaySys.prototype.onRenderCompleted = function(event) {
   this.displayContext.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height, 0, 0, this.displayCanvas.width, this.displayCanvas.height);
   // this.displayContext.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height, 0, 0, this.canvas.width, this.canvas.height);
   // this.displayContext.fillStyle = "#FF0000";
   // this.displayContext.fillRect(0, 0, 20, 20);
 };
 
-Pxl.SpriteRenderer.prototype.destroy = function() {
+Pxl.Canvas2dDisplaySys.prototype.destroy = function() {
   this.scene.beacon.ignore(this, "entityAdded", this.onEntityAdded);
   this.scene.beacon.ignore(this, "entityRemoved", this.onEntityRemoved);
   this.scene.beacon.ignore(this, "rendered", this.onRendered, 10);

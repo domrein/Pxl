@@ -13,7 +13,10 @@ Pxl.EntityFactory.prototype.registerType = function(name, componentList) {
   this.entityPool[name] = [];
 };
 
-Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
+Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides, entityArgs) {
+  defaultOverrides = defaultOverrides || null;
+  entityArgs = entityArgs || null;
+  
   // look in pool for type before creating
   var entityType = this.entityTypes[typeName];
   if (!entityType)
@@ -43,12 +46,16 @@ Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides) {
     for (var key in listItem.params)
       component[key] = this.clone(listItem.params[key]);
   }
-  // set any default overrides
-  for (var defaultOverride in defaultOverrides) {
-    component = entity.fetchComponentByName(defaultOverride);
-    for (key in defaultOverrides[defaultOverride])
-      component[key] = this.clone(defaultOverrides[defaultOverride][key]);
+  if (defaultOverrides) {
+    // set any default overrides
+    for (var defaultOverride in defaultOverrides) {
+      component = entity.fetchComponentByName(defaultOverride);
+      for (key in defaultOverrides[defaultOverride])
+        component[key] = this.clone(defaultOverrides[defaultOverride][key]);
+    }
   }
+  if (entityArgs)
+    entity.args = entityArgs;
 
   // call init on components after they've all been created, added and defaults initialized
   for (i = 0; i < entity.components.length; i ++)

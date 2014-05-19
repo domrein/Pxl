@@ -52,6 +52,7 @@ Object.defineProperty(Pxl.PhysicsComponent.prototype, "x", {
   },
   set: function(value) {
     this.rect.loc.x = value;
+    this.beacon.emit("updated", null);
   }
 });
 
@@ -61,6 +62,7 @@ Object.defineProperty(Pxl.PhysicsComponent.prototype, "y", {
   },
   set: function(value) {
     this.rect.loc.y = value;
+    this.beacon.emit("updated", null);
   }
 });
 

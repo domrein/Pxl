@@ -55,7 +55,6 @@ Pxl.Timer.prototype.onHeartbeat = function(event) {
     return;
   }
 
-  this.curCount++;
   if (this.curCount == this.duration) {
     this.curCount = 0;
     this.curRep++;
@@ -66,4 +65,6 @@ Pxl.Timer.prototype.onHeartbeat = function(event) {
       this.heartbeatOn = false;
     }
   }
+  else
+    this.curCount++;
 };

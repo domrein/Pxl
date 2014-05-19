@@ -1,16 +1,13 @@
-Pxl.Sprite = function() {
-  Pxl.Component.call(this);
-  this.loc = new Pxl.Point();
-  this.anchor = new Pxl.Point();
-  this.offset = new Pxl.Point();
+Pxl.TextCom = function() {
+  Pxl.Sprite.call(this);
   this.reset();
 };
 
-Pxl.Sprite.prototype = Object.create(Pxl.Component.prototype);
-Pxl.Sprite.prototype.constructor = Pxl.Sprite;
+Pxl.TextCom.prototype = Object.create(Pxl.Component.prototype);
+Pxl.TextCom.prototype.constructor = Pxl.TextCom;
 
-Pxl.Sprite.prototype.reset = function() {
-  Pxl.Component.prototype.reset.call(this);
+Pxl.TextCom.prototype.reset = function() {
+  Pxl.Sprite.prototype.reset.call(this);
   
   this.loc.reset();
   this.z = 0;
@@ -33,7 +30,7 @@ Pxl.Sprite.prototype.reset = function() {
   this.autoSizePhysics = false;
 };
 
-Object.defineProperty(Pxl.Sprite.prototype, "anchorX", {
+Object.defineProperty(Pxl.TextCom.prototype, "anchorX", {
   get: function() {
     return this.achor.x;
   },
@@ -42,7 +39,7 @@ Object.defineProperty(Pxl.Sprite.prototype, "anchorX", {
   }
 });
 
-Object.defineProperty(Pxl.Sprite.prototype, "anchorY", {
+Object.defineProperty(Pxl.TextCom.prototype, "anchorY", {
   get: function() {
     return this.achor.y;
   },
@@ -51,7 +48,7 @@ Object.defineProperty(Pxl.Sprite.prototype, "anchorY", {
   }
 });
 
-Pxl.Sprite.prototype.init = function() {
+Pxl.TextCom.prototype.init = function() {
   Pxl.Component.prototype.init.call(this);
   
   this.animTimer = new Pxl.Timer(0, -1, 0, this.entity.beacon, "updated");
@@ -70,7 +67,7 @@ Pxl.Sprite.prototype.init = function() {
   }
 };
 
-Pxl.Sprite.prototype.onAnimTimerTimed = function() {
+Pxl.TextCom.prototype.onAnimTimerTimed = function() {
   if (!this.anim.looping && this.frameIndex == this.anim.frames.length - 1) {
     this.animTimer.stop();
     this.beacon.emit("animCompleted", null);
@@ -87,36 +84,36 @@ Pxl.Sprite.prototype.onAnimTimerTimed = function() {
   else if (this.frameIndex >= this.anim.frames.length)
     this.frameIndex = this.anim.frames.length - 1;
   
-  var frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
-  frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
-  this.frame = this.entity.scene.game.spriteStore.frames[frameName];
+  var frameName = this.entity.scene.game.TextComStore.anims[this.animName].frames[this.frameIndex];
+  frameName = this.entity.scene.game.TextComStore.anims[this.animName].frames[this.frameIndex];
+  this.frame = this.entity.scene.game.TextComStore.frames[frameName];
 };
 
-Pxl.Sprite.prototype.onPhysicsUpdated = function() {
+Pxl.TextCom.prototype.onPhysicsUpdated = function() {
   this.loc.x = this.physics.rect.loc.x + this.offset.x;
   this.loc.y = this.physics.rect.loc.y + this.offset.y;
   this.speedX = this.physics.speedX;
   this.speedY = this.physics.speedY;
 };
 
-Pxl.Sprite.prototype.play = function(animName) {
+Pxl.TextCom.prototype.play = function(animName) {
   this.animName = animName;
-  this.anim = this.game.spriteStore.anims[this.animName];
+  this.anim = this.game.TextComStore.anims[this.animName];
   this.frameIndex = 0;
   this.animTimer.duration = this.anim.frameRate;
   this.animTimer.reset();
   if (!this.animTimer.isRunning)
     this.animTimer.start();
   var frameName = this.anim.frames[this.frameIndex];
-  this.frame = this.game.spriteStore.frames[frameName];
+  this.frame = this.game.TextComStore.frames[frameName];
 };
 
-Pxl.Sprite.prototype.pause = function() {
+Pxl.TextCom.prototype.pause = function() {
 };
 
-Pxl.Sprite.prototype.resume = function() {
+Pxl.TextCom.prototype.resume = function() {
 };
 
-Pxl.Sprite.prototype.setZIndex = function() {
+Pxl.TextCom.prototype.setZIndex = function() {
   this.beacon.emit('updatedZIndex', {});
 };

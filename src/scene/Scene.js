@@ -56,8 +56,8 @@ Pxl.Scene.prototype.fetchSystem = function(systemClass) {
 };
 
 // a convenience function to create an entity and add it to the scene
-Pxl.Scene.prototype.makeEntity = function(type, defaultOverrides) {
-  return this.addEntity(this.game.entityFactory.createType(type, defaultOverrides));
+Pxl.Scene.prototype.makeEntity = function(type, defaultOverrides, entityArgs) {
+  return this.addEntity(this.game.entityFactory.createType(type, defaultOverrides, entityArgs));
 };
 
 Pxl.Scene.prototype.addEntity = function(entity) {

@@ -17,6 +17,8 @@ Pxl.Entity.prototype.reset = function() {
   this.alive = true;
   this.scene = null;
   this.game = null;
+  // these arguments can be passed in and accessed by components during the init phase
+  this.args = null;
 };
 
 Pxl.Entity.prototype.update = function() {

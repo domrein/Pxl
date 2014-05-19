@@ -1,6 +1,6 @@
 var PlayScene = function() {
   Pxl.Scene.call(this);
-  this.addSystem(new Pxl.SpriteRenderer());
+  this.addSystem(new Pxl.Canvas2dDisplaySys());
   var physics = new Pxl.Physics();
   physics.addCollisionPair("animal", "animal");
   this.addSystem(physics);
