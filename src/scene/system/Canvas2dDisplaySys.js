@@ -78,29 +78,30 @@ Pxl.Canvas2dDisplaySys.prototype.onSpriteUpdatedZIndex = function(event) {
 };
 
 Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
+  var _this = this;
   this.context.fillStyle = "rgba(0, 0, 0, 1)";
   this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  for (var i = 0; i < this.displayComs.length; i++) {
-    var displayCom = this.displayComs[i];
+  this.displayComs.forEach(function(displayCom) {
     // TODO: move all common displayCom code up here
     if (!displayCom.visible)
-      continue;
+      return;
+    var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - (displayCom.anchor.x * displayCom.scaleX) - _this.camera.x;
+    var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - (displayCom.anchor.y * displayCom.scaleY) - _this.camera.y;
+    
     if (displayCom instanceof Pxl.SpriteCom) {
       if (!displayCom.anim || !displayCom.frame)
-        continue;
-      var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - (displayCom.anchor.x * displayCom.scaleX) - this.camera.x;
-      var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - (displayCom.anchor.y * displayCom.scaleY) - this.camera.y;
+        return;
       var drawOffsetX = 0;
       var drawOffsetY = 0;
-      var image = this.scene.game.spriteStore.images[displayCom.frame.image];
+      var image = _this.scene.game.spriteStore.images[displayCom.frame.image];
       if (displayCom.flippedX || displayCom.flippedY || displayCom.rotation || displayCom.alpha != 1) {
-        this.context.save();
+        _this.context.save();
         // TODO: make flipping work in conjunction with rotation and anchors
         if (displayCom.rotation) {
-          this.context.translate(Math.round(displayComX + displayCom.anchor.x * displayCom.scaleX), Math.round(displayComY + displayCom.anchor.y * displayCom.scaleY));
+          _this.context.translate(Math.round(displayComX + displayCom.anchor.x * displayCom.scaleX), Math.round(displayComY + displayCom.anchor.y * displayCom.scaleY));
           drawOffsetX = -displayCom.anchor.x * displayCom.scaleX;
           drawOffsetY = -displayCom.anchor.y * displayCom.scaleY;
-          this.context.rotate(displayCom.rotation);
+          _this.context.rotate(displayCom.rotation);
           displayComX = 0;
           displayComY = 0;
         }
@@ -109,26 +110,31 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
           var flipY = (displayCom.flippedY) ? 1 : 0;
           var scaleX = (displayCom.flippedX) ? -1 : 1;
           var scaleY = (displayCom.flippedY) ? -1 : 1;
-          this.context.translate(Math.round(displayComX + displayCom.frame.width * displayCom.scaleX * flipX), Math.round(displayComY + displayCom.frame.height * displayCom.scaleY * flipY));
-          this.context.scale(scaleX, scaleY);
+          _this.context.translate(Math.round(displayComX + displayCom.frame.width * displayCom.scaleX * flipX), Math.round(displayComY + displayCom.frame.height * displayCom.scaleY * flipY));
+          _this.context.scale(scaleX, scaleY);
           displayComX = 0;
           displayComY = 0;
         }
-        // this.context.fillStyle = "#00FF00";
-        // this.context.strokeRect(drawOffsetX, drawOffsetY, Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
-        this.context.drawImage(image, displayCom.frame.x, displayCom.frame.y, displayCom.frame.width, displayCom.frame.height, 0 + drawOffsetX, 0 + drawOffsetY, Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
-        this.context.restore();
+        // _this.context.fillStyle = "#00FF00";
+        // _this.context.strokeRect(drawOffsetX, drawOffsetY, Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
+        _this.context.drawImage(image, displayCom.frame.x, displayCom.frame.y, displayCom.frame.width, displayCom.frame.height, 0 + drawOffsetX, 0 + drawOffsetY, Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
+        _this.context.restore();
       }
       else {
-        // this.context.fillStyle = "#00FF00";
-        // this.context.strokeRect(displayComX, displayComY, Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
-        this.context.drawImage(image, displayCom.frame.x, displayCom.frame.y, displayCom.frame.width, displayCom.frame.height, Math.round(displayComX), Math.round(displayComY), Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
+        // _this.context.fillStyle = "#00FF00";
+        // _this.context.strokeRect(displayComX, displayComY, Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
+        _this.context.drawImage(image, displayCom.frame.x, displayCom.frame.y, displayCom.frame.width, displayCom.frame.height, Math.round(displayComX), Math.round(displayComY), Math.round(displayCom.frame.width * displayCom.scaleX), Math.round(displayCom.frame.height * displayCom.scaleY));
       }
     }
     else if (displayCom instanceof Pxl.TextCom) {
-
+      var widthTotal = 0;
+      displayCom.frames.forEach(function(letterFrame) {
+        image = _this.scene.game.spriteStore.images[letterFrame.image];
+        _this.context.drawImage(image, letterFrame.x, letterFrame.y, letterFrame.width, letterFrame.height, Math.round(displayComX + widthTotal), Math.round(displayComY), Math.round(letterFrame.width), Math.round(letterFrame.height));
+        widthTotal += letterFrame.width;
+      });
     }
-  }
+  });
   this.beacon.emit("renderingCompleted", null);
 };
 

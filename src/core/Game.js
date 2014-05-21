@@ -55,6 +55,10 @@ Pxl.Game = function(width, height, firstSceneClass) {
     {type: Pxl.PhysicsComponent, name: "physics", params: {}},
     {type: Pxl.SpriteCom, name: "sprite", params: {}},
   ]);
+  this.entityFactory.registerType("PxlTextent", [
+    {type: Pxl.PhysicsComponent, name: "physics", params: {}},
+    {type: Pxl.TextCom, name: "text", params: {}},
+  ]);
 };
 
 Pxl.Game.prototype.init = function() {
