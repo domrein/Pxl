@@ -115,5 +115,5 @@ Pxl.TextCom.prototype.resume = function() {
 };
 
 Pxl.TextCom.prototype.setZIndex = function() {
-  this.beacon.emit('updatedZIndex', {});
+  this.beacon.emit('updatedLayerIndex', {});
 };

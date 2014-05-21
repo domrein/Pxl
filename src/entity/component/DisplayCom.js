@@ -13,7 +13,7 @@ Pxl.DisplayCom.prototype.reset = function() {
   Pxl.Component.prototype.reset.call(this);
   
   this.loc.reset();
-  this.z = 0;
+  this._layerIndex = 0;
   this.visible = true;
   this.speedX = 0;
   this.speedY = 0;
@@ -46,14 +46,14 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "anchorY", {
   }
 });
 
-Object.defineProperty(Pxl.DisplayCom.prototype, "z", {
+Object.defineProperty(Pxl.DisplayCom.prototype, "layerIndex", {
   get: function() {
-    return this.z;
+    return this._layerIndex;
   },
   set: function(value) {
-    this.z = value;
+    this._layerIndex = value;
     // TODO: this should only be dispatched if it's already been added to display system
-    this.beacon.emit('updatedZIndex', {});
+    this.beacon.emit('updatedLayerIndex', {});
   }
 });
 
@@ -63,8 +63,7 @@ Pxl.DisplayCom.prototype.init = function() {
   this.physics = this.entity.fetchComponent(Pxl.PhysicsComponent);
   if (this.physics != null) {
     this.physics.beacon.observe(this, "updated", this.onPhysicsUpdated);
-    if (this.autoSizePhysics)
-      this.sizePhysics();
+    this.onPhysicsUpdated();
   }
 };
 

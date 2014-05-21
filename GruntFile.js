@@ -18,6 +18,7 @@ module.exports = function(grunt) {
             'src/entity/Entity.js',
             'src/entity/EntityFactory.js',
             'src/entity/component/Component.js',
+            'src/entity/component/DataCom.js',
             'src/entity/component/KillOffscreen.js',
             'src/entity/component/PhysicsComponent.js',
             'src/entity/component/PixelBlotMap.js',

@@ -89,6 +89,9 @@ Pxl.Tween.prototype.start = function(startValue, endValue, duration) {
   
   this.time = 0 - this.delay;
 
+  // set to init value
+  this.target[this.property] = this.startValue;
+
   return this;
 };
 

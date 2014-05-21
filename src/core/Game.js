@@ -47,13 +47,13 @@ Pxl.Game = function(width, height, firstSceneClass) {
   // TODO: move the default entity types somewhere more appropriate
   this.entityFactory.registerType("PxlButton", [
     {type: Pxl.PhysicsComponent, name: "physics", params: {}},
-    {type: Pxl.Sprite, name: "sprite", params: {autoSizePhysics: true}},
+    {type: Pxl.SpriteCom, name: "sprite", params: {autoSizePhysics: true}},
     {type: Pxl.PointerCom, name: "pointer", params: {}},
     {type: Pxl.DataCom, name: "data", params: {}},
   ]);
   this.entityFactory.registerType("PxlSprient", [
     {type: Pxl.PhysicsComponent, name: "physics", params: {}},
-    {type: Pxl.Sprite, name: "sprite", params: {}},
+    {type: Pxl.SpriteCom, name: "sprite", params: {}},
   ]);
 };
 
