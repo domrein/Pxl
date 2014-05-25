@@ -26,6 +26,7 @@ Pxl.DisplayCom.prototype.reset = function() {
   this.flippedY = false;
   this.alpha = 1;
   this.autoSizePhysics = false;
+  this.lerp = 1;
 };
 
 Object.defineProperty(Pxl.DisplayCom.prototype, "anchorX", {

@@ -85,8 +85,8 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
     // TODO: move all common displayCom code up here
     if (!displayCom.visible)
       return;
-    var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - (displayCom.anchor.x * displayCom.scaleX) - _this.camera.x;
-    var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - (displayCom.anchor.y * displayCom.scaleY) - _this.camera.y;
+    var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - (displayCom.anchor.x * displayCom.scaleX) - _this.camera.x * displayCom.lerp;
+    var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - (displayCom.anchor.y * displayCom.scaleY) - _this.camera.y * displayCom.lerp;
     
     if (displayCom instanceof Pxl.SpriteCom) {
       if (!displayCom.anim || !displayCom.frame)

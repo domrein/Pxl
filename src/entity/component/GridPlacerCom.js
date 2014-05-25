@@ -1,9 +1,6 @@
 Pxl.GridPlacerCom = function() {
   Pxl.Component.call(this);
-  this.data = {};
-  // grid is a comma delimeted list of strings. "." means nothing is in that spot. "x" means that spot is occuppied by the item
-  this.grid = [];
-  this.gridCell = null; // for tracking where in the grid the item is
+  this.reset();
 };
 
 Pxl.GridPlacerCom.prototype = Object.create(Pxl.Component.prototype);
@@ -26,6 +23,9 @@ Object.defineProperty(Pxl.GridPlacerCom.prototype, "height", {
 
 Pxl.GridPlacerCom.prototype.reset = function() {
   Pxl.Component.prototype.reset.call(this);
+  this.data = {};
+  this.grid = [];
+  this.gridCell = null;
 };
 
 Pxl.GridPlacerCom.prototype.init = function() {

@@ -95,7 +95,18 @@ Pxl.Tween.prototype.start = function(startValue, endValue, duration) {
   return this;
 };
 
+Pxl.Tween.prototype.stop = function() {
+  if (this.heartbeatOn) {
+    this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat);
+    this.heartbeatOn = false;
+  }
+  
+  return this;
+};
+
 Pxl.Tween.prototype.onHeartbeat = function(event) {
+  // if (this.target instanceof Pxl.Point)
+  //   console.log();
   if (this.time <= 0) {
     this.target[this.property] = this.startValue;
     this.time++;
@@ -104,9 +115,9 @@ Pxl.Tween.prototype.onHeartbeat = function(event) {
     var changeAmount = this.easeFunc(this.time, this.startValue, this.endValue - this.startValue, this.duration) - this.easeFunc(this.time - 1, this.startValue, this.endValue - this.startValue, this.duration);
     
     // TODO: the physics system should handle the speed adjustments
-    if (this.property == 'x')
+    if (this.property == 'x' && this.target.hasOwnProperty('speedX'))
       this.target.speedX = changeAmount;
-    else if (this.property == 'y')
+    else if (this.property == 'y' && this.target.hasOwnProperty('speedY'))
       this.target.speedY = changeAmount;
     else
       this.target[this.property] += changeAmount;
@@ -114,12 +125,14 @@ Pxl.Tween.prototype.onHeartbeat = function(event) {
   }
   else {
     if (this.property == 'x') {
-      this.target.rect.loc.x = this.endValue;
-      this.target.speedX = 0;
+      this.target.x = this.endValue;
+      if (this.target.hasOwnProperty('speedX'))
+        this.target.speedX = 0;
     }
     else if (this.property == 'y') {
-      this.target.rect.loc.y = this.endValue;
-      this.target.speedY = 0;
+      this.target.y = this.endValue;
+      if (this.target.hasOwnProperty('speedY'))
+        this.target.speedY = 0;
     }
     else
       this.target[this.property] = this.endValue;
@@ -128,8 +141,8 @@ Pxl.Tween.prototype.onHeartbeat = function(event) {
     this.heartbeatBeacon.ignore(this, this.heartbeatEvent, this.onHeartbeat);
     this.heartbeatOn = false;
   }
-
-  this.target.beacon.emit('updated', null);
+  if (this.target.beacon)
+    this.target.beacon.emit('updated', null);
 };
 
 Pxl.Tween.prototype.destroy = function() {
