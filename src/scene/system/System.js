@@ -38,6 +38,7 @@ Pxl.System.prototype.onEntityRemoved = function(event) {
 
 Pxl.System.prototype.addComponent = function(component) {
   this.components.push(component);
+  component.system = this;
 };
 
 Pxl.System.prototype.removeComponent = function(component) {

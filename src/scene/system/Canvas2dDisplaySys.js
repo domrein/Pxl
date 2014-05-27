@@ -1,7 +1,7 @@
 Pxl.Canvas2dDisplaySys = function() {
   Pxl.System.call(this);
   this.componentTypes = [Pxl.SpriteCom, Pxl.TextCom];
-  this.displayComs = [];
+  this.sortedDisplayComs = [];
   this.beacon.observe(this, "addedToScene", this.onAddedToScene);
   // internal canvas for drawing
   this.canvas = document.createElement("canvas");
@@ -46,28 +46,30 @@ Pxl.Canvas2dDisplaySys.prototype.onDisplayResized = function(event) {
 };
 
 Pxl.Canvas2dDisplaySys.prototype.addComponent = function(component) {
-  var inserted = false
+  Pxl.System.prototype.addComponent.call(this, component);
+  var inserted = false;
   // TODO: this number is blowing up as we add components!
-  for (var i = 0; i < this.displayComs.length; i++) {
-    var sprite = this.displayComs[i];
+  for (var i = 0; i < this.sortedDisplayComs.length; i++) {
+    var sprite = this.sortedDisplayComs[i];
     if (sprite.z > component.z) {
       inserted = true;
-      this.displayComs.splice(i, 0, component);
+      this.sortedDisplayComs.splice(i, 0, component);
       break;
     }
   }
   if (!inserted)
-    this.displayComs.push(component);
+    this.sortedDisplayComs.push(component);
   component.beacon.observe(this, "updatedLayerIndex", this.onSpriteUpdatedZIndex);
 };
 
 Pxl.Canvas2dDisplaySys.prototype.removeComponent = function(component) {
-  for (var i = this.displayComs.length - 1; i >= 0; i--) {
-    var otherComponent = this.displayComs[i];
+  Pxl.System.prototype.removeComponent.call(this, component);
+  for (var i = this.sortedDisplayComs.length - 1; i >= 0; i--) {
+    var otherComponent = this.sortedDisplayComs[i];
     if (component != otherComponent)
       continue;
     component.beacon.ignore(this, "updatedLayerIndex", this.onSpriteUpdatedZIndex);
-    this.displayComs.splice(i, 1);
+    this.sortedDisplayComs.splice(i, 1);
   }
 };
 
@@ -81,7 +83,7 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
   var _this = this;
   this.context.fillStyle = "rgba(0, 0, 0, 1)";
   this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  this.displayComs.forEach(function(displayCom) {
+  this.sortedDisplayComs.forEach(function(displayCom) {
     // TODO: move all common displayCom code up here
     if (!displayCom.visible)
       return;

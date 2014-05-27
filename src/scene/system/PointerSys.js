@@ -1,9 +1,8 @@
 Pxl.PointerSys = function() {
   Pxl.System.call(this);
   this.componentTypes = [Pxl.PointerCom];
-  this.pointerComponents = [];
   this.componentsInDrag = {};
-  
+
   // this.pointers is mouse and touch data combined
   this.pointers = {};
 
@@ -37,13 +36,13 @@ Pxl.PointerSys.prototype.update = function() {
 };
 
 Pxl.PointerSys.prototype.addComponent = function(component) {
-  this.pointerComponents.push(component);
+  Pxl.System.prototype.addComponent.call(this, component);
 };
 
 Pxl.PointerSys.prototype.removeComponent = function(component) {
-  var index = this.pointerComponents.indexOf(component);
+  var index = this.components.indexOf(component);
   if (index >= 0) {
-    this.pointerComponents.splice(index, 1);
+    this.components.splice(index, 1);
     if (this.componentsInDrag[component.id])
       delete this.componentsInDrag[component.id];
   }
@@ -105,10 +104,16 @@ Pxl.PointerSys.prototype.pointerStart = function(id, x, y) {
   // scale x, y
   x = x / this.scene.game.displayRatio;
   y = y / this.scene.game.displayRatio;
+  if (this.cameraOffset) {
+    x += this.cameraOffset.x;
+    y += this.cameraOffset.y;
+    console.log("x: " + x);
+    console.log("y: " + y);
+  }
 
   var pointer = this.pointers[id] = {x: x, y: y, target: null};
-  for (var i = 0; i < this.pointerComponents.length; i ++) {
-    var pointerComponent = this.pointerComponents[i];
+  for (var i = 0; i < this.components.length; i ++) {
+    var pointerComponent = this.components[i];
     if (!pointerComponent.enabled)
       continue;
     if (pointerComponent.collisionCheck(pointer.x, pointer.y)) {
@@ -154,6 +159,10 @@ Pxl.PointerSys.prototype.pointerMove = function(id, x, y) {
   // scale x, y
   x = x / this.scene.game.displayRatio;
   y = y / this.scene.game.displayRatio;
+  if (this.cameraOffset) {
+    x += this.cameraOffset.x;
+    y += this.cameraOffset.y;
+  }
 
   var pointer = this.pointers[id];
   if (!pointer) {
@@ -177,8 +186,8 @@ Pxl.PointerSys.prototype.pointerMove = function(id, x, y) {
     }
   }
   else {
-    for (var i = 0; i < this.pointerComponents.length; i ++) {
-      var pointerComponent = this.pointerComponents[i];
+    for (var i = 0; i < this.components.length; i ++) {
+      var pointerComponent = this.components[i];
       if (!pointerComponent.enabled)
         continue;
       if (pointerComponent.collisionCheck(pointer.x, pointer.y)) {

@@ -6,6 +6,7 @@ Pxl.Component = function() {
   this.id = Pxl.Component.idCounter++;
   this.data = {};
   this.initFunc = null;
+  this.system = null;
 };
 
 Pxl.Component.idCounter = 0;

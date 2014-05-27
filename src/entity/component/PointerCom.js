@@ -16,12 +16,18 @@ Pxl.PointerCom.prototype.reset = function() {
   this.colCheck = null; // for overriding collision check
   this.syncLoc = null; // for overriding syncLocation
   this.lastTapTime = -1;
+  
+  // component dependencies
+  this.physics = null;
+  this.display = null;
 };
 
 Pxl.PointerCom.prototype.init = function() {
   Pxl.Component.prototype.init.call(this);
 
-  this.physics = this.entity.fetchComponent(Pxl.PhysicsComponent);
+  this.physics = this.entity.cm.physics;
+  this.display = this.entity.cm.sprite; // TODO: sprite should be renamed display
+
   if (this.colCheck)
     this.colCheck = this.colCheck.bind(this);
   if (this.syncLoc)
@@ -29,6 +35,8 @@ Pxl.PointerCom.prototype.init = function() {
 };
 
 Pxl.PointerCom.prototype.collisionCheck = function(x, y) {
+  x += this.display.system.camera.x * this.display.lerp;
+  y += this.display.system.camera.y * this.display.lerp;
   if (this.colCheck)
     return this.colCheck(x, y);
 

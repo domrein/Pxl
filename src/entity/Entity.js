@@ -4,6 +4,7 @@ Pxl.Entity = function() {
   this.id = Pxl.Entity.idCounter++;
   this.components = [];
   this.componentMap = {};
+  this.cm = this.componentMap;
   this.typeName = null;
   this.reset();
 };
