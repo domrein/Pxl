@@ -18,14 +18,14 @@ Pxl.KeyboardInput.prototype.constructor = Pxl.KeyboardInput;
 // [KeyboardEvent] event
 Pxl.KeyboardInput.prototype.onKeyDown = function(event) {
   this.keys[event.keyCode] = true;
-  this.beacon.emit('keyDown', {keyCode:event.keyCode});
+  this.beacon.emit("keyDown", {keyCode:event.keyCode});
   this.beacon.emit(this.translateKeyCode(event.keyCode) + "Down", null);
 };
 
 // [KeyboardEvent] event
 Pxl.KeyboardInput.prototype.onKeyUp = function(event) {
   this.keys[event.keyCode] = false;
-  this.beacon.emit('keyUp', {keyCode:event.keyCode});
+  this.beacon.emit("keyUp", {keyCode:event.keyCode});
   this.beacon.emit(this.translateKeyCode(event.keyCode) + "Up", null);
 };
 
@@ -44,7 +44,7 @@ Pxl.KeyboardInput.prototype.getKeyDown = function(keyName) {
 };
 
 Pxl.KeyboardInput.prototype.translateKeyCode = function(keyCode) {
-  keyName = "";
+  var keyName = "";
   switch (keyCode) {
     case 32: keyName = "space"; break;
     case 37: keyName = "left"; break;

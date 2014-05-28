@@ -14,6 +14,7 @@ Pxl.Component.idCounter = 0;
 // used for resetting state. Called whenever parent entity is recycled
 Pxl.Component.prototype.reset = function() {
   this.beacon.reset();
+  this.data = {};
 };
 
 // TODO: have a custom function run at beginning and end of init call

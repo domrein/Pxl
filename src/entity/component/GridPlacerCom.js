@@ -16,14 +16,34 @@ Object.defineProperty(Pxl.GridPlacerCom.prototype, "width", {
 
 Object.defineProperty(Pxl.GridPlacerCom.prototype, "height", {
   get: function() {
-    return this.grid.length
+    return this.grid.length;
   }
 });
 
+Pxl.GridPlacerCom.prototype.rotate = function() {
+  var rotatedGrid = [];
+  while (rotatedGrid.length < this.width)
+    rotatedGrid.push("");
+
+  for (var i = this.height - 1; i >= 0; i --) {
+    for (var j = 0; j < this.width; j ++) {
+      rotatedGrid[j] += this.grid[i][j];
+    }
+  }
+
+  this.grid = rotatedGrid;
+};
+
+// [x.x]
+// [...]
+// [xxx]
+
+// [x.x]
+// [x..]
+// [x.x]
 
 Pxl.GridPlacerCom.prototype.reset = function() {
   Pxl.Component.prototype.reset.call(this);
-  this.data = {};
   this.grid = [];
   this.gridCell = null;
 };

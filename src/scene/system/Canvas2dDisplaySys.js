@@ -50,8 +50,8 @@ Pxl.Canvas2dDisplaySys.prototype.addComponent = function(component) {
   var inserted = false;
   // TODO: this number is blowing up as we add components!
   for (var i = 0; i < this.sortedDisplayComs.length; i++) {
-    var sprite = this.sortedDisplayComs[i];
-    if (sprite.z > component.z) {
+    var displayCom = this.sortedDisplayComs[i];
+    if (displayCom.layerIndex > component.layerIndex) {
       inserted = true;
       this.sortedDisplayComs.splice(i, 0, component);
       break;
@@ -59,7 +59,7 @@ Pxl.Canvas2dDisplaySys.prototype.addComponent = function(component) {
   }
   if (!inserted)
     this.sortedDisplayComs.push(component);
-  component.beacon.observe(this, "updatedLayerIndex", this.onSpriteUpdatedZIndex);
+  component.beacon.observe(this, "updatedLayerIndex", this.onDisplayComUpdatedLayerIndex);
 };
 
 Pxl.Canvas2dDisplaySys.prototype.removeComponent = function(component) {
@@ -68,15 +68,15 @@ Pxl.Canvas2dDisplaySys.prototype.removeComponent = function(component) {
     var otherComponent = this.sortedDisplayComs[i];
     if (component != otherComponent)
       continue;
-    component.beacon.ignore(this, "updatedLayerIndex", this.onSpriteUpdatedZIndex);
+    component.beacon.ignore(this, "updatedLayerIndex", this.onDisplayComUpdatedLayerIndex);
     this.sortedDisplayComs.splice(i, 1);
   }
 };
 
-Pxl.Canvas2dDisplaySys.prototype.onSpriteUpdatedZIndex = function(event) {
-  var sprite = event.beacon.owner;
-  this.removeComponent(sprite);
-  this.addComponent(sprite);
+Pxl.Canvas2dDisplaySys.prototype.onDisplayComUpdatedLayerIndex = function(event) {
+  var displayCom = event.beacon.owner;
+  this.removeComponent(displayCom);
+  this.addComponent(displayCom);
 };
 
 Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
