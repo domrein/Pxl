@@ -117,7 +117,10 @@ Pxl.PointerSys.prototype.pointerStart = function(id, x, y) {
     if (!pointerComponent.enabled)
       continue;
     if (pointerComponent.collisionCheck(pointer.x, pointer.y)) {
-      pointerComponent.beacon.emit("tapped", null);
+      pointer.target = pointerComponent;
+      var localX = pointerComponent.globalToLocalX(x) - pointer.target.physics.x;
+      var localY = pointerComponent.globalToLocalY(y) - pointer.target.physics.y;
+      pointerComponent.beacon.emit("tapped", {localX: localX, localY: localY});
       pointerComponent.beacon.emit("entered", null);
       if (this.scene.game.time - pointerComponent.lastTapTime < 250) {
         pointerComponent.beacon.emit("doubleTapped", null);
@@ -125,14 +128,13 @@ Pxl.PointerSys.prototype.pointerStart = function(id, x, y) {
       }
       else
         pointerComponent.lastTapTime = this.scene.game.time;
-      pointer.target = pointerComponent;
       if (pointerComponent.draggable && !this.componentsInDrag[pointerComponent.id]) {
         this.componentsInDrag[pointerComponent.id] = {
-          xOffset: x - pointer.target.physics.x,
-          yOffset: y - pointer.target.physics.y
+          localX: localX,
+          localY: localY
         };
         pointerComponent.dragStart = new Pxl.Point(pointer.target.physics.x, pointer.target.physics.y);
-        pointerComponent.beacon.emit("dragStarted", null);
+        pointerComponent.beacon.emit("dragStarted", {localX: localX, localY: localY});
       }
       break;
     }
@@ -172,9 +174,9 @@ Pxl.PointerSys.prototype.pointerMove = function(id, x, y) {
   pointer.y = y;
   if (pointer.target) {
     if (this.componentsInDrag[pointer.target.id]) {
-      var xOffset = this.componentsInDrag[pointer.target.id].xOffset;
-      var yOffset = this.componentsInDrag[pointer.target.id].yOffset;
-      pointer.target.syncLocation(x, y, xOffset, yOffset);
+      var localX = this.componentsInDrag[pointer.target.id].localX;
+      var localY = this.componentsInDrag[pointer.target.id].localY;
+      pointer.target.syncLocation(x, y, localX, localY);
     }
     else {
       if (pointer.target.collisionCheck(pointer.x, pointer.y)) {

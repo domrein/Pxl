@@ -87,8 +87,10 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
     // TODO: move all common displayCom code up here
     if (!displayCom.visible)
       return;
-    var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - (displayCom.anchor.x * displayCom.scaleX) - _this.camera.x * displayCom.lerp;
-    var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - (displayCom.anchor.y * displayCom.scaleY) - _this.camera.y * displayCom.lerp;
+    var offsetSumX = (displayCom.anchorX * displayCom.scaleX) - displayCom.offsetX * displayCom.scaleX;
+    var offsetSumY = (displayCom.anchorY * displayCom.scaleY) - displayCom.offsetY * displayCom.scaleY;
+    var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - offsetSumX - _this.camera.x * displayCom.lerp;
+    var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - offsetSumY - _this.camera.y * displayCom.lerp;
     
     if (displayCom instanceof Pxl.SpriteCom) {
       if (!displayCom.anim || !displayCom.frame)
@@ -100,9 +102,9 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
         _this.context.save();
         // TODO: make flipping work in conjunction with rotation and anchors
         if (displayCom.rotation) {
-          _this.context.translate(Math.round(displayComX + displayCom.anchor.x * displayCom.scaleX), Math.round(displayComY + displayCom.anchor.y * displayCom.scaleY));
-          drawOffsetX = -displayCom.anchor.x * displayCom.scaleX;
-          drawOffsetY = -displayCom.anchor.y * displayCom.scaleY;
+          _this.context.translate(Math.round(displayComX + displayCom.anchorX), Math.round(displayComY + displayCom.anchorY));
+          drawOffsetX = -displayCom.anchorX;
+          drawOffsetY = -displayCom.anchorY;
           _this.context.rotate(displayCom.rotation);
           displayComX = 0;
           displayComY = 0;

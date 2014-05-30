@@ -31,7 +31,7 @@ Pxl.DisplayCom.prototype.reset = function() {
 
 Object.defineProperty(Pxl.DisplayCom.prototype, "anchorX", {
   get: function() {
-    return this.achor.x;
+    return this.anchor.x;
   },
   set: function(value) {
     this.anchor.x = value;
@@ -40,10 +40,28 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "anchorX", {
 
 Object.defineProperty(Pxl.DisplayCom.prototype, "anchorY", {
   get: function() {
-    return this.achor.y;
+    return this.anchor.y;
   },
   set: function(value) {
     this.anchor.y = value;
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "offsetX", {
+  get: function() {
+    return this.offset.x;
+  },
+  set: function(value) {
+    this.offset.x = value;
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "offsetY", {
+  get: function() {
+    return this.offset.y;
+  },
+  set: function(value) {
+    this.offset.y = value;
   }
 });
 
@@ -72,8 +90,8 @@ Pxl.DisplayCom.prototype.sizePhysics = function() {
 };
 
 Pxl.DisplayCom.prototype.onPhysicsUpdated = function() {
-  this.loc.x = this.physics.rect.loc.x + this.offset.x;
-  this.loc.y = this.physics.rect.loc.y + this.offset.y;
+  this.loc.x = this.physics.rect.loc.x;
+  this.loc.y = this.physics.rect.loc.y;
   this.speedX = this.physics.speedX;
   this.speedY = this.physics.speedY;
 };

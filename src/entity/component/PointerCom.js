@@ -34,9 +34,19 @@ Pxl.PointerCom.prototype.init = function() {
     this.syncLoc = this.syncLoc.bind(this);
 };
 
-Pxl.PointerCom.prototype.collisionCheck = function(x, y) {
+Pxl.PointerCom.prototype.globalToLocalX = function(x) {
   x += this.display.system.camera.x * this.display.lerp;
+  return x;
+};
+
+Pxl.PointerCom.prototype.globalToLocalY = function(y) {
   y += this.display.system.camera.y * this.display.lerp;
+  return y;
+};
+
+Pxl.PointerCom.prototype.collisionCheck = function(x, y) {
+  x = this.globalToLocalX(x);
+  y = this.globalToLocalY(y);
   if (this.colCheck)
     return this.colCheck(x, y);
 
@@ -46,15 +56,15 @@ Pxl.PointerCom.prototype.collisionCheck = function(x, y) {
   return false;
 };
 
-Pxl.PointerCom.prototype.syncLocation = function(x, y, xOffset, yOffset) {
+Pxl.PointerCom.prototype.syncLocation = function(x, y, localX, localY) {
   if (this.syncLoc) {
-    this.syncLoc(x, y);
+    this.syncLoc(x, y, localX, localY);
     return;
   }
-
+  
   // TODO: add in speed so that it animates smoothly
   // this.physicsComponent.speedX = x - this.physicsComponent.rect.loc.x
   // this.physicsComponent.speedY = y - this.physicsComponent.rect.loc.y
-  this.physics.x = x - xOffset;
-  this.physics.y = y - yOffset;
+  this.physics.x = x - localX;
+  this.physics.y = y - localY;
 };
