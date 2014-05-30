@@ -18,8 +18,8 @@ Pxl.GridPlacerSys.prototype.constructor = Pxl.GridPlacerSys;
 Pxl.GridPlacerSys.prototype.addComponent = function(component) {
   Pxl.System.prototype.addComponent.call(this, component);
   // TODO: make all the dependencies optional
-  component.entity.componentMap.pointer.beacon.observe(this, "dragStarted", this.onComponentDragStarted);
-  component.entity.componentMap.pointer.beacon.observe(this, "dragEnded", this.onComponentDragEnded);
+  component.entity.cm.pointer.beacon.observe(this, "dragStarted", this.onComponentDragStarted);
+  component.entity.cm.pointer.beacon.observe(this, "dragEnded", this.onComponentDragEnded);
 };
 
 Pxl.GridPlacerSys.prototype.resizeGrid = function(width, height) {
@@ -33,14 +33,39 @@ Pxl.GridPlacerSys.prototype.update = function() {
 };
 
 Pxl.GridPlacerSys.prototype.onComponentDragStarted = function(event) {
-  this.rebuildGrid(event.beacon.owner.entity.componentMap.gridPlacer);
+  this.rebuildGrid(event.beacon.owner.entity.cm.gridPlacer);
 };
 
 Pxl.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var physics = event.beacon.owner.physics;
-  var gridPlacer = event.beacon.owner.entity.componentMap.gridPlacer;
-  var x = Math.round((physics.x - this.gridOffset.x) / this.gridCellSize);
-  var y = Math.round((physics.y - this.gridOffset.y) / this.gridCellSize);
+  var display = event.beacon.owner.display;
+  // get the size of the frame
+  // rotate width/height accordingly
+  // calculate offsets
+  var gridPlacer = event.beacon.owner.entity.cm.gridPlacer;
+  var width = gridPlacer.width * this.gridCellSize;
+  var height = gridPlacer.height * this.gridCellSize;
+  if (display.rotation == 0) {
+    var myX = physics.x;
+    var myY = physics.y;
+  }
+  else if (display.rotation == Math.PI / 2) {
+    // myX = physics.x + display.offsetY - width;
+    // myY = physics.y + display.offsetX - height;
+    console.log('<here>');
+    console.log(physics.x);
+    console.log(display.offsetX);
+    console.log(width);
+    console.log('</here>');
+    myX = physics.x + display.offsetX + display.offsetY - width;
+    myY = physics.y + display.offsetY - display.offsetX;
+  }
+
+  console.log(myX);
+  console.log(myY);
+
+  var x = Math.round((myX - this.gridOffset.x) / this.gridCellSize);
+  var y = Math.round((myY - this.gridOffset.y) / this.gridCellSize);
   console.log(x);
   console.log(y);
   var validPlacement = this.validatePlacement(x, y, gridPlacer);
@@ -118,7 +143,7 @@ Pxl.GridPlacerSys.prototype.rebuildGrid = function(componentExclusion) {
     if (component === componentExclusion)
       return;
     if (component.gridCell) {
-      var physics = component.entity.componentMap.physics;
+      var physics = component.entity.cm.physics;
       var x = Math.round((physics.x - _this.gridOffset.x) / _this.gridCellSize);
       var y = Math.round((physics.y - _this.gridOffset.y) / _this.gridCellSize);
       _this.placeComponent(x, y, component)

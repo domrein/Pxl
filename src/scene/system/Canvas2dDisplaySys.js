@@ -87,8 +87,8 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
     // TODO: move all common displayCom code up here
     if (!displayCom.visible)
       return;
-    var offsetSumX = (displayCom.anchorX * displayCom.scaleX) - displayCom.offsetX * displayCom.scaleX;
-    var offsetSumY = (displayCom.anchorY * displayCom.scaleY) - displayCom.offsetY * displayCom.scaleY;
+    var offsetSumX = displayCom.anchorX * displayCom.scaleX - displayCom.offsetX;
+    var offsetSumY = displayCom.anchorY * displayCom.scaleY - displayCom.offsetY;
     var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - offsetSumX - _this.camera.x * displayCom.lerp;
     var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - offsetSumY - _this.camera.y * displayCom.lerp;
     

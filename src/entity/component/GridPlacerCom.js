@@ -46,6 +46,7 @@ Pxl.GridPlacerCom.prototype.reset = function() {
   Pxl.Component.prototype.reset.call(this);
   this.grid = [];
   this.gridCell = null;
+  this.rotation = 0;
 };
 
 Pxl.GridPlacerCom.prototype.init = function() {
