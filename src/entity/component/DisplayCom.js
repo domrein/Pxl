@@ -1,8 +1,8 @@
 Pxl.DisplayCom = function() {
   Pxl.Component.call(this);
   this.loc = new Pxl.Point();
+  this.pivot = new Pxl.Point();
   this.anchor = new Pxl.Point();
-  this.offset = new Pxl.Point();
   this.reset();
 };
 
@@ -18,8 +18,8 @@ Pxl.DisplayCom.prototype.reset = function() {
   this.speedX = 0;
   this.speedY = 0;
   this.rotation = 0;
+  this.pivot.reset();
   this.anchor.reset();
-  this.offset.reset();
   this.scaleX = 1;
   this.scaleY = 1;
   this.flippedX = false;
@@ -28,6 +28,24 @@ Pxl.DisplayCom.prototype.reset = function() {
   this.autoSizePhysics = false;
   this.lerp = 1;
 };
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "pivotX", {
+  get: function() {
+    return this.pivot.x;
+  },
+  set: function(value) {
+    this.pivot.x = value;
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "pivotY", {
+  get: function() {
+    return this.pivot.y;
+  },
+  set: function(value) {
+    this.pivot.y = value;
+  }
+});
 
 Object.defineProperty(Pxl.DisplayCom.prototype, "anchorX", {
   get: function() {
@@ -44,24 +62,6 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "anchorY", {
   },
   set: function(value) {
     this.anchor.y = value;
-  }
-});
-
-Object.defineProperty(Pxl.DisplayCom.prototype, "offsetX", {
-  get: function() {
-    return this.offset.x;
-  },
-  set: function(value) {
-    this.offset.x = value;
-  }
-});
-
-Object.defineProperty(Pxl.DisplayCom.prototype, "offsetY", {
-  get: function() {
-    return this.offset.y;
-  },
-  set: function(value) {
-    this.offset.y = value;
   }
 });
 
