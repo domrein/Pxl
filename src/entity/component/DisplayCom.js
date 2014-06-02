@@ -47,7 +47,7 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "pivotY", {
   },
   set: function(value) {
     if (value === 'center')
-      this.pivot.y = this.width / 2;
+      this.pivot.y = this.height / 2;
     else
       this.pivot.y = value;
   }
