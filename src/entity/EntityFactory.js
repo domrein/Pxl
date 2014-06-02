@@ -14,6 +14,7 @@ Pxl.EntityFactory.prototype.registerType = function(name, componentList) {
 };
 
 Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides, entityArgs) {
+  var _this = this;
   defaultOverrides = defaultOverrides || null;
   entityArgs = entityArgs || null;
   
@@ -43,17 +44,31 @@ Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides, en
   for (i = 0; i < entity.components.length; i ++) {
     listItem = entityType.componentList[i];
     component = entity.components[i];
-    for (var key in listItem.params)
-      component[key] = this.clone(listItem.params[key]);
-  }
-  if (defaultOverrides) {
-    // set any default overrides
-    for (var defaultOverride in defaultOverrides) {
-      component = entity.fetchComponentByName(defaultOverride);
-      for (key in defaultOverrides[defaultOverride])
-        component[key] = this.clone(defaultOverrides[defaultOverride][key]);
+    if (defaultOverrides[component.name])
+      var defaultOverride = defaultOverrides[component.name];
+    // set priority properties
+    component.propInitOrder.forEach(function(prop) {
+      if (defaultOverride.hasOwnProperty(prop))
+        component[prop] = _this.clone(defaultOverride[prop]);
+      else
+        component[prop] = _this.clone(listItem.params[prop]);
+    });
+
+    // set all other specified properties
+    for (var prop in defaultOverride) {
+      // TODO: this indexOf is horribly inefficient, fix it
+      if (component.propInitOrder.indexOf(prop) != -1)
+        continue;
+      component[prop] = this.clone(defaultOverride[prop]);
+    }
+    for (prop in listItem.params) {
+      // TODO: this indexOf is horribly inefficient, fix it
+      if (component.propInitOrder.indexOf(prop) != -1 || defaultOverride.hasOwnProperty(prop))
+        continue;
+      component[prop] = this.clone(listItem.params[prop]);
     }
   }
+
   if (entityArgs)
     entity.args = entityArgs;
 

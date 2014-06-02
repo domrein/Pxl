@@ -3,8 +3,9 @@ Pxl.Component = function() {
   // we never move components from one entity to another, so we never need to rebind these after creation
   this.entity = null;
   this.name = null;
+  this.propInitOrder = []; // prop setting order dependencies
   this.id = Pxl.Component.idCounter++;
-  this.data = {};
+  this.data = null;
   this.initFunc = null;
   this.system = null;
 };

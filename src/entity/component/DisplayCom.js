@@ -34,7 +34,10 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "pivotX", {
     return this.pivot.x;
   },
   set: function(value) {
-    this.pivot.x = value;
+    if (value === 'center')
+      this.pivot.x = this.width / 2;
+    else
+      this.pivot.x = value;
   }
 });
 
@@ -43,7 +46,10 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "pivotY", {
     return this.pivot.y;
   },
   set: function(value) {
-    this.pivot.y = value;
+    if (value === 'center')
+      this.pivot.y = this.width / 2;
+    else
+      this.pivot.y = value;
   }
 });
 
@@ -52,7 +58,10 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "anchorX", {
     return this.anchor.x;
   },
   set: function(value) {
-    this.anchor.x = value;
+    if (value === 'center')
+      this.anchor.x = this.width / 2;
+    else
+      this.anchor.x = value;
   }
 });
 
@@ -61,7 +70,10 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "anchorY", {
     return this.anchor.y;
   },
   set: function(value) {
-    this.anchor.y = value;
+    if (value === 'center')
+      this.anchor.y = this.height / 2;
+    else
+      this.anchor.y = value;
   }
 });
 
@@ -73,6 +85,18 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "layerIndex", {
     this._layerIndex = value;
     // TODO: this should only be dispatched if it's already been added to display system
     this.beacon.emit('updatedLayerIndex', {});
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "width", {
+  get: function() {
+    return 0;
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "height", {
+  get: function() {
+    return 0;
   }
 });
 

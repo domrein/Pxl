@@ -1,6 +1,7 @@
 Pxl.SpriteCom = function() {
   Pxl.DisplayCom.call(this);
   this.reset();
+  this.propInitOrder.push("animName");
 };
 
 Pxl.SpriteCom.prototype = Object.create(Pxl.DisplayCom.prototype);
@@ -10,18 +11,36 @@ Pxl.SpriteCom.prototype.reset = function() {
   Pxl.DisplayCom.prototype.reset.call(this);
   
   this.anim = null;
-  this.animName = null;
+  this._animName = null;
   this.animTimer = null;
   this.frame = null;
   this.frameIndex = 0;
 };
 
+Object.defineProperty(Pxl.SpriteCom.prototype, "animName", {
+  get: function() {
+    return this._animName;
+  },
+  set: function(value) {
+    this.play(value);
+  }
+});
+
+Object.defineProperty(Pxl.SpriteCom.prototype, "width", {
+  get: function() {
+    return this.frame.width * this.scaleX;
+  }
+});
+
+Object.defineProperty(Pxl.SpriteCom.prototype, "height", {
+  get: function() {
+    return this.frame.height * this.scaleY;
+  },
+});
+
 Pxl.SpriteCom.prototype.init = function() {
   Pxl.DisplayCom.prototype.init.call(this);
-
-  this.animTimer = new Pxl.Timer(0, -1, 0, this.entity.beacon, "updated");
-  this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed);
-
+  
   if (this.animName)
     this.play(this.animName);
   if (this.autoSizePhysics && this.physics) {
@@ -51,13 +70,18 @@ Pxl.SpriteCom.prototype.onAnimTimerTimed = function() {
   else if (this.frameIndex >= this.anim.frames.length)
     this.frameIndex = this.anim.frames.length - 1;
   
-  var frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
-  frameName = this.entity.scene.game.spriteStore.anims[this.animName].frames[this.frameIndex];
+  var frameName = this.entity.scene.game.spriteStore.anims[this._animName].frames[this.frameIndex];
+  frameName = this.entity.scene.game.spriteStore.anims[this._animName].frames[this.frameIndex];
   this.frame = this.entity.scene.game.spriteStore.frames[frameName];
 };
 
 Pxl.SpriteCom.prototype.play = function(animName) {
-  this.animName = animName;
+  if (!this.animTimer) {
+    this.animTimer = new Pxl.Timer(0, -1, 0, this.entity.beacon, "updated");
+    this.animTimer.beacon.observe(this, "timed", this.onAnimTimerTimed);
+  }
+
+  this._animName = animName;
   this.anim = this.game.spriteStore.anims[this.animName];
   this.frameIndex = 0;
   this.animTimer.duration = this.anim.frameRate;
