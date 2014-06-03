@@ -41,8 +41,6 @@ Object.defineProperty(Pxl.SpriteCom.prototype, "height", {
 Pxl.SpriteCom.prototype.init = function() {
   Pxl.DisplayCom.prototype.init.call(this);
   
-  if (this.animName)
-    this.play(this.animName);
   if (this.autoSizePhysics && this.physics) {
     this.physics.width = this.frame.width * this.scaleX;
     this.physics.height = this.frame.height * this.scaleY;

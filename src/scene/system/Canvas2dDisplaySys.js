@@ -89,11 +89,7 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
       return;
     
     var offsetSumX = displayCom.anchorX * displayCom.scaleX;
-    if (displayCom.scaleX != 1)
-       offsetSumX -= (displayCom.pivotX * displayCom.scaleX - displayCom.pivotX);
     var offsetSumY = displayCom.anchorY * displayCom.scaleY;
-    if (displayCom.scaleY != 1)
-      offsetSumY -= (displayCom.pivotY * displayCom.scaleY - displayCom.pivotY);
 
     var displayComX = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - offsetSumX - _this.camera.x * displayCom.lerp;
     var displayComY = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - offsetSumY - _this.camera.y * displayCom.lerp;
@@ -108,10 +104,10 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
         _this.context.save();
         // TODO: make flipping work in conjunction with rotation and pivots
         if (displayCom.rotation) {
-          _this.context.translate(Math.round(displayComX + displayCom.pivotX), Math.round(displayComY + displayCom.pivotY));
-          drawOffsetX = -displayCom.pivotX;
-          drawOffsetY = -displayCom.pivotY;
+          _this.context.translate(Math.round(displayComX + displayCom.pivotX * displayCom.scaleX), Math.round(displayComY + displayCom.pivotY));
           _this.context.rotate(displayCom.rotation);
+          drawOffsetX = -displayCom.pivotX * displayCom.scaleX;
+          drawOffsetY = -displayCom.pivotY * displayCom.scaleY;
           displayComX = 0;
           displayComY = 0;
         }

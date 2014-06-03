@@ -48,7 +48,7 @@ Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides, en
       var defaultOverride = defaultOverrides[component.name];
     // set priority properties
     component.propInitOrder.forEach(function(prop) {
-      if (defaultOverride.hasOwnProperty(prop))
+      if (defaultOverride && defaultOverride.hasOwnProperty(prop))
         component[prop] = _this.clone(defaultOverride[prop]);
       else
         component[prop] = _this.clone(listItem.params[prop]);
@@ -63,7 +63,7 @@ Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides, en
     }
     for (prop in listItem.params) {
       // TODO: this indexOf is horribly inefficient, fix it
-      if (component.propInitOrder.indexOf(prop) != -1 || defaultOverride.hasOwnProperty(prop))
+      if (component.propInitOrder.indexOf(prop) != -1 || (defaultOverride && defaultOverride.hasOwnProperty(prop)))
         continue;
       component[prop] = this.clone(listItem.params[prop]);
     }
