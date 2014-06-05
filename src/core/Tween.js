@@ -55,25 +55,15 @@ Pxl.Tween = function(target, property, heartbeatBeacon, heartbeatEvent, delay, e
 };
 
 // utility function to move entity with a physics component
-Pxl.Tween.move = function(target, changeX, changeY, duration, delay) {
-  return Pxl.Tween.moveTo(target, target.physics.rect.loc.x + changeX, target.physics.rect.loc.y + changeY, duration, delay);
+Pxl.Tween.move = function(target, changeX, changeY, duration, delay, easeFunc) {
+  return Pxl.Tween.moveTo(target, target.physics.rect.loc.x + changeX, target.physics.rect.loc.y + changeY, duration, delay, easeFunc);
 };
 
-Pxl.Tween.moveTo = function(target, destX, destY, duration, delay) {
-  var tweenX = new Pxl.Tween(target.physics, 'x', target.scene.beacon, 'updated');
-  var tweenY = new Pxl.Tween(target.physics, 'y', target.scene.beacon, 'updated');
-  if (delay) {
-    var timer = new Pxl.Timer(delay, 1, 0, target.scene.beacon, 'updated');
-    timer.start();
-    timer.beacon.observe(this, 'timed', function(event) {
-      tweenX.start(target.physics.rect.loc.x, destX, duration);
-      tweenY.start(target.physics.rect.loc.y, destY, duration);
-    });
-  }
-  else {
-    tweenX.start(target.physics.rect.loc.x, destX, duration);
-    tweenY.start(target.physics.rect.loc.y, destY, duration);
-  }
+Pxl.Tween.moveTo = function(target, destX, destY, duration, delay, easeFunc) {
+  var tweenX = new Pxl.Tween(target.physics, 'x', target.scene.beacon, 'updated', delay, easeFunc);
+  var tweenY = new Pxl.Tween(target.physics, 'y', target.scene.beacon, 'updated', delay, easeFunc);
+  tweenX.start(target.physics.rect.loc.x, destX, duration);
+  tweenY.start(target.physics.rect.loc.y, destY, duration);
   
   return [tweenX, tweenY];
 };
