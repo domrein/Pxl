@@ -6,9 +6,6 @@ Pxl.GridPlacerSys = function() {
   this.grid = [];
   this.gridOffset = new Pxl.Point(); // offset used when calculating physics location
   this.gridCellSize = 0; // physics size of each cell
-  // this.beacon.observe(this, "updated", function(event) {
-  //   console.log("updated");
-  // });
 };
 
 Pxl.GridPlacerSys.prototype = Object.create(Pxl.System.prototype);
@@ -55,25 +52,8 @@ Pxl.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
     myY = physics.y + width / 2 - height / 2;
   }
 
-  // else if (display.rotation == Math.PI / 2) {
-  //   // myX = physics.x + display.offsetY - width;
-  //   // myY = physics.y + display.offsetX - height;
-  //   console.log('<here>');
-  //   console.log(physics.x);
-  //   console.log(display.offsetX);
-  //   console.log(width);
-  //   console.log('</here>');
-  //   myX = physics.x + display.offsetX + display.offsetY - width;
-  //   myY = physics.y + display.offsetY - display.offsetX;
-  // }
-
-  console.log(myX);
-  console.log(myY);
-
   var gridX = Math.round((myX - this.gridOffset.x) / this.gridCellSize);
   var gridY = Math.round((myY - this.gridOffset.y) / this.gridCellSize);
-  console.log(gridX);
-  console.log(gridY);
   var validPlacement = this.validatePlacement(gridX, gridY, gridPlacer);
   if (validPlacement) {
     this.placeComponent(gridX, gridY, gridPlacer);
@@ -91,12 +71,13 @@ Pxl.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   }
   else {
     gridPlacer.beacon.emit("gridPlacementFailed", {});
-    // TODO: unrotate when we send it back
     var lastRotation = gridPlacer.lastRotation;
     var curRotation = gridPlacer.rotation;
     if (lastRotation > curRotation)
       lastRotation += 4;
-    gridPlacer.rotate(lastRotation - curRotation);
+    if (lastRotation - curRotation) {
+      gridPlacer.rotate(lastRotation - curRotation);
+    }
 
     tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
     tween.start(physics.x, event.beacon.owner.dragStart.x, 5);
@@ -141,7 +122,6 @@ Pxl.GridPlacerSys.prototype.placeComponent = function(x, y, component) {
       }
     }
   }
-  console.log(this.grid);
 };
 
 Pxl.GridPlacerSys.prototype.rebuildGrid = function(componentExclusion) {
