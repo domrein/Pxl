@@ -44,7 +44,7 @@ Pxl.EntityFactory.prototype.createType = function(typeName, defaultOverrides, en
   for (i = 0; i < entity.components.length; i ++) {
     listItem = entityType.componentList[i];
     component = entity.components[i];
-    if (defaultOverrides[component.name])
+    if (defaultOverrides && defaultOverrides[component.name])
       var defaultOverride = defaultOverrides[component.name];
     // set priority properties
     component.propInitOrder.forEach(function(prop) {
