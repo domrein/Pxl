@@ -33,7 +33,8 @@ Pxl.GridPlacerSys.prototype.update = function() {
 };
 
 Pxl.GridPlacerSys.prototype.onComponentDragStarted = function(event) {
-  this.rebuildGrid(event.beacon.owner.entity.cm.gridPlacer);
+  var gridPlacer = event.beacon.owner.entity.cm.gridPlacer;
+  this.rebuildGrid(gridPlacer);
 };
 
 Pxl.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
@@ -45,43 +46,57 @@ Pxl.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var gridPlacer = event.beacon.owner.entity.cm.gridPlacer;
   var width = gridPlacer.width * this.gridCellSize;
   var height = gridPlacer.height * this.gridCellSize;
-  if (display.rotation == 0) {
+  if (gridPlacer.rotation == 0 || gridPlacer.rotation == 2) {
     var myX = physics.x;
     var myY = physics.y;
   }
-  else if (display.rotation == Math.PI / 2) {
-    // myX = physics.x + display.offsetY - width;
-    // myY = physics.y + display.offsetX - height;
-    console.log('<here>');
-    console.log(physics.x);
-    console.log(display.offsetX);
-    console.log(width);
-    console.log('</here>');
-    myX = physics.x + display.offsetX + display.offsetY - width;
-    myY = physics.y + display.offsetY - display.offsetX;
+  else if (gridPlacer.rotation == 1 || gridPlacer.rotation == 3) {
+    myX = physics.x + height / 2 - width / 2;
+    myY = physics.y + width / 2 - height / 2;
   }
+
+  // else if (display.rotation == Math.PI / 2) {
+  //   // myX = physics.x + display.offsetY - width;
+  //   // myY = physics.y + display.offsetX - height;
+  //   console.log('<here>');
+  //   console.log(physics.x);
+  //   console.log(display.offsetX);
+  //   console.log(width);
+  //   console.log('</here>');
+  //   myX = physics.x + display.offsetX + display.offsetY - width;
+  //   myY = physics.y + display.offsetY - display.offsetX;
+  // }
 
   console.log(myX);
   console.log(myY);
 
-  var x = Math.round((myX - this.gridOffset.x) / this.gridCellSize);
-  var y = Math.round((myY - this.gridOffset.y) / this.gridCellSize);
-  console.log(x);
-  console.log(y);
-  var validPlacement = this.validatePlacement(x, y, gridPlacer);
+  var gridX = Math.round((myX - this.gridOffset.x) / this.gridCellSize);
+  var gridY = Math.round((myY - this.gridOffset.y) / this.gridCellSize);
+  console.log(gridX);
+  console.log(gridY);
+  var validPlacement = this.validatePlacement(gridX, gridY, gridPlacer);
   if (validPlacement) {
-    this.placeComponent(x, y, gridPlacer);
+    this.placeComponent(gridX, gridY, gridPlacer);
     this.rebuildGrid();
     gridPlacer.beacon.emit("gridPlacementSucceeded", {});
+    gridPlacer.lastRotation = gridPlacer.rotation;
 
     var tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
-    tween.start(physics.x, x * this.gridCellSize + this.gridOffset.x, 5);
+    var targetX = gridX * this.gridCellSize + this.gridOffset.x;
+    var targetY = gridY * this.gridCellSize + this.gridOffset.y;
+    tween.start(physics.x, targetX + (physics.x - myX), 5);
     
     tween = new Pxl.Tween(physics, "y", this.scene.beacon, "updated");
-    tween.start(physics.y, y * this.gridCellSize + this.gridOffset.y, 5);
+    tween.start(physics.y, targetY + (physics.y - myY), 5);
   }
   else {
-    event.beacon.emit("gridPlacementFailed", {});
+    gridPlacer.beacon.emit("gridPlacementFailed", {});
+    // TODO: unrotate when we send it back
+    var lastRotation = gridPlacer.lastRotation;
+    var curRotation = gridPlacer.rotation;
+    if (lastRotation > curRotation)
+      lastRotation += 4;
+    gridPlacer.rotate(lastRotation - curRotation);
 
     tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
     tween.start(physics.x, event.beacon.owner.dragStart.x, 5);

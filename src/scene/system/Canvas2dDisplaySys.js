@@ -147,6 +147,10 @@ Pxl.Canvas2dDisplaySys.prototype.onRendered = function(event) {
         widthTotal += letterFrame.width;
       });
     }
+    // _this.context.strokeStyle = "#00FF00";
+    // var x = displayCom.loc.x + displayCom.speedX * event.data.frameProgress - _this.camera.x * displayCom.lerp;
+    // var y = displayCom.loc.y + displayCom.speedY * event.data.frameProgress - _this.camera.y * displayCom.lerp;
+    // _this.context.strokeRect(x, y, Math.round(displayCom.width * displayCom.scaleX), Math.round(displayCom.height * displayCom.scaleY));
   });
   this.beacon.emit("renderingCompleted", null);
 };

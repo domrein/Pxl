@@ -35,12 +35,12 @@ Pxl.PointerCom.prototype.init = function() {
 };
 
 Pxl.PointerCom.prototype.globalToLocalX = function(x) {
-  x += this.display.system.camera.x * this.display.lerp + this.display.pivotX + this.display.anchorX;
+  x += this.display.system.camera.x * this.display.lerp + this.display.anchorX;
   return x;
 };
 
 Pxl.PointerCom.prototype.globalToLocalY = function(y) {
-  y += this.display.system.camera.y * this.display.lerp + this.display.pivotY + this.display.anchorY;
+  y += this.display.system.camera.y * this.display.lerp + this.display.anchorY;
   return y;
 };
 

@@ -20,7 +20,23 @@ Object.defineProperty(Pxl.GridPlacerCom.prototype, "height", {
   }
 });
 
-Pxl.GridPlacerCom.prototype.rotate = function() {
+Pxl.GridPlacerCom.prototype.rotate = function(amount) {
+  if (amount < 0) {
+    for (var i = 0; i < Math.abs(amount); i ++) {
+      // HACK: rotate backwards
+      this.rotate(3);
+    }
+  }
+  else if (amount > 0) {
+    for (i = 0; i < amount; i ++) {
+      this.rotateGrid();
+    }
+  }
+};
+
+Pxl.GridPlacerCom.prototype.rotateGrid = function() {
+  this.rotation++;
+  this.rotation %= 4;
   var rotatedGrid = [];
   while (rotatedGrid.length < this.width)
     rotatedGrid.push("");
@@ -30,9 +46,8 @@ Pxl.GridPlacerCom.prototype.rotate = function() {
       rotatedGrid[j] += this.grid[i][j];
     }
   }
-
   this.grid = rotatedGrid;
-};
+}
 
 // [x.x]
 // [...]
@@ -47,6 +62,7 @@ Pxl.GridPlacerCom.prototype.reset = function() {
   this.grid = [];
   this.gridCell = null;
   this.rotation = 0;
+  this.lastRotation = 0;
 };
 
 Pxl.GridPlacerCom.prototype.init = function() {
