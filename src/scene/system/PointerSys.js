@@ -107,11 +107,10 @@ Pxl.PointerSys.prototype.pointerStart = function(id, x, y) {
   if (this.cameraOffset) {
     x += this.cameraOffset.x;
     y += this.cameraOffset.y;
-    console.log("x: " + x);
-    console.log("y: " + y);
   }
 
   var pointer = this.pointers[id] = {x: x, y: y, target: null};
+  this.beacon.emit("pointerStarted", {x: x, y: y});
   for (var i = 0; i < this.components.length; i ++) {
     var pointerComponent = this.components[i];
     if (!pointerComponent.enabled)
@@ -142,6 +141,7 @@ Pxl.PointerSys.prototype.pointerStart = function(id, x, y) {
 };
 
 Pxl.PointerSys.prototype.pointerEnd = function(id) {
+  this.beacon.emit("pointerEnded", null);
   var pointer = this.pointers[id];
   if (!pointer)
     return;
