@@ -27,6 +27,7 @@ module.exports = function(grunt) {
             'src/entity/component/TextCom.js',
             'src/entity/component/PointerCom.js',
             'src/entity/component/GridPlacerCom.js',
+            'src/entity/component/AudioCom.js',
             'src/scene/Scene.js',
             'src/scene/SceneDirector.js',
             'src/scene/system/System.js',
@@ -36,9 +37,11 @@ module.exports = function(grunt) {
             'src/scene/system/Physics.js',
             'src/scene/system/PixelBlotRenderer.js',
             'src/scene/system/GridPlacerSys.js',
+            'src/scene/system/AudioSys.js',
             'src/core/Utils.js',
             'src/core/Preloader.js',
             'src/core/SpriteStore.js',
+            'src/core/AudioStore.js',
             'src/core/SaveData.js',
           ]
         }
