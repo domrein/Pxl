@@ -1,6 +1,8 @@
 Pxl.Preloader = function() {
   this.imagePaths = [];
   this.totalImages = 0;
+  this.audioPaths = [];
+  this.totalAudio = 0;
   // this.images = {};
   this.beacon = new Pxl.Beacon(this);
   // TODO: pass in id of canvas
@@ -12,9 +14,14 @@ Pxl.Preloader.prototype.addImage = function(imagePath) {
   this.imagePaths.push(imagePath);
 };
 
+Pxl.Preloader.prototype.addAudio = function(audioPath) {
+  this.audioPaths.push(audioPath);
+};
+
 Pxl.Preloader.prototype.load = function() {
   this.totalImages = this.imagePaths.length;
   this.render();
+  // load images
   for (var i = 0; i < this.imagePaths.length; i ++) {
     var imagePath = this.imagePaths[i];
     var image = new Image();
@@ -23,6 +30,26 @@ Pxl.Preloader.prototype.load = function() {
     image.src = imagePath;
     // this.images[imagePath] = image;
   }
+
+  // load audio
+  if("webkitAudioContext" in window) {
+    var myAudioContext = new webkitAudioContext();
+  }
+  var mySource;
+  function bufferSound(event) {
+    var request = event.target;
+    var source = myAudioContext.createBufferSource();
+    source.buffer = myAudioContext.createBuffer(request.response, false);
+    mySource = source;
+  }
+  for (i = 0; i < this.audioPaths.length; i ++) {
+    var audioPath = this.audioPaths[i];
+    var request = new XMLHttpRequest();
+    request.open("GET", audioPath, true);
+    request.responseType = "arraybuffer";
+    request.addEventListener("load", bufferSound, false);
+    request.send();
+  };
 };
 
 Pxl.Preloader.prototype.onImageLoaded = function(event) {
@@ -55,7 +82,6 @@ Pxl.Preloader.prototype.render = function() {
   var innerHeight = Math.round(height - innerPadding * 2);
 
   // calc percentComplete
-  // Using Object.keys is probably a bad idea, but it doesn't really matter here (Note though that it is ES5)
   var percentComplete = 1 - this.imagePaths.length / this.totalImages;
 
   // draw loading bar
