@@ -4,7 +4,10 @@ module.exports = function(grunt) {
       buildGame: {
         options: {
           sourceMap: true,
-          sourceMapName: 'bin/Pxl.js.map'
+          sourceMapName: 'bin/Pxl.js.map',
+          // The following two options fix issues when debugging with sourcemaps (turn off for final build)
+          mangle: false,
+          compress: {sequences: false, join_vars: false}
         },
         files: {
           'bin/Pxl.min.js': [
