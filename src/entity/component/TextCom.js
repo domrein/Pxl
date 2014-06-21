@@ -6,7 +6,7 @@ Pxl.TextCom = function() {
 Pxl.TextCom.prototype = Object.create(Pxl.DisplayCom.prototype);
 Pxl.TextCom.prototype.constructor = Pxl.TextCom;
 
-Object.defineProperty(Pxl.DisplayCom.prototype, "font", {
+Object.defineProperty(Pxl.TextCom.prototype, "font", {
   get: function() {
     return this._font;
   },
@@ -17,7 +17,7 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "font", {
   }
 });
 
-Object.defineProperty(Pxl.DisplayCom.prototype, "text", {
+Object.defineProperty(Pxl.TextCom.prototype, "text", {
   get: function() {
     return this._text;
   },
@@ -28,6 +28,21 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "text", {
   }
 });
 
+Object.defineProperty(Pxl.TextCom.prototype, "width", {
+  get: function() {
+    var widthTotal = 0;
+    this.frames.forEach(function(letterFrame) {
+      widthTotal += letterFrame.width;
+    });
+    return widthTotal * this.scaleX;
+  }
+});
+
+Object.defineProperty(Pxl.TextCom.prototype, "height", {
+  get: function() {
+    return this.frames[0].height;
+  },
+});
 
 Pxl.TextCom.prototype.reset = function() {
   Pxl.DisplayCom.prototype.reset.call(this);
