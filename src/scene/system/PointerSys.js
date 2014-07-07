@@ -146,8 +146,9 @@ Pxl.PointerSys.prototype.pointerEnd = function(id) {
   if (!pointer)
     return;
   if (pointer.target) {
-    pointer.target.beacon.emit("lifted", null);
     pointer.target.beacon.emit("exited", null);
+    if (this.scene.game.time - pointer.target.lastTapTime < 150)
+      pointer.target.beacon.emit("tappedAndReleased", null);
     if (this.componentsInDrag[pointer.target.id]) {
       pointer.target.beacon.emit("dragEnded", null);
       pointer.target.dragStart = null;

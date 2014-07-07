@@ -6,6 +6,7 @@ Pxl.GridPlacerSys = function() {
   this.grid = [];
   this.gridOffset = new Pxl.Point(); // offset used when calculating physics location
   this.gridCellSize = 0; // physics size of each cell
+  this.removalZone = new Pxl.Rectangle();
 };
 
 Pxl.GridPlacerSys.prototype = Object.create(Pxl.System.prototype);
@@ -62,36 +63,44 @@ Pxl.GridPlacerSys.prototype.onComponentDragEnded = function(event) {
   var gridPlacer = event.beacon.owner.entity.cm.gridPlacer;
 
   var gridXY = this.calcGridXY(event.beacon.owner.entity);
-  var validPlacement = this.validatePlacement(gridXY.x, gridXY.y, gridPlacer);
-  if (validPlacement) {
-    this.placeComponent(gridXY.x, gridXY.y, gridPlacer);
-    this.rebuildGrid();
-    gridPlacer.beacon.emit("gridPlacementSucceeded", {});
-    gridPlacer.lastRotation = gridPlacer.rotation;
 
-    var tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
-    var targetX = gridXY.x * this.gridCellSize + this.gridOffset.x;
-    var targetY = gridXY.y * this.gridCellSize + this.gridOffset.y;
-    tween.start(physics.x, targetX + (physics.x - gridXY.rotatedX), 5);
-    
-    tween = new Pxl.Tween(physics, "y", this.scene.beacon, "updated");
-    tween.start(physics.y, targetY + (physics.y - gridXY.rotatedY), 5);
+  if (this.removalZone.contains(new Pxl.Point(gridXY.rotatedX, gridXY.rotatedY))) {
+    gridPlacer.beacon.emit("removedFromGrid", null);
+    gridPlacer.gridCell = null;
+    this.rebuildGrid();
   }
   else {
-    gridPlacer.beacon.emit("gridPlacementFailed", {});
-    var lastRotation = gridPlacer.lastRotation;
-    var curRotation = gridPlacer.rotation;
-    if (lastRotation > curRotation)
-      lastRotation += 4;
-    if (lastRotation - curRotation) {
-      gridPlacer.rotate(lastRotation - curRotation);
-    }
+    var validPlacement = this.validatePlacement(gridXY.x, gridXY.y, gridPlacer);
+    if (validPlacement) {
+      this.placeComponent(gridXY.x, gridXY.y, gridPlacer);
+      this.rebuildGrid();
+      gridPlacer.beacon.emit("gridPlacementSucceeded", {});
+      gridPlacer.lastRotation = gridPlacer.rotation;
 
-    tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
-    tween.start(physics.x, event.beacon.owner.dragStart.x, 5);
-    
-    tween = new Pxl.Tween(physics, "y", this.scene.beacon, "updated");
-    tween.start(physics.y, event.beacon.owner.dragStart.y, 5);
+      var tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
+      var targetX = gridXY.x * this.gridCellSize + this.gridOffset.x;
+      var targetY = gridXY.y * this.gridCellSize + this.gridOffset.y;
+      tween.start(physics.x, targetX + (physics.x - gridXY.rotatedX), 5);
+      
+      tween = new Pxl.Tween(physics, "y", this.scene.beacon, "updated");
+      tween.start(physics.y, targetY + (physics.y - gridXY.rotatedY), 5);
+    }
+    else {
+      gridPlacer.beacon.emit("gridPlacementFailed", {});
+      var lastRotation = gridPlacer.lastRotation;
+      var curRotation = gridPlacer.rotation;
+      if (lastRotation > curRotation)
+        lastRotation += 4;
+      if (lastRotation - curRotation) {
+        gridPlacer.rotate(lastRotation - curRotation);
+      }
+
+      tween = new Pxl.Tween(physics, "x", this.scene.beacon, "updated");
+      tween.start(physics.x, event.beacon.owner.dragStart.x, 5);
+      
+      tween = new Pxl.Tween(physics, "y", this.scene.beacon, "updated");
+      tween.start(physics.y, event.beacon.owner.dragStart.y, 5);
+    }
   }
 };
 

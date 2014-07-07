@@ -48,20 +48,20 @@ Pxl.PhysicsComponent.prototype.init = function() {
 
 Object.defineProperty(Pxl.PhysicsComponent.prototype, "x", {
   get: function() {
-    return this.rect.loc.x;
+    return this.rect.x;
   },
   set: function(value) {
-    this.rect.loc.x = value;
+    this.rect.x = value;
     this.beacon.emit("updated", null);
   }
 });
 
 Object.defineProperty(Pxl.PhysicsComponent.prototype, "y", {
   get: function() {
-    return this.rect.loc.y;
+    return this.rect.y;
   },
   set: function(value) {
-    this.rect.loc.y = value;
+    this.rect.y = value;
     this.beacon.emit("updated", null);
   }
 });
@@ -90,19 +90,19 @@ Object.defineProperty(Pxl.PhysicsComponent.prototype, "height", {
 Pxl.PhysicsComponent.prototype.setX = function(x, syncLast) {
   syncLast = syncLast || false;
   if (syncLast)
-    this.lastRect.loc.x = x;
+    this.lastRect.x = x;
   else
-    this.lastRect.loc.x = this.rect.loc.x;
-  this.rect.loc.x = x;
+    this.lastRect.x = this.rect.x;
+  this.rect.x = x;
 };
 
 Pxl.PhysicsComponent.prototype.setY = function(y, syncLast) {
   syncLast = syncLast || false;
   if (syncLast)
-    this.lastRect.loc.y = y;
+    this.lastRect.y = y;
   else
-    this.lastRect.loc.y = this.rect.loc.y;
-  this.rect.loc.y = y;
+    this.lastRect.y = this.rect.y;
+  this.rect.y = y;
 };
 
 Pxl.PhysicsComponent.prototype.setWidth = function(width) {

@@ -1,23 +1,23 @@
 Pxl.Rectangle = function() {
-  this.loc = new Pxl.Point();
+  Pxl.Point.call(this);
   this.reset();
 };
 
 Pxl.Rectangle.prototype.reset = function() {
-  this.loc.reset();
+  Pxl.Point.prototype.reset.call(this);
   this.width = 0;
   this.height = 0;
 };
 
 Pxl.Rectangle.prototype.intersects = function(rectangle) {
   var intersectionFound = true;
-  if (rectangle.loc.x >= this.loc.x + this.width)
+  if (rectangle.x >= this.x + this.width)
     intersectionFound = false;
-  else if (rectangle.loc.x + rectangle.width <= this.loc.x)
+  else if (rectangle.x + rectangle.width <= this.x)
     intersectionFound = false;
-  else if (rectangle.loc.y >= this.loc.y + this.height)
+  else if (rectangle.y >= this.y + this.height)
     intersectionFound = false;
-  else if (rectangle.loc.y + rectangle.height <= this.loc.y)
+  else if (rectangle.y + rectangle.height <= this.y)
     intersectionFound = false;
   
   return intersectionFound;
@@ -25,9 +25,9 @@ Pxl.Rectangle.prototype.intersects = function(rectangle) {
 
 Pxl.Rectangle.prototype.contains = function(point) {
   var inside = true;
-  if (point.x < this.loc.x || point.x > this.loc.x + this.width)
+  if (point.x < this.x || point.x > this.x + this.width)
     inside = false;
-  if (point.y < this.loc.y || point.y > this.loc.y + this.height)
+  if (point.y < this.y || point.y > this.y + this.height)
     inside = false;
 
   return inside;
@@ -35,17 +35,17 @@ Pxl.Rectangle.prototype.contains = function(point) {
 
 // TODO: convert these to getters/setters
 Pxl.Rectangle.prototype.getLeft = function() {
-  return this.loc.x;
+  return this.x;
 };
 
 Pxl.Rectangle.prototype.getRight = function() {
-  return this.loc.x + this.width;
+  return this.x + this.width;
 };
 
 Pxl.Rectangle.prototype.getTop = function() {
-  return this.loc.y;
+  return this.y;
 };
 
 Pxl.Rectangle.prototype.getBottom = function() {
-  return this.loc.y + this.height ;
+  return this.y + this.height ;
 };

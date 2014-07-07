@@ -100,6 +100,30 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "height", {
   }
 });
 
+Object.defineProperty(Pxl.DisplayCom.prototype, "left", {
+  get: function() {
+    
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "right", {
+  get: function() {
+
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "top", {
+  get: function() {
+
+  }
+});
+
+Object.defineProperty(Pxl.DisplayCom.prototype, "bottom", {
+  get: function() {
+
+  }
+});
+
 Pxl.DisplayCom.prototype.init = function() {
   Pxl.Component.prototype.init.call(this);
   
