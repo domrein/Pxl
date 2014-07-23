@@ -11,7 +11,7 @@ Pxl.DisplayCom.prototype.constructor = Pxl.DisplayCom;
 
 Pxl.DisplayCom.prototype.reset = function() {
   Pxl.Component.prototype.reset.call(this);
-  
+
   this.loc.reset();
   this._layerIndex = 0;
   this.visible = true;
@@ -102,7 +102,7 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "height", {
 
 Object.defineProperty(Pxl.DisplayCom.prototype, "left", {
   get: function() {
-    
+
   }
 });
 
@@ -126,7 +126,7 @@ Object.defineProperty(Pxl.DisplayCom.prototype, "bottom", {
 
 Pxl.DisplayCom.prototype.init = function() {
   Pxl.Component.prototype.init.call(this);
-  
+
   this.physics = this.entity.fetchComponent(Pxl.PhysicsComponent);
   if (this.physics != null) {
     this.physics.beacon.observe(this, "updated", this.onPhysicsUpdated);
@@ -138,8 +138,8 @@ Pxl.DisplayCom.prototype.sizePhysics = function() {
 };
 
 Pxl.DisplayCom.prototype.onPhysicsUpdated = function() {
-  this.loc.x = this.physics.rect.loc.x;
-  this.loc.y = this.physics.rect.loc.y;
+  this.loc.x = this.physics.rect.x;
+  this.loc.y = this.physics.rect.y;
   this.speedX = this.physics.speedX;
   this.speedY = this.physics.speedY;
 };
