@@ -14,6 +14,7 @@ export default class Body extends Rectangle {
     this.velocity = new Vector();
     this.friction = null;
     this.gravity = new Vector();
+    this.disabled = false;
   }
 
   calcAngle(body) {

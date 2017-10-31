@@ -68,7 +68,7 @@ export default class Physics {
           const leftBody = leftBodies[i];
           for (let j = leftBodies === rightBodies ? i + 1 : 0; j < rightBodies.length; j++) {
             const rightBody = rightBodies[j];
-            if (leftBody.intersects(rightBody)) {
+            if (!leftBody.disabled && !rightBody.disabled && leftBody.intersects(rightBody)) {
               leftBody.beacon.emit("collided", rightBody);
               rightBody.beacon.emit("collided", leftBody);
               this.beacon.emit("collided", leftBody, rightBody);

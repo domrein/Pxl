@@ -10,6 +10,7 @@ import SceneDirector from "../scene/SceneDirector.js";
 export default class Game {
   constructor(width, height, firstSceneClass, rendererClass, canvasId) {
     this.renderer = new rendererClass(this, canvasId);
+    this.displayRatio = 1;
     this.beacon = new Beacon(this);
 
     this.inputRelay = new InputRelay(this);

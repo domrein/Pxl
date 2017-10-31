@@ -12,11 +12,9 @@ export default class SpriteStore {
   }
 
   buildAnims() {
-    for (const image of Object.keys(this.frameData)) {
-      const imageFrames = this.frameData[image];
-      for (const frame of Object.keys(imageFrames)) {
-        const frameData = imageFrames[frame];
-        this.addFrame(frame, frameData.x, frameData.y, frameData.width, frameData.height, this.images[image]);
+    for (const [image, frames] of Object.entries(this.frameData)) {
+      for (const [frame, data] of Object.entries(frames)) {
+        this.addFrame(frame, data.x, data.y, data.width, data.height, this.images[image]);
       }
     }
 

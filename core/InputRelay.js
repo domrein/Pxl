@@ -10,12 +10,17 @@ export default class InputRelay {
     this.game = game;
     this.preventDefaults = null;
     this.canvas = game.renderer.canvas;
+    this.touching = false;
+
     document.addEventListener("keydown", this.onKeyDown.bind(this), true);
     document.addEventListener("keyup", this.onKeyUp.bind(this), true);
+
     this.canvas.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.canvas.addEventListener("touchmove", this.onTouchMove.bind(this));
     this.canvas.addEventListener("touchend", this.onTouchEnd.bind(this));
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
+    this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
+    this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
     // TODO: attach gamepad events
   }
 
@@ -50,7 +55,7 @@ export default class InputRelay {
     for (const changedTouch of event.changedTouches) {
       const touchX = changedTouch.clientX - this.canvas.offsetLeft;
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
-      const touch = new Point(touchX, touchY);
+      const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
       if (this.game.scenes.length) {
         this.game.scenes[this.game.scenes.length - 1].input.onTouchStart(touch);
       }
@@ -69,9 +74,30 @@ export default class InputRelay {
 
   // NOTE: mouse events mimic touch events
   onMouseDown(event) {
-    const touch = new Point(event.offsetX, event.offsetY);
+    const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
+    this.touching = true;
     if (this.game.scenes.length) {
-      this.game.scenes[this.game.scenes.length - 1].input.onTouchStart(touch);
+      this.game.scenes[this.game.scenes.length - 1].input.onTouchStarted(touch);
+    }
+  }
+
+  onMouseMove(event) {
+    // dispatch touch event
+    if (this.touching) {
+      const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
+      if (this.game.scenes.length) {
+        this.game.scenes[this.game.scenes.length - 1].input.onTouchMoved(touch);
+      }
+    }
+
+    // TODO: dispatch mouse move event for mouse only interactions (hover)
+  }
+
+  onMouseUp(event) {
+    this.touching = false;
+    const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
+    if (this.game.scenes.length) {
+      this.game.scenes[this.game.scenes.length - 1].input.onTouchEnded(touch);
     }
   }
 };

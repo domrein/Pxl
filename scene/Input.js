@@ -21,7 +21,15 @@ export default class Input {
     this.keys[key] = false;
   }
 
-  onTouchStart(touch) {
+  onTouchStarted(touch) {
     this.beacon.emit("touchStarted", touch);
+  }
+
+  onTouchMoved(touch) {
+    this.beacon.emit("touchMoved", touch);
+  }
+
+  onTouchEnded(touch) {
+    this.beacon.emit("touchEnded", touch);
   }
 };
