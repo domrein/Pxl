@@ -57,19 +57,31 @@ export default class InputRelay {
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
       const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
       if (this.game.scenes.length) {
-        this.game.scenes[this.game.scenes.length - 1].input.onTouchStart(touch);
+        this.game.scenes[this.game.scenes.length - 1].input.onTouchStarted(touch);
       }
     }
   }
 
   onTouchMove(event) {
-    // TODO: touch move events
-    // console.log(event);
+    for (const changedTouch of event.changedTouches) {
+      const touchX = changedTouch.clientX - this.canvas.offsetLeft;
+      const touchY = changedTouch.clientY - this.canvas.offsetTop;
+      const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
+      if (this.game.scenes.length) {
+        this.game.scenes[this.game.scenes.length - 1].input.onTouchMoved(touch);
+      }
+    }
   }
 
   onTouchEnd(event) {
-    // TODO: touch end events
-    // console.log(event);
+    for (const changedTouch of event.changedTouches) {
+      const touchX = changedTouch.clientX - this.canvas.offsetLeft;
+      const touchY = changedTouch.clientY - this.canvas.offsetTop;
+      const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
+      if (this.game.scenes.length) {
+        this.game.scenes[this.game.scenes.length - 1].input.onTouchEnded(touch);
+      }
+    }
   }
 
   // NOTE: mouse events mimic touch events
