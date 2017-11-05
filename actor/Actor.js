@@ -1,7 +1,11 @@
 import Beacon from "../core/Beacon.js";
+import Scene from "../scene/Scene.js";
 
 export default class Actor {
   constructor(scene) {
+    if (!(scene instanceof Scene)) {
+      throw new Error(`scene ${scene} is not an instance of Scene`);
+    }
     this.scene = scene;
     this.beacon = new Beacon(this);
     this.alive = true;
