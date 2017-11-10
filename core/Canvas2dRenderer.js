@@ -73,7 +73,19 @@ export default class Canvas2dRenderer {
           this.context.font = `${graphic.size * this.game.displayRatio}px ${graphic.font}`;
           this.context.fillStyle = graphic.fillStyle;
           this.context.textBaseline = graphic.textBaseline;
+          if (graphic.shadow) {
+            this.context.shadowColor = graphic.shadow.color;
+            this.context.shadowOffsetX = graphic.shadow.x;
+            this.context.shadowOffsetY = graphic.shadow.y;
+            this.context.shadowBlur = graphic.shadow.blur;
+          }
           this.context.fillText(graphic.prefix + graphic.text, renderX, renderY);
+          if (graphic.shadow) {
+            this.context.shadowColor = null;
+            this.context.shadowOffsetX = 0;
+            this.context.shadowOffsetY = 0;
+            this.context.shadowBlur = 0;
+          }
         }
         else if (graphic instanceof ColorRectangle) {
           this.context.fillStyle = graphic.color;

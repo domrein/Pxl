@@ -10,5 +10,12 @@ export default class Text extends Graphic {
     this.fillStyle = "#FFFFFF";
     this.textBaseline = "top";
     this.fontString = `${this.size}px ${this.font}`;
+    this.shadow = null;
+    // this.shadow = {
+    //   color: "#000",
+    //   x: 5,
+    //   y: 5,
+    //   blur: 5,
+    // };
   }
 };
