@@ -10,11 +10,12 @@ export default class Canvas2dRenderer {
     this.context = this.canvas.getContext("2d");
     this.context.imageSmoothingEnabled = false;
     this.graphics = new WeakMap();
+    this.backgroundColor = "#000000";
   }
 
   render() {
     this.context.imageSmoothingEnabled = false;
-    this.context.fillStyle = "#000000";
+    this.context.fillStyle = this.backgroundColor;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (const scene of this.game.scenes) {
       if (!this.graphics.get(scene)) {
