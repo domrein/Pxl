@@ -57,7 +57,15 @@ export default class InputRelay {
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
       const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
       if (this.game.scenes.length) {
-        this.game.scenes[this.game.scenes.length - 1].input.onTouchStarted(touch);
+        const scene = this.game.scenes[this.game.scenes.length - 1];
+        scene.input.onTouchStarted(touch);
+        scene.actors.forEach(a => {
+          if (a.body && a.body.touchable) {
+            if (a.body.contains(touch)) {
+              a.body.beacon.emit("touchStarted");
+            }
+          }
+        });
       }
     }
   }
@@ -68,7 +76,8 @@ export default class InputRelay {
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
       const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
       if (this.game.scenes.length) {
-        this.game.scenes[this.game.scenes.length - 1].input.onTouchMoved(touch);
+        const scene = this.game.scenes[this.game.scenes.length - 1];
+        scene.input.onTouchMoved(touch);
       }
     }
   }
@@ -89,7 +98,15 @@ export default class InputRelay {
     const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
     this.touching = true;
     if (this.game.scenes.length) {
-      this.game.scenes[this.game.scenes.length - 1].input.onTouchStarted(touch);
+      const scene = this.game.scenes[this.game.scenes.length - 1];
+      scene.input.onTouchStarted(touch);
+      scene.actors.forEach(a => {
+        if (a.body && a.body.touchable) {
+          if (a.body.contains(touch)) {
+            a.body.beacon.emit("touchStarted");
+          }
+        }
+      });
     }
   }
 
