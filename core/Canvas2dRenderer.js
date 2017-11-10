@@ -31,8 +31,8 @@ export default class Canvas2dRenderer {
         .filter(graphic => graphic.visible)
         .sort((a, b) => a.z - b.z);
       for (const graphic of graphics) {
-        const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio + scene.camera.x * this.game.displayRatio;
-        const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio + scene.camera.y * this.game.displayRatio;
+        const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
+        const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
         if (graphic.alpha !== this.context.globalAlpha) {
           this.context.globalAlpha = graphic.alpha;
         }

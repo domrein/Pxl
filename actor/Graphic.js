@@ -16,6 +16,7 @@ export default class Graphic {
     this.offset = new Point();
     this.pivot = new Point();
     this.z = 0;
+    this.lerp = 1;
 
     this.blinkCount = 0;
     this.blinkRate = -1;
