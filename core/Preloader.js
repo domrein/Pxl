@@ -58,7 +58,8 @@ export default class Preloader {
       // this.images[imagePath] = image;
     }
 
-    const context = new AudioContext();
+    // TODO: remove AudioContext prefix when Safari updates
+    const context = window.AudioContext ? new AudioContext() : new webkitAudioContext();
     this.beacon.emit("audioContextCreated", context);
     for (const audio of this.audio) {
       const request = new XMLHttpRequest();
