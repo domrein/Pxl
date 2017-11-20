@@ -13,25 +13,40 @@ export default class Canvas2dRenderer {
     this.backgroundColor = "#000000";
   }
 
+  onSceneAdded(scene) {
+    scene.beacon.observe(this, "actorAdded", this.onActorAdded);
+    scene.beacon.observe(this, "actorRemoved", this.onActorRemoved);
+    const graphics = [];
+    scene.actors.forEach(a => graphics.push(...a.graphics));
+    this.graphics.set(scene, graphics);
+  }
+
+  onActorAdded(source, actor) {
+    this.graphics.get(source.owner).push(...actor.graphics);
+  }
+
+  onActorRemoved(source, actor) {
+    const graphics = this.graphics.get(source.owner);
+    for (let i = graphics.length - 1; i >= 0; i--) {
+      const graphic = graphics[i];
+      if (actor.graphics.includes(graphic)) {
+        graphics.splice(i, 1);
+      }
+    }
+  }
+
   render() {
     this.context.imageSmoothingEnabled = false;
     this.context.fillStyle = this.backgroundColor;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (const scene of this.game.scenes) {
-      if (!this.graphics.get(scene)) {
-        this.graphics.set(scene, scene.actors
-          .reduce((prev, curr) => curr.graphics.length ? prev.concat(curr.graphics) : prev, [])
-          .filter(graphic => graphic.visible)
-          .sort((a, b) => a.z - b.z)
-        );
-      }
-      // TODO: move this into an event based system instead of building every frame
-      // need to know when actors are added/removed and when graphics are added/removed
-      const graphics = scene.actors
-        .reduce((prev, curr) => curr.graphics.length ? prev.concat(curr.graphics) : prev, [])
-        .filter(graphic => graphic.visible)
-        .sort((a, b) => a.z - b.z);
+      const graphics = this.graphics.get(scene);
+      graphics.sort((a, b) => a.z - b.z);
       for (const graphic of graphics) {
+        if (!graphic.visible) {
+          continue;
+        }
+
         const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
         const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
         if (graphic.alpha !== this.context.globalAlpha) {

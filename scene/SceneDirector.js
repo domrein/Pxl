@@ -7,6 +7,7 @@ export default class SceneDirector {
 
   addScene(sceneClass, handoffData) {
     var scene = new sceneClass(this.game, handoffData);
+    this.game.renderer.onSceneAdded(scene);
     scene.beacon.observe(this, "completed", this.onSceneCompleted);
     this.scenes.push(scene);
     scene.beacon.emit("added", null);
