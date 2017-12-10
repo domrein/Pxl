@@ -14,8 +14,8 @@ export default class Preloader {
     this.context = this.canvas.getContext("2d");
   }
 
-  addImage(path) {
-    this.imagePaths.push(path);
+  addImage(path, name) {
+    this.imagePaths.push({path, name});
   }
 
   addAudio(path, name) {
@@ -39,11 +39,12 @@ export default class Preloader {
     this.render();
     // load images
     for (let i = 0; i < this.imagePaths.length; i ++) {
-      const imagePath = this.imagePaths[i];
+      const {path: imagePath, name: imageName} = this.imagePaths[i];
+
       const image = new Image();
       image.onload = event => {
         this.imagePaths.splice(this.imagePaths.indexOf(imagePath), 1);
-        this.beacon.emit("imageLoaded", event.currentTarget, imagePath);
+        this.beacon.emit("imageLoaded", event.currentTarget, imageName);
 
         this.render();
 
