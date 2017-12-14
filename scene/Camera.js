@@ -4,6 +4,7 @@ Paul Milham
 */
 
 import Point from "../core/Point.js";
+import * as random from "../core/random.js";
 
 export default class Camera extends Point {
   constructor() {
@@ -14,14 +15,8 @@ export default class Camera extends Point {
 
   update() {
     if (this.shakeData) {
-      let shakeX = this.shakeData.intensity * (this.shakeData.count / this.shakeData.duration) * Math.random();
-      if (Math.random() > 0.5) {
-        shakeX = -shakeX;
-      }
-      let shakeY = this.shakeData.intensity * (this.shakeData.count / this.shakeData.duration) * Math.random();
-      if (Math.random() > 0.5) {
-        shakeY = -shakeY;
-      }
+      let shakeX = this.shakeData.intensity * (this.shakeData.count / this.shakeData.duration) * random.float(-1, 1);
+      let shakeY = this.shakeData.intensity * (this.shakeData.count / this.shakeData.duration) * random.float(-1, 1);
 
       this.x = this.loc.x + shakeX;
       this.y = this.loc.y + shakeY;
