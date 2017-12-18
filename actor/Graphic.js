@@ -5,9 +5,12 @@ Paul Milham
 
 import Point from "../core/Point.js";
 
+let idCount = 0;
+
 export default class Graphic {
   constructor(actor) {
     this.actor = actor;
+    this.actor.beacon.observe(this, "addedToScene", this.onAddedToScene);
 
     this.scale = new Point(1, 1);
 
@@ -16,6 +19,9 @@ export default class Graphic {
     this.offset = new Point();
     this.pivot = new Point();
     this.z = 0;
+    this.id = idCount++; // used to keep z sorting stable
+    this.layerName = "default"; // used to look up layer when added to scene
+    this.layer = null;
     this.lerp = 1;
 
     this.blinkCount = 0;
@@ -33,6 +39,13 @@ export default class Graphic {
         this.blinkCount = 0;
         this.visible = true;
       }
+    }
+  }
+
+  onAddedToScene() {
+    this.layer = this.actor.scene.layers.find(l => l.name === this.layerName);
+    if (!this.layer) {
+      throw new Error(`Unable to find layer by name: ${this.layerName} in scene ${this.actor.scene.constructor.name}`);
     }
   }
 };

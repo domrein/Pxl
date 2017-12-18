@@ -2,6 +2,7 @@ import Beacon from "../core/Beacon.js";
 import Physics from "./Physics.js";
 import Input from "./Input.js";
 import Camera from "./Camera.js";
+import Layer from "./Layer.js";
 import Tween from "../core/Tween.js";
 
 export default class Scene {
@@ -16,6 +17,8 @@ export default class Scene {
     this.input = new Input();
     this.camera = new Camera();
     this.tween = new Tween();
+    this.layers = [];
+    this.addLayer("default");
   }
 
   update() {
@@ -55,8 +58,8 @@ export default class Scene {
   addActor(actor) {
     actor.scene = this;
     this.actors.push(actor);
-    this.beacon.emit("actorAdded", actor);
     actor.beacon.emit("addedToScene");
+    this.beacon.emit("actorAdded", actor);
 
     return actor;
   }
@@ -70,6 +73,14 @@ export default class Scene {
     else {
       this.actors.splice(this.actors.indexOf(actor), 1);
     }
+  }
+
+  addLayer(name, {ySort = false} = {}) {
+    const layer = new Layer();
+    layer.name = name;
+    layer.ySort = ySort;
+    this.layers.push(layer);
+    return layer;
   }
 
   switchScene(sceneClass, transition, handoffData) {

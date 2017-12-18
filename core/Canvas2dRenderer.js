@@ -16,23 +16,57 @@ export default class Canvas2dRenderer {
   onSceneAdded(scene) {
     scene.beacon.observe(this, "actorAdded", this.onActorAdded);
     scene.beacon.observe(this, "actorRemoved", this.onActorRemoved);
-    const graphics = [];
-    scene.actors.forEach(a => graphics.push(...a.graphics));
-    this.graphics.set(scene, graphics);
+
+    const layers = {};
+    scene.layers.forEach(l => layers[l.name] = []);
+
+    scene.actors.forEach(a => a.graphics.forEach(g => layers[g.layer.name].push(g)))
+    Object.values(layers).forEach(l => l.sort(this.sortGraphics));
+
+    this.graphics.set(scene, layers);
+  }
+
+  // sort by then z, then id
+  // (graphics are already sorted by layer)
+  sortGraphics(a, b) {
+    if (a.z === b.z) {
+      return a.id - b.id;
+    }
+    return a.z - b.z;
   }
 
   onActorAdded(source, actor) {
-    this.graphics.get(source.owner).push(...actor.graphics);
+    const layers = this.graphics.get(source.owner);
+    // sort as we add (should match logic in sortGraphics)
+    for (const actorGraphic of actor.graphics) {
+      let inserted = false;
+      const layerGraphics = layers[actorGraphic.layer.name];
+      // TODO: this insertion algorightm could be more efficient (binary search)
+      for (let i = 0; i < layerGraphics.length; i++) {
+        const layerGraphic = layerGraphics[i];
+        const sort = this.sortGraphics(actorGraphic, layerGraphic);
+        if (sort < 0) {
+          layerGraphics.splice(i, 0, actorGraphic);
+          inserted = true;
+          break;
+        }
+      }
+
+      if (!inserted) {
+        layerGraphics.push(actorGraphic);
+      }
+    }
   }
 
   onActorRemoved(source, actor) {
-    const graphics = this.graphics.get(source.owner);
-    for (let i = graphics.length - 1; i >= 0; i--) {
-      const graphic = graphics[i];
-      if (actor.graphics.includes(graphic)) {
-        graphics.splice(i, 1);
+    const layers = this.graphics.get(source.owner);
+    actor.graphics.forEach(g => {
+      const layer = layers[g.layer.name];
+      const index = layer.indexOf(g);
+      if (index !== -1) {
+        layer.splice(index, 1);
       }
-    }
+    });
   }
 
   render() {
@@ -40,78 +74,94 @@ export default class Canvas2dRenderer {
     this.context.fillStyle = this.backgroundColor;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (const scene of this.game.scenes) {
-      const graphics = this.graphics.get(scene);
-      graphics.sort((a, b) => a.z - b.z);
-      for (const graphic of graphics) {
-        if (!graphic.visible) {
-          continue;
+      const layers = this.graphics.get(scene);
+      // render each layer
+      for (const l of scene.layers) {
+      // scene.layers.forEach(l => {
+        const graphics = layers[l.name];
+        if (l.ySort) {
+          graphics.sort((a, b) => {
+            if (a.z === b.z) {
+              if (a.actor.body.y === b.actor.body.y) {
+                return a.id - b.id;
+              }
+              return a.actor.body.y - b.actor.body.y;
+            }
+            return a.z - b.z;
+          });
         }
-
-        const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
-        const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
-        if (graphic.alpha !== this.context.globalAlpha) {
-          this.context.globalAlpha = graphic.alpha;
-        }
-        // TODO: find a cheaper way of testing type than instanceof
-        if (graphic instanceof Sprite) {
-          if (graphic.flip) {
-            this.context.scale(-1, 1);
-            this.context.drawImage(
-              graphic.frame.image,
-              graphic.frame.x,
-              graphic.frame.y,
-              graphic.frame.width,
-              graphic.frame.height,
-              -renderX - this.game.displayRatio * graphic.frame.width,
-              renderY,
-              graphic.frame.width * this.game.displayRatio * graphic.scale.x,
-              graphic.frame.height * this.game.displayRatio * graphic.scale.y
-            );
-            this.context.scale(-1, 1);
+        for (const graphic of graphics) {
+          if (!graphic.visible) {
+            continue;
           }
-          else {
-            // this.context.scale(1, 1);
-            this.context.drawImage(
-              graphic.frame.image,
-              graphic.frame.x,
-              graphic.frame.y,
-              graphic.frame.width,
-              graphic.frame.height,
+
+          const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
+          const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
+          if (graphic.alpha !== this.context.globalAlpha) {
+            this.context.globalAlpha = graphic.alpha;
+          }
+          // TODO: find a cheaper way of testing type than instanceof
+          if (graphic instanceof Sprite) {
+            if (graphic.flip) {
+              this.context.scale(-1, 1);
+              this.context.drawImage(
+                graphic.frame.image,
+                graphic.frame.x,
+                graphic.frame.y,
+                graphic.frame.width,
+                graphic.frame.height,
+                -renderX - this.game.displayRatio * graphic.frame.width,
+                renderY,
+                graphic.frame.width * this.game.displayRatio * graphic.scale.x,
+                graphic.frame.height * this.game.displayRatio * graphic.scale.y
+              );
+              this.context.scale(-1, 1);
+            }
+            else {
+              // this.context.scale(1, 1);
+              this.context.drawImage(
+                graphic.frame.image,
+                graphic.frame.x,
+                graphic.frame.y,
+                graphic.frame.width,
+                graphic.frame.height,
+                renderX,
+                renderY,
+                graphic.frame.width * this.game.displayRatio * graphic.scale.x,
+                graphic.frame.height * this.game.displayRatio * graphic.scale.y
+              );
+            }
+          }
+          else if (graphic instanceof Text) {
+            this.context.font = `${graphic.size * this.game.displayRatio}px ${graphic.font}`;
+            this.context.fillStyle = graphic.fillStyle;
+            this.context.textBaseline = graphic.textBaseline;
+            if (graphic.shadow) {
+              this.context.shadowColor = graphic.shadow.color;
+              this.context.shadowOffsetX = graphic.shadow.x;
+              this.context.shadowOffsetY = graphic.shadow.y;
+              this.context.shadowBlur = graphic.shadow.blur;
+            }
+            this.context.fillText(graphic.prefix + graphic.text, renderX, renderY);
+            if (graphic.shadow) {
+              this.context.shadowColor = null;
+              this.context.shadowOffsetX = 0;
+              this.context.shadowOffsetY = 0;
+              this.context.shadowBlur = 0;
+            }
+          }
+          else if (graphic instanceof ColorRectangle) {
+            this.context.fillStyle = graphic.color;
+            this.context.fillRect(
               renderX,
               renderY,
-              graphic.frame.width * this.game.displayRatio * graphic.scale.x,
-              graphic.frame.height * this.game.displayRatio * graphic.scale.y
+              graphic.width * this.game.displayRatio * graphic.scale.x,
+              graphic.height * this.game.displayRatio * graphic.scale.y
             );
           }
         }
-        else if (graphic instanceof Text) {
-          this.context.font = `${graphic.size * this.game.displayRatio}px ${graphic.font}`;
-          this.context.fillStyle = graphic.fillStyle;
-          this.context.textBaseline = graphic.textBaseline;
-          if (graphic.shadow) {
-            this.context.shadowColor = graphic.shadow.color;
-            this.context.shadowOffsetX = graphic.shadow.x;
-            this.context.shadowOffsetY = graphic.shadow.y;
-            this.context.shadowBlur = graphic.shadow.blur;
-          }
-          this.context.fillText(graphic.prefix + graphic.text, renderX, renderY);
-          if (graphic.shadow) {
-            this.context.shadowColor = null;
-            this.context.shadowOffsetX = 0;
-            this.context.shadowOffsetY = 0;
-            this.context.shadowBlur = 0;
-          }
-        }
-        else if (graphic instanceof ColorRectangle) {
-          this.context.fillStyle = graphic.color;
-          this.context.fillRect(
-            renderX,
-            renderY,
-            graphic.width * this.game.displayRatio * graphic.scale.x,
-            graphic.height * this.game.displayRatio * graphic.scale.y
-          );
-        }
       }
+      // });
     }
   }
 };
