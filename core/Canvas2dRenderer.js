@@ -91,12 +91,38 @@ export default class Canvas2dRenderer {
           });
         }
         for (const graphic of graphics) {
+          // if sprite isn't visible
           if (!graphic.visible) {
             continue;
           }
+          if (graphic.alpha <= 0) {
+            continue;
+          }
+
 
           const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
           const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
+          let renderWidth = 0;
+          let renderHeight = 0;
+          if (graphic instanceof Sprite) {
+            renderWidth = graphic.frame.image.width * this.game.displayRatio;
+            renderHeight = graphic.frame.image.width * this.game.displayRatio;
+          }
+
+          // if sprite is off camera
+          if (renderX + renderWidth < 0) {
+            continue;
+          }
+          if (renderX > scene.game.width * this.game.displayRatio) {
+            continue;
+          }
+          if (renderY + renderHeight < 0) {
+            continue;
+          }
+          if (renderY > scene.game.height * this.game.displayRatio) {
+            continue;
+          }
+
           if (graphic.alpha !== this.context.globalAlpha) {
             this.context.globalAlpha = graphic.alpha;
           }
