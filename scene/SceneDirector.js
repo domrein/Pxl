@@ -11,17 +11,24 @@ export default class SceneDirector {
     scene.beacon.observe(this, "completed", this.onSceneCompleted);
     this.scenes.push(scene);
     scene.beacon.emit("added", null);
+
+    return scene;
   }
 
   onSceneCompleted(source, sceneClass, handoffData) {
     source.ignore(this, "completed", this.onSceneCompleted);
+
     for (let i = this.scenes.length - 1; i >= 0; i--) {
       const scene = this.scenes[i];
       if (source.owner === scene) {
         this.scenes.splice(i, 1);
       }
     }
+
     source.owner.destroy();
-    this.addScene(sceneClass, handoffData);
+
+    if (sceneClass) {
+      this.addScene(sceneClass, handoffData);
+    }
   }
 };
