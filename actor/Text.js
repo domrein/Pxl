@@ -5,8 +5,8 @@ export default class Text extends Graphic {
     super(actor);
     this.text = `${text}`;
     this.prefix = "";
-    this.size = 25;
-    this.font = "DSDigital";
+    this.size = Text.defaultSize;
+    this.font = Text.defaultFont;
     this.fillStyle = "#FFFFFF";
     this.textBaseline = "top";
     this.fontString = `${this.size}px ${this.font}`;
@@ -19,3 +19,6 @@ export default class Text extends Graphic {
     // };
   }
 };
+
+Text.defaultFont = "DSDigital";
+Text.defaultSize = 25;
