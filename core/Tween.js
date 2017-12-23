@@ -41,7 +41,7 @@ export default class Tween {
     this.targets = new Map();
   }
 
-  add(target, property, startValue, endValue, duration, easing, {delay=0}={}) {
+  add(target, property, startValue, endValue, duration, {easing = "linear", delay = 0} = {}) {
     if (!this.targets.has(target)) {
       this.targets.set(target, []);
     }
