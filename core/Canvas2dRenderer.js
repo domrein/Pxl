@@ -6,9 +6,16 @@ export default class Canvas2dRenderer {
   // TODO: how do we render scene transitions?
   constructor(game, canvasId) {
     this.game = game;
-    this.canvas = document.getElementById(canvasId);
+    this.displayCanvas = document.getElementById(canvasId);
+    this.displayContext = this.displayCanvas.getContext("2d");
+    this.displayContext.imageSmoothingEnabled = false;
+
+    // render to nearest evenly scalable multiple then rerender to target canvas
+    // this should eliminate any tears
+    this.canvas = document.createElement("canvas");
     this.context = this.canvas.getContext("2d");
     this.context.imageSmoothingEnabled = false;
+
     this.graphics = new WeakMap();
     this.backgroundColor = "#000000";
   }
@@ -99,27 +106,30 @@ export default class Canvas2dRenderer {
             continue;
           }
 
-
-          const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
-          const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
+          const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio + this.game.displayOffsetX;
+          const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio + this.game.displayOffsetY;
           let renderWidth = 0;
           let renderHeight = 0;
           if (graphic instanceof Sprite) {
             renderWidth = graphic.frame.image.width * this.game.displayRatio;
             renderHeight = graphic.frame.image.width * this.game.displayRatio;
           }
+          else if (graphic instanceof ColorRectangle) {
+            renderWidth = graphic.width * this.game.displayRatio * graphic.scale.x;
+            renderHeight = graphic.height * this.game.displayRatio * graphic.scale.y;
+          }
 
           // if sprite is off camera
-          if (renderX + renderWidth < 0) {
+          if (renderX + renderWidth < 0 - this.game.displayOffsetX) {
             continue;
           }
-          if (renderX > scene.game.width * this.game.displayRatio) {
+          if (renderX > scene.game.width * this.game.displayRatio + this.game.displayOffsetX * 2) {
             continue;
           }
-          if (renderY + renderHeight < 0) {
+          if (renderY + renderHeight < 0 - this.game.displayOffsetY) {
             continue;
           }
-          if (renderY > scene.game.height * this.game.displayRatio) {
+          if (renderY > scene.game.height * this.game.displayRatio + this.game.displayOffsetY * 2) {
             continue;
           }
 

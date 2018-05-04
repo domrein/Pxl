@@ -5,6 +5,7 @@ Paul Milham
 
 import Beacon from "../core/Beacon.js";
 
+// scene level input listener
 export default class Input {
   constructor() {
     this.beacon = new Beacon(this);

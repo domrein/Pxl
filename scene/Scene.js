@@ -3,7 +3,7 @@ import Physics from "./Physics.js";
 import Input from "./Input.js";
 import Camera from "./Camera.js";
 import Layer from "./Layer.js";
-import Tween from "../core/Tween.js";
+import Tweener from "../core/Tweener.js";
 
 export default class Scene {
   constructor(game, handoffData) {
@@ -16,13 +16,13 @@ export default class Scene {
     this.physics = new Physics(this);
     this.input = new Input();
     this.camera = new Camera();
-    this.tween = new Tween();
+    this.tweener = new Tweener();
     this.layers = [];
     this.addLayer("default");
   }
 
   update() {
-    this.tween.update();
+    this.tweener.update();
     this.camera.update();
     // update all actors
     for (const actor of this.actors) {

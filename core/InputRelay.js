@@ -5,6 +5,7 @@ Paul Milham
 
 import Point from "./Point.js";
 
+// global input
 export default class InputRelay {
   constructor(game) {
     this.game = game;
@@ -55,7 +56,10 @@ export default class InputRelay {
     for (const changedTouch of event.changedTouches) {
       const touchX = changedTouch.clientX - this.canvas.offsetLeft;
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
-      const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
+      const touch = new Point(
+        (touchX - this.game.displayOffsetX) / this.game.displayRatio,
+        (touchY - this.game.displayOffsetY) / this.game.displayRatio
+      );
       if (this.game.scenes.length) {
         const scene = this.game.scenes[this.game.scenes.length - 1];
         scene.input.onTouchStarted(touch);
@@ -74,7 +78,10 @@ export default class InputRelay {
     for (const changedTouch of event.changedTouches) {
       const touchX = changedTouch.clientX - this.canvas.offsetLeft;
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
-      const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
+      const touch = new Point(
+        (touchX - this.game.displayOffsetX) / this.game.displayRatio,
+        (touchY - this.game.displayOffsetY) / this.game.displayRatio
+      );
       if (this.game.scenes.length) {
         const scene = this.game.scenes[this.game.scenes.length - 1];
         scene.input.onTouchMoved(touch);
@@ -86,17 +93,31 @@ export default class InputRelay {
     for (const changedTouch of event.changedTouches) {
       const touchX = changedTouch.clientX - this.canvas.offsetLeft;
       const touchY = changedTouch.clientY - this.canvas.offsetTop;
-      const touch = new Point(touchX / this.game.displayRatio, touchY / this.game.displayRatio);
+      const touch = new Point(
+        (touchX - this.game.displayOffsetX) / this.game.displayRatio,
+        (touchY - this.game.displayOffsetY) / this.game.displayRatio
+      );
       if (this.game.scenes.length) {
-        this.game.scenes[this.game.scenes.length - 1].input.onTouchEnded(touch);
+        const scene = this.game.scenes[this.game.scenes.length - 1];
+        scene.input.onTouchEnded(touch);
+        scene.actors.forEach(a => {
+          if (a.body && a.body.touchable) {
+            if (a.body.contains(touch)) {
+              a.body.beacon.emit("touchEnded");
+            }
+          }
+        });
       }
     }
   }
 
   // NOTE: mouse events mimic touch events
   onMouseDown(event) {
-    const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
     this.touching = true;
+    const touch = new Point(
+      (event.offsetX - this.game.displayOffsetX) / this.game.displayRatio,
+      (event.offsetY - this.game.displayOffsetY) / this.game.displayRatio
+    );
     if (this.game.scenes.length) {
       const scene = this.game.scenes[this.game.scenes.length - 1];
       scene.input.onTouchStarted(touch);
@@ -113,7 +134,10 @@ export default class InputRelay {
   onMouseMove(event) {
     // dispatch touch event
     if (this.touching) {
-      const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
+      const touch = new Point(
+        (event.offsetX - this.game.displayOffsetX) / this.game.displayRatio,
+        (event.offsetY - this.game.displayOffsetY) / this.game.displayRatio
+      );
       if (this.game.scenes.length) {
         this.game.scenes[this.game.scenes.length - 1].input.onTouchMoved(touch);
       }
@@ -124,9 +148,22 @@ export default class InputRelay {
 
   onMouseUp(event) {
     this.touching = false;
-    const touch = new Point(event.offsetX / this.game.displayRatio, event.offsetY / this.game.displayRatio);
+    const touch = new Point(
+      (event.offsetX - this.game.displayOffsetX) / this.game.displayRatio,
+      (event.offsetY - this.game.displayOffsetY) / this.game.displayRatio
+    );
     if (this.game.scenes.length) {
-      this.game.scenes[this.game.scenes.length - 1].input.onTouchEnded(touch);
+      const scene = this.game.scenes[this.game.scenes.length - 1];
+
+      scene.input.onTouchEnded(touch);
+      scene.actors.forEach(a => {
+        if (a.body && a.body.touchable) {
+          if (a.body.contains(touch)) {
+            // TODO: only dispatch touchEnded if received touchStarted?
+            a.body.beacon.emit("touchEnded");
+          }
+        }
+      });
     }
   }
 };

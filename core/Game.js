@@ -8,7 +8,7 @@ import SaveData from "./SaveData.js";
 import SceneDirector from "../scene/SceneDirector.js";
 
 export default class Game {
-  constructor(width, height, firstSceneClass, rendererClass, canvasId) {
+  constructor(width, height, firstSceneClass, rendererClass, canvasId, {responsive = false} = {}) {
     this.renderer = new rendererClass(this, canvasId);
     this.displayRatio = 1;
     this.beacon = new Beacon(this);
@@ -17,6 +17,7 @@ export default class Game {
 
     this.width = width;
     this.height = height;
+    this.responsive = responsive; // resize game to window size
     window.addEventListener("resize", () => this.onDisplayResize());
     this.onDisplayResize();
 
@@ -92,25 +93,57 @@ export default class Game {
     // find display size and get ratio
     var widthRatio = window.innerWidth / this.width;
     var heightRatio = window.innerHeight / this.height;
-    this.displayRatio = widthRatio;
+    this.displayRatio = Math.ceil(widthRatio);
     if (this.height * widthRatio > window.innerHeight) {
-      this.displayRatio = heightRatio;
+      this.displayRatio = Math.ceil(heightRatio);
     }
     this.displayOffsetX = Math.round(window.innerWidth - this.width * this.displayRatio) / 2;
     this.displayOffsetY = Math.round(window.innerHeight - this.height * this.displayRatio) / 2;
-
-    document.getElementById("canvas").width = this.width * this.displayRatio;
-    document.getElementById("canvas").height = this.height * this.displayRatio;
-    // TODO: make sure the fullscreen toggling is correct and unprefix it
-    if (!document.webkitFullscreenElement) {
-      document.getElementById("canvas").style.marginLeft = this.displayOffsetX  + "px";
-      document.getElementById("canvas").style.marginTop = this.displayOffsetY  + "px";
+    const canvas = document.getElementById("canvas");
+    if (this.responsive) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
     else {
-      document.getElementById("canvas").style.marginLeft = "0px";
-      document.getElementById("canvas").style.marginTop = "0px";
+      canvas.width = this.width * this.displayRatio;
+      canvas.height = this.height * this.displayRatio;
+      // TODO: make sure the fullscreen toggling is correct and unprefix it
+      if (!document.webkitFullscreenElement) {
+        canvas.style.marginLeft = this.displayOffsetX  + "px";
+        canvas.style.marginTop = this.displayOffsetY  + "px";
+      }
+      else {
+        canvas.style.marginLeft = "0px";
+        canvas.style.marginTop = "0px";
+      }
     }
 
-    this.beacon.emit("displayResized", null);
+    this.beacon.emit("displayResized", {
+      display: canvas.width > canvas.height ? "landscape" : "portrait",
+    });
+  }
+
+  get responsiveLeft() {
+    return 0 - this.displayOffsetX / this.displayRatio;
+  }
+
+  get responsiveRight() {
+    return this.width + this.displayOffsetX / this.displayRatio;
+  }
+
+  get responsiveTop() {
+    return 0 - this.displayOffsetY / this.displayRatio;
+  }
+
+  get responsiveBottom() {
+    return this.height + this.displayOffsetY / this.displayRatio;
+  }
+
+  get responsiveWidth() {
+    return this.width + this.displayOffsetX * 2 / this.displayRatio;
+  }
+
+  get responsiveHeight() {
+    return this.height + this.displayOffsetY * 2 / this.displayRatio;
   }
 };

@@ -1,66 +1,12 @@
-let seed = 0;
-let state = 0;
-let increment = 0;
+/*
+Paul Milham
+12/26/17
+*/
 
-export const setSeed = (val, warn = true) => {
-  if (warn) {
-    console.warn(`Setting random seed to ${val}`);
-  }
-  seed = val;
-  state = seed;
-  increment = seed % 10 + 1;
-}
-
-setSeed(Math.floor(Math.random() * 1000000), false);
-
-export const int = (min, max) => {
-  const range = max - min;
-  const i = Math.floor(rand() * range + min);
-  // console.log(i);
-  return i;
-};
-
-export const float = (min, max) => {
-  const range = max - min;
-  return rand() * range + min;
-};
-
+// global seed (for testing)
+let seed = null;
 // radians in a circle
-const radians = Math.PI * 2;
-// random radian in circle
-export const radian = (start = 0, end = radians) => {
-  while (end < start) {
-    end += radians;
-  }
-  const range = end - start;
-  let r = rand() * range;
-  while (r > radians) {
-    r -= radians;
-  }
-
-  return r;
-};
-
-// returns random item in array
-export const item = array => {
-  if (!array.length) {
-    return null;
-  }
-
-  return array[int(0, array.length)];
-}
-
-export const rand = () => {
-  // update state with xorshift
-  state ^= state << 13;
-  state ^= state >> 17;
-  state ^= state << 5;
-
-  // normalize
-  const num = Math.abs(state) / Math.abs(~(1 << 31));
-
-  return num === 1 ? 0 : num;
-};
+const CIRCLE_RADIANS = Math.PI * 2;
 
 // distribution test
 // const nums = {};
@@ -75,10 +21,105 @@ export const rand = () => {
 // }
 // console.log(nums);
 
-export const chance = percent => {
-  if (percent > 1) {
-    percent /= 100;
+export default class Random {
+  static get seed() {
+    return seed;
   }
 
-  return rand() < percent;
+  // this should be set before intantiating instances
+  static set seed(val) {
+    seed = val;
+    console.warn(`Setting global random seed to ${val}`);
+  }
+
+  // only pass in seed if you want a random repeatable sequence for this instance
+  constructor(_seed = null) {
+    // instance seed
+    if (_seed) {
+      this.state = _seed;
+    }
+    // global seed
+    else if (seed) {
+      this.state = seed;
+    }
+    // random seed
+    else {
+      this.state = Math.floor(Math.random() * 1000000)
+    }
+    this.increment = seed % 10 + 1;
+  }
+
+  int(min, max) {
+    const range = max - min;
+    const i = Math.floor(this.rand() * range + min);
+
+    return i;
+  }
+
+  float(min, max) {
+    const range = max - min;
+
+    return this.rand() * range + min;
+  }
+
+  // min = "a", max = "d"
+  letter(min, max) {
+    const range = max.charCodeAt(0) - min.charCodeAt(0);
+
+    return String.fromCharCode(this.rand() * range + min.charCodeAt(0));
+  }
+
+  // random radian in circle
+  radian(start = 0, end = CIRCLE_RADIANS) {
+    while (end < start) {
+      end += CIRCLE_RADIANS;
+    }
+    const range = end - start;
+    let r = this.rand() * range + start;
+    while (r > CIRCLE_RADIANS) {
+      r -= CIRCLE_RADIANS;
+    }
+
+    return r;
+  }
+
+  // applies Math.PI
+  piRadian(start = 0, end = 2) {
+    return this.radian(start * Math.PI, end * Math.PI);
+  }
+
+  // percentage of circle
+  percentRadian(start = 0, end = 1) {
+    return this.radian(start * Math.PI * 2, end * Math.PI * 2);
+  }
+
+  // returns random item in array
+  item(array) {
+    if (!array.length) {
+      return null;
+    }
+
+    return array[int(0, array.length)];
+  }
+
+  // mutates this.state on every call
+  rand() {
+    // update state with xorshift
+    this.state ^= this.state << 13;
+    this.state ^= this.state >> 17;
+    this.state ^= this.state << 5;
+
+    // normalize
+    const num = Math.abs(this.state) / Math.abs(~(1 << 31));
+
+    return num === 1 ? 0 : num;
+  }
+
+  chance(percent) {
+    if (percent > 1) {
+      percent /= 100;
+    }
+
+    return this.rand() < percent;
+  }
 };
