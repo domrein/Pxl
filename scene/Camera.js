@@ -4,7 +4,7 @@ Paul Milham
 */
 
 import Point from "../core/Point.js";
-import * as random from "../core/random.js";
+import * as random from "../core/Random.js";
 
 export default class Camera extends Point {
   constructor() {
