@@ -4,8 +4,8 @@ export default class ColorRectangle extends Graphic {
   constructor(actor) {
     super(actor);
 
-    this.width = 0;
-    this.height = 0;
+    this.width = 10;
+    this.height = 10;
     this.color = "#000";
   }
 };

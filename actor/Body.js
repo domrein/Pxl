@@ -13,7 +13,10 @@ export default class Body extends Rectangle {
     this.mass = null; // for use in shared collision resolution
     this.velocity = new Vector();
     this.friction = null;
-    this.gravity = new Vector();
+
+    /** @type {Vector} */
+    this.gravity = null;
+
     this.disabled = false;
     this.touchable = false;
   }

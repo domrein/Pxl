@@ -21,15 +21,20 @@ export default class Scene {
     this.addLayer("default");
   }
 
-  update() {
-    this.tween.update();
-    this.camera.update();
+  // NOTE: actors should be added here, not in constructor
+  init() {
+
+  }
+
+  update(delta) {
+    this.tween.update(delta);
+    this.camera.update(delta);
     // update all actors
     for (const actor of this.actors) {
-      actor.update();
+      actor.update(delta);
     }
 
-    this.physics.update();
+    this.physics.update(delta);
 
     // TODO: actor pooling
     // remove dead actors

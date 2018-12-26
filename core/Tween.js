@@ -67,24 +67,32 @@ export default class Tween {
     return tween;
   }
 
-  update() {
+  update(delta) {
     for (const [target, tweens] of this.targets.entries()) {
       for (let i = tweens.length - 1; i >= 0; i--) {
         const tween = tweens[i];
-        if (tween.time < 0) {
-          tween.time++;
+        tween.time += delta;
+        if (tween.time <= 0) {
+          return;
         }
-        else if (!tween.time) {
-          tween.target[tween.property] = tween.startValue;
-          tween.time++;
-        }
-        else if (tween.time < tween.duration) {
-          const changeAmount = tween.easeFunc(tween.time, tween.startValue, tween.endValue - tween.startValue, tween.duration) - tween.easeFunc(tween.time - 1, tween.startValue, tween.endValue - tween.startValue, tween.duration);
-          tween.target[tween.property] += changeAmount;
-          tween.time++;
-        }
-        else {
-          tween.target[tween.property] = tween.endValue;
+        tween.target[tween.property] = tween.easeFunc(
+          Math.min(tween.time, tween.duration), // time in seconds
+          tween.startValue, // start value for target property
+          tween.endValue - tween.startValue, // change amount for target property
+          tween.duration, // duration in seconds
+        );
+
+        // else if (!tween.time) {
+        //   tween.target[tween.property] = tween.startValue;
+        //   tween.time++;
+        // }
+        // else if (tween.time < tween.duration) {
+        //   const changeAmount = tween.easeFunc(tween.time, tween.startValue, tween.endValue - tween.startValue, tween.duration) - tween.easeFunc(tween.time - 1, tween.startValue, tween.endValue - tween.startValue, tween.duration);
+        //   tween.target[tween.property] += changeAmount;
+        //   tween.time++;
+        // }
+        if (tween.time >= tween.duration) {
+          // tween.target[tween.property] = tween.endValue;
           tween.beacon.emit("completed");
           if (tweens.length === 1) {
             this.targets.delete(target);

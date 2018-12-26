@@ -6,9 +6,20 @@ export default class Canvas2dRenderer {
   // TODO: how do we render scene transitions?
   constructor(game, canvasId) {
     this.game = game;
-    this.canvas = document.getElementById(canvasId);
+
+    this.canvas = document.createElement("canvas");
+    this.canvas.style.position = "absolute";
+    this.canvas.style.top = "0px";
+    this.canvas.style.left = "0px";
+    this.canvas.style.border = "2px solid";
+    this.canvas.width = game.width;
+    this.canvas.height = game.height;
+    document.body.appendChild(this.canvas);
+
     this.context = this.canvas.getContext("2d");
-    this.context.imageSmoothingEnabled = false;
+    this.renderCanvas = document.getElementById(canvasId);
+    this.renderContext = this.renderCanvas.getContext("2d");
+    this.renderContext.imageSmoothingEnabled = false;
     this.graphics = new WeakMap();
     this.backgroundColor = "#000000";
   }
@@ -20,8 +31,12 @@ export default class Canvas2dRenderer {
     const layers = {};
     scene.layers.forEach(l => layers[l.name] = []);
 
+
     scene.actors.forEach(a => a.graphics.forEach(g => layers[g.layer.name].push(g)))
     Object.values(layers).forEach(l => l.sort(this.sortGraphics));
+
+    // add all actors in scene (usually actors added in constructor)
+    // scene.actors.forEach(a => this.onActorAdded(scene.beacon, a));
 
     this.graphics.set(scene, layers);
   }
@@ -71,6 +86,7 @@ export default class Canvas2dRenderer {
 
   render() {
     this.context.imageSmoothingEnabled = false;
+    // this.renderContext.imageSmoothingEnabled = false;
     this.context.fillStyle = this.backgroundColor;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (const scene of this.game.scenes) {
@@ -100,26 +116,26 @@ export default class Canvas2dRenderer {
           }
 
 
-          const renderX = (graphic.actor.body.x + graphic.offset.x) * this.game.displayRatio - scene.camera.x * graphic.lerp * this.game.displayRatio;
-          const renderY = (graphic.actor.body.y + graphic.offset.y) * this.game.displayRatio - scene.camera.y * graphic.lerp * this.game.displayRatio;
+          const renderX = (graphic.actor.body.x + graphic.offset.x) - scene.camera.x * graphic.lerp;
+          const renderY = (graphic.actor.body.y + graphic.offset.y) - scene.camera.y * graphic.lerp;
           let renderWidth = 0;
           let renderHeight = 0;
           if (graphic instanceof Sprite) {
-            renderWidth = graphic.frame.image.width * this.game.displayRatio;
-            renderHeight = graphic.frame.image.width * this.game.displayRatio;
+            renderWidth = graphic.frame.image.width;
+            renderHeight = graphic.frame.image.width;
           }
 
           // if sprite is off camera
           if (renderX + renderWidth < 0) {
             continue;
           }
-          if (renderX > scene.game.width * this.game.displayRatio) {
+          if (renderX > scene.game.width) {
             continue;
           }
           if (renderY + renderHeight < 0) {
             continue;
           }
-          if (renderY > scene.game.height * this.game.displayRatio) {
+          if (renderY > scene.game.height) {
             continue;
           }
 
@@ -136,7 +152,7 @@ export default class Canvas2dRenderer {
                 graphic.frame.y,
                 graphic.frame.width,
                 graphic.frame.height,
-                -renderX - this.game.displayRatio * graphic.frame.width,
+                -renderX * graphic.frame.width,
                 renderY,
                 graphic.frame.width * this.game.displayRatio * graphic.scale.x,
                 graphic.frame.height * this.game.displayRatio * graphic.scale.y
@@ -153,13 +169,13 @@ export default class Canvas2dRenderer {
                 graphic.frame.height,
                 renderX,
                 renderY,
-                graphic.frame.width * this.game.displayRatio * graphic.scale.x,
-                graphic.frame.height * this.game.displayRatio * graphic.scale.y
+                graphic.frame.width * graphic.scale.x,
+                graphic.frame.height * graphic.scale.y
               );
             }
           }
           else if (graphic instanceof Text) {
-            this.context.font = `${graphic.size * this.game.displayRatio}px ${graphic.font}`;
+            this.context.font = `${graphic.size}px ${graphic.font}`;
             this.context.fillStyle = graphic.fillStyle;
             this.context.textBaseline = graphic.textBaseline;
             if (graphic.shadow) {
@@ -181,13 +197,35 @@ export default class Canvas2dRenderer {
             this.context.fillRect(
               renderX,
               renderY,
-              graphic.width * this.game.displayRatio * graphic.scale.x,
-              graphic.height * this.game.displayRatio * graphic.scale.y
+              graphic.width * graphic.scale.x,
+              graphic.height * graphic.scale.y
             );
           }
         }
       }
-      // });
     }
+
+    var widthRatio = window.innerWidth / this.game.width;
+    var heightRatio = window.innerHeight / this.game.height;
+    let displayRatio = widthRatio;
+    if (this.game.height * widthRatio > window.innerHeight) {
+      displayRatio = heightRatio;
+    }
+    // this.displayOffsetX = Math.round(window.innerWidth - this.width * this.displayRatio) / 2;
+    // this.displayOffsetY = Math.round(window.innerHeight - this.height * this.displayRatio) / 2;
+
+    // document.getElementById(this.canvasId).width = this.width * this.displayRatio;
+    // document.getElementById(this.canvasId).height = this.height * this.displayRatio;
+    // // TODO: make sure the fullscreen toggling is correct and unprefix it
+    // if (!document.webkitFullscreenElement) {
+    //   document.getElementById(this.canvasId).style.marginLeft = this.displayOffsetX  + "px";
+    //   document.getElementById(this.canvasId).style.marginTop = this.displayOffsetY  + "px";
+    // }
+    // else {
+    //   document.getElementById(this.canvasId).style.marginLeft = "0px";
+    //   document.getElementById(this.canvasId).style.marginTop = "0px";
+    // }
+
+    this.renderContext.drawImage(this.canvas, 0, 0, this.game.width * displayRatio, this.game.height * displayRatio);
   }
 };

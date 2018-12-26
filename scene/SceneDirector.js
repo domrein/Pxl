@@ -11,6 +11,7 @@ export default class SceneDirector {
     scene.beacon.observe(this, "completed", this.onSceneCompleted);
     this.scenes.push(scene);
     scene.beacon.emit("added", null);
+    scene.init();
 
     return scene;
   }

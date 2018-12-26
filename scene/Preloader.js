@@ -1,17 +1,64 @@
-import Beacon from "./Beacon.js";
+import Scene from "./Scene.js";
+import Actor from "../actor/Actor.js";
+import Body from "../actor/Body.js";
+import ColorRectangle from "../actor/ColorRectangle.js";
 
-export default class Preloader {
-  constructor() {
+export default class Preloader extends Scene {
+  constructor(game) {
+    super(game);
+
     this.imagePaths = [];
     this.totalImages = 0;
     this.audio = [];
     this.totalAudio = 0;
     this.data = [];
     this.totalData = 0;
-    this.beacon = new Beacon(this);
-    // TODO: pass in id of canvas
-    this.canvas = document.getElementById("canvas");
-    this.context = this.canvas.getContext("2d");
+
+    this.nextScene = null;
+
+    this.beacon.observe(this.spriteStore, "imageLoaded", (source, image, name) => this.spriteStore.addImage(image, name));
+    this.beacon.observe(this.spriteStore, "completed", () => {
+      if (this.dataStore.data.frameData) {
+        this.spriteStore.frameData = this.dataStore.data.frameData;
+      }
+      if (this.dataStore.data.animData) {
+        this.spriteStore.animData = this.dataStore.data.animData;
+      }
+      this.spriteStore.buildAnims();
+    });
+    this.beacon.observe(this.audioMixer, "audioContextCreated", (...args) => this.audioMixer.onContextCreated(...args));
+    this.beacon.observe(this.audioMixer, "audioLoaded", (...args) => this.audioMixer.onAudioLoaded(...args));
+    this.beacon.observe(this.dataStore, "dataLoaded", (source, data, name) => this.dataStore.addData(data, name));
+  }
+
+  init() {
+    const padding = Math.round(this.game.width / 10);
+    const width = Math.round(this.game.width - padding * 2);
+    const height = Math.round(padding);
+    const innerPadding = Math.round(this.game.width / 100);
+    const innerWidth = Math.round(width - innerPadding * 2);
+    const innerHeight = Math.round(height - innerPadding * 2);
+
+    const progress = new Actor(this);
+    progress.graphics.push(new ColorRectangle(progress));
+    progress.graphics[0].color = "#FFF";
+    progress.body = new Body();
+    progress.body.x = padding;
+    progress.body.y = this.game.height / 2 - height / 2;
+    this.addActor(progress);
+
+    const loadProgress = () => {
+      const totalAssets = this.totalImages + this.totalAudio + this.totalData;
+      const totalLoaded = totalAssets - this.imagePaths.length + this.audio.length + this.data.length;
+
+      // calc percentComplete
+      const percentComplete = totalLoaded / totalAssets;
+      progress.graphics[0].width = width * percentComplete;
+    };
+
+    this.beacon.observe(this, "imageLoaded", loadProgress);
+    this.beacon.observe(this, "audioLoaded", loadProgress);
+    this.beacon.observe(this, "dataLoaded", loadProgress);
   }
 
   addImage(path, name) {
@@ -36,7 +83,6 @@ export default class Preloader {
 
   load() {
     this.totalImages = this.imagePaths.length;
-    this.render();
     // load images
     for (let i = 0; i < this.imagePaths.length; i ++) {
       const {path: imagePath, name: imageName} = this.imagePaths[i];
@@ -52,7 +98,7 @@ export default class Preloader {
           this.beacon.emit("allImagesLoaded");
         }
         if (!this.imagePaths.length && !this.audio.length && !this.data.length) {
-          this.beacon.emit("completed", {});
+          this.beacon.emit("completed", this.nextScene);
         }
       };
       image.src = imagePath;
@@ -79,7 +125,7 @@ export default class Preloader {
             this.beacon.emit("allAudioLoaded");
           }
           if (!this.imagePaths.length && !this.audio.length && !this.data.length) {
-            this.beacon.emit("completed", {});
+            this.beacon.emit("completed", this.nextScene);
           }
         });
       }, false);
@@ -102,32 +148,10 @@ export default class Preloader {
           this.beacon.emit("allDataLoaded");
         }
         if (!this.imagePaths.length && !this.audio.length && !this.data.length) {
-          this.beacon.emit("completed", {});
+          this.beacon.emit("completed", this.nextScene);
         }
       }, false);
       request.send();
     }
-  }
-
-  render() {
-    // clear screen
-    this.context.fillStyle = "#000000";
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // calc sizes and stuff
-    const padding = Math.round(this.canvas.width / 10);
-    const width = Math.round(this.canvas.width - padding * 2);
-    const height = Math.round(padding);
-    const innerPadding = Math.round(this.canvas.width / 100);
-    const innerWidth = Math.round(width - innerPadding * 2);
-    const innerHeight = Math.round(height - innerPadding * 2);
-
-    // calc percentComplete
-    const percentComplete = 1 - this.imagePaths.length / this.totalImages;
-
-    // draw loading bar
-    this.context.fillStyle = this.context.strokeStyle = "#EEEEEE";
-    this.context.strokeRect(padding, this.canvas.height / 2 - height / 2, width, height);
-    this.context.fillRect(padding + innerPadding, this.canvas.height / 2 - innerHeight / 2, Math.round(innerWidth * percentComplete), innerHeight);
   }
 };

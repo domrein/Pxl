@@ -1,26 +1,46 @@
 import Beacon from "../core/Beacon.js";
+import Actor from "../actor/Actor.js";
+import Body from "../actor/Body.js";
+import Scene from "../scene/Scene.js";
 
 export default class Physics {
+  /**
+  * @param scene {Scene}
+  */
   constructor(scene) {
     scene.beacon.observe(this, "actorAdded", this.onActorAdded);
     scene.beacon.observe(this, "actorRemoved", this.onActorRemoved);
-    this.bodies = {};
+
+    // TODO: figure out why this isn't working
+    /** @type {Map<string, string>} */
+    this.bodies = new Map();
+
+    /** @type {Array<Array<string>>} */
     this.collisionPairs = [];
+
     this.beacon = new Beacon(this);
   }
 
+  /**
+  * @param {Beacon} source
+  * @param {Actor} actor
+  */
   onActorAdded(source, actor) {
     if (actor.body) {
-      if (!this.bodies[actor.body.type]) {
-        this.bodies[actor.body.type] = [];
+      if (!this.bodies.has(actor.body.type)) {
+        this.bodies.set(actor.body.type, []);
       }
-      this.bodies[actor.body.type].push(actor.body);
+      this.bodies.get(actor.body.type).push(actor.body);
     }
   }
 
+  /**
+  * @param {Beacon} source
+  * @param {Actor} actor
+  */
   onActorRemoved(source, actor) {
     if (actor.body) {
-      const bodies = this.bodies[actor.body.type];
+      const bodies = this.bodies.get(actor.body.type);
       if (bodies) {
         for (let i = bodies.length - 1; i >= 0; i--) {
           if (bodies[i] === actor.body) {
@@ -31,18 +51,21 @@ export default class Physics {
     }
   }
 
-  update() {
+  /**
+  * @param {number} delta
+  */
+  update(delta) {
     // update physics
-    for (const type of Object.keys(this.bodies)) {
-      for (const body of this.bodies[type]) {
+    for (const [type, bodies] of this.bodies.entries()) {
+      for (const body of bodies) {
         // apply forces
-        if (body.friction) {
+        if (body.friction && body.friction.m) {
           body.velocity.x *= body.friction.x;
           body.velocity.y *= body.friction.y;
         }
-        if (body.gravity) {
+        if (body.gravity && body.gravity.m) {
         // if (body.gravity && body.applyGravity) {
-          body.velocity.add(body.gravity);
+          body.velocity.add(Vector.multiply(body.gravity, delta));
         }
 
         // cap speed
@@ -53,8 +76,8 @@ export default class Physics {
         // }
 
         // update position
-        body.x += body.velocity.x;
-        body.y += body.velocity.y;
+        body.x += body.velocity.x * delta;
+        body.y += body.velocity.y * delta;
       }
     }
 
